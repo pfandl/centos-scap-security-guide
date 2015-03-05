@@ -1,0 +1,89 @@
+--- scap-security-guide-0.1.19/RHEL/7/input/system/accounts/pam.xml.orig	2014-09-29 08:53:24.078751294 -0400
++++ scap-security-guide-0.1.19/RHEL/7/input/system/accounts/pam.xml	2014-09-29 08:59:28.963638607 -0400
+@@ -81,33 +81,28 @@ and gives them an opportunity to notify
+ 
+ <Group id="password_quality">
+ <title>Set Password Quality Requirements</title>
+-<description>The default <tt>pam_cracklib</tt> PAM module provides strength
++<description>The default <tt>pam_pwquality</tt> PAM module provides strength
+ checking for passwords. It performs a number of checks, such as
+ making sure passwords are not similar to dictionary words, are of
+ at least a certain length, are not the previous password reversed,
+ and are not simply a change of case from the previous password. It
+ can also require passwords to be in certain character classes.
+ <br /><br />
+-The <tt>pam_passwdqc</tt> PAM module also provides the ability to enforce
+-stringent password strength requirements. It is provided
+-in an RPM of the same name.
+-<br /><br />
+-The man pages <tt>pam_cracklib(8)</tt> and <tt>pam_passwdqc(8)</tt>
+-provide information on the capabilities and configuration of
+-each.</description>
++The man page <tt>pam_pwquality(8)</tt> provide further information
++on the capabilities and configuration.</description>
+ 
+ <Group id="password_quality_pamcracklib">
+ <title>Set Password Quality Requirements, if using
+-pam_cracklib</title>
+-<description>The <tt>pam_cracklib</tt> PAM module can be configured to meet
++ pam_pwquality</title>
++<description>The <tt>pam_pwquality</tt> PAM module can be configured to meet
+ requirements for a variety of policies.
+ <br /><br />
+-For example, to configure <tt>pam_cracklib</tt> to require at least one uppercase
++For example, to configure <tt>pam_pwquality</tt> to require at least one uppercase
+ character, lowercase character, digit, and other (special)
+ character, locate the following line in <tt>/etc/pam.d/system-auth</tt>:
+-<pre>password requisite pam_cracklib.so try_first_pass retry=3</pre>
++<pre>password requisite pam_pwquality.so try_first_pass retry=3</pre>
+ and then alter it to read:
+-<pre>password required pam_cracklib.so try_first_pass retry=3 maxrepeat=3 minlen=14 dcredit=-1 ucredit=-1 ocredit=-1 lcredit=-1 difok=4</pre>
++<pre>password required pam_pwquality.so try_first_pass retry=3 maxrepeat=3 minlen=14 dcredit=-1 ucredit=-1 ocredit=-1 lcredit=-1 difok=4</pre>
+ If no such line exists, add one as the first line of the password section in <tt>/etc/pam.d/system-auth</tt>.
+ The arguments can be modified to ensure compliance with
+ your organization's security policy. Discussion of each parameter follows.
+@@ -268,14 +263,14 @@ is different from account lockout, which
+ 
+ <Rule id="accounts_password_pam_cracklib_maxrepeat">
+ <title>Set Password to Maximum of Three Consecutive Repeating Characters</title>
+-<description>The pam_cracklib module's <tt>maxrepeat</tt> parameter controls requirements for
++<description>The pam_pwquality module's <tt>maxrepeat</tt> parameter controls requirements for
+ consecutive repeating characters. When set to a positive number, it will reject passwords
+ which contain more than that number of consecutive characters. Add <tt>maxrepeat=3</tt>
+-after pam_cracklib.so to prevent a run of four or more identical characters.
++after pam_pwquality.so to prevent a run of four or more identical characters.
+ </description>
+ <ocil clause="maxrepeat is not found or not set to the required value">
+ To check the maximum value for consecutive repeating characters, run the following command:
+-<pre>$ grep pam_cracklib /etc/pam.d/system-auth</pre>
++<pre>$ grep pam_pwquality /etc/pam.d/system-auth</pre>
+ Look for the value of the <tt>maxrepeat</tt> parameter. The DoD requirement is 3.
+ </ocil>
+ <rationale>
+@@ -413,7 +408,7 @@ Note that passwords which are changed on
+ 
+ <Rule id="accounts_password_pam_cracklib_minclass">
+ <title>Set Password Strength Minimum Different Categories</title>
+-<description>The pam_cracklib module's <tt>minclass</tt> parameter controls requirements for
++<description>The pam_pwquality module's <tt>minclass</tt> parameter controls requirements for
+ usage of different character classes, or types, of character that must exist in a password
+ before it is considered valid. For example, setting this value to three (3) requires that
+ any password must have characters from at least three different categories in order to be
+@@ -425,7 +420,7 @@ four categories available:
+ * Digits
+ * Special characters (for example, punctuation)
+ </pre>
+-Add <tt>minclass=<i>NUM</i></tt> after pam_cracklib.so entry into the
++Add <tt>minclass=<i>NUM</i></tt> after pam_pwquality.so entry into the
+ <tt>/etc/pam.d/system-auth</tt> file in order to require differing categories of
+ characters when changing passwords, substituting <i>NUM</i> appropriately (for example to
+ require at least three character classes to be used in password, use <tt>minclass=3</tt>).
+@@ -433,7 +428,7 @@ require at least three character classes
+ <ocil clause="minclass is not found or not set to the required value">
+ To check how many categories of characters must be used in password during a password change,
+ run the following command:
+-<pre>$ grep pam_cracklib /etc/pam.d/system-auth</pre>
++<pre>$ grep pam_pwquality /etc/pam.d/system-auth</pre>
+ The <tt>minclass</tt> parameter will indicate how many character classes must be used. If
+ the requirement was for the password to contain characters from three different categories,
+ then this would appear as <tt>minclass=3</tt>.

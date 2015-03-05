@@ -1,0 +1,14 @@
+--- scap-security-guide-0.1.19/RHEL/7/input/guide.xslt.orig	2014-09-29 07:55:24.154151816 -0400
++++ scap-security-guide-0.1.19/RHEL/7/input/guide.xslt	2014-09-29 07:56:48.376190494 -0400
+@@ -8,10 +8,7 @@
+       <xsl:copy-of select="@*|node()" />
+ 
+        <!-- adding profiles here -->
+-		<xsl:apply-templates select="document('profiles/test.xml')" />
+-		<xsl:apply-templates select="document('profiles/rht-ccp.xml')" />
+-		<xsl:apply-templates select="document('profiles/common.xml')" />
+-		<xsl:apply-templates select="document('profiles/stig-rhel7-server-upstream.xml')" />
++                <xsl:apply-templates select="document('profiles/rht-ccp.xml')" />
+ 
+        <Value id="conditional_clause" type="string" operator="equals">
+                  <title>A conditional clause for check statements.</title>

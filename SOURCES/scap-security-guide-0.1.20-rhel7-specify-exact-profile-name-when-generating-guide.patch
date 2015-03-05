@@ -1,0 +1,20 @@
+diff --git a/RHEL/7/Makefile b/RHEL/7/Makefile
+index c3be98b..0f15c1d 100644
+--- a/RHEL/7/Makefile
++++ b/RHEL/7/Makefile
+@@ -44,11 +44,12 @@ checks:
+ 
+ guide: shorthand2xccdf
+ #	remove auxiliary Groups which are only for use in tables, and not guide output.
+-#	specifying a nonexistent profile, "allrules," to make oscap print all Rules
+ 	xsltproc -o $(OUT)/unlinked-rhel7-xccdf-guide.xml $(TRANS)/xccdf-removeaux.xslt $(OUT)/unlinked-rhel7-xccdf.xml
+ 	xsltproc -o $(OUT)/unlinked-notest-rhel7-xccdf-guide.xml $(TRANS)/xccdf-removetested.xslt $(OUT)/unlinked-rhel7-xccdf-guide.xml
+-	oscap xccdf generate guide --profile allrules $(OUT)/unlinked-notest-rhel7-xccdf-guide.xml > $(OUT)/rhel7-guide.html
+-	xsltproc -o $(OUT)/rhel7-guide-custom.html $(TRANS)/xccdf2html.xslt $(OUT)/unlinked-notest-rhel7-xccdf-guide.xml
++#       OpenSCAP-1.1.1 expects exact profile name in order to include also rules into guide
++#       Create guide for RHT-CCP profile
++	oscap xccdf generate guide --profile rht-ccp $(OUT)/unlinked-notest-rhel7-xccdf-guide.xml > $(OUT)/rhel7-ccp-guide.html
++	xsltproc -o $(OUT)/rhel7-ccp-guide-custom.html $(TRANS)/xccdf2html.xslt $(OUT)/unlinked-notest-rhel7-xccdf-guide.xml
+ 
+ # example, if needed: for converting XCCDF into shorthand
+ #xccdf2shorthand:

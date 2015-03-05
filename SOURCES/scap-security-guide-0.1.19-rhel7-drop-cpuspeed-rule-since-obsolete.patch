@@ -1,0 +1,26 @@
+--- scap-security-guide-0.1.19/RHEL/7/input/services/base.xml.orig	2014-09-29 07:29:50.979356661 -0400
++++ scap-security-guide-0.1.19/RHEL/7/input/services/base.xml	2014-09-29 07:30:23.749395788 -0400
+@@ -91,23 +91,6 @@ service is not necessary.
+ <ref nist="CM-7" />
+ </Rule>
+ 
+-<Rule id="service_cpuspeed_disabled">
+-<title>Disable CPU Speed (cpuspeed)</title>
+-<description>The <tt>cpuspeed</tt> service can adjust the clock speed of supported CPUs based upon
+-the current processing load thereby conserving power and reducing heat.
+-<service-disable-macro service="cpuspeed" />
+-</description>
+-<ocil><service-disable-check-macro service="cpuspeed" /></ocil>
+-<rationale>The <tt>cpuspeed</tt> service is only necessary if adjusting the CPU clock speed
+-provides benefit. Traditionally this has included laptops (to enhance battery life),
+-but may also apply to server or desktop environments where conserving power is
+-highly desirable or necessary.
+-</rationale>
+-<ident cce="RHEL7-CCE-TBD" />
+-<oval id="service_cpuspeed_disabled" />
+-<ref nist="CM-7" />
+-</Rule>
+-
+ <Rule id="service_irqbalance_enabled">
+ <title>Enable IRQ Balance (irqbalance)</title>
+ <description>The <tt>irqbalance</tt> service optimizes the balance between
