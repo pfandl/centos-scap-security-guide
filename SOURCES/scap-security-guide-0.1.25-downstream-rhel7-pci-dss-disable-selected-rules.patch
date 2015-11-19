@@ -1,0 +1,34 @@
+--- scap-security-guide-0.1.24/RHEL/7/input/profiles/pci-dss.xml.orig	2015-08-03 21:07:57.312866056 +0200
++++ scap-security-guide-0.1.24/RHEL/7/input/profiles/pci-dss.xml	2015-08-03 21:14:25.502325114 +0200
+@@ -46,15 +46,15 @@
+ <select idref="audit_rules_dac_modification_lsetxattr" selected="true"/>
+ <select idref="audit_rules_dac_modification_removexattr" selected="true"/>
+ <select idref="audit_rules_dac_modification_setxattr" selected="true"/>
+-<select idref="audit_rules_login_events" selected="true"/>
++<!-- <select idref="audit_rules_login_events" selected="true"/> reason: Incorrect OVAL, see: https://github.com/OpenSCAP/scap-security-guide/issues/607 -->
+ <select idref="audit_rules_session_events" selected="true"/>
+ <select idref="audit_rules_unsuccessful_file_modification" selected="true"/>
+-<select idref="audit_rules_privileged_commands" selected="true"/>
++<!-- <select idref="audit_rules_privileged_commands" selected="true"/> reason: Missing remediation -->
+ <select idref="audit_rules_media_export" selected="true"/>
+ <select idref="audit_rules_file_deletion_events" selected="true"/>
+ <select idref="audit_rules_sysadmin_actions" selected="true"/>
+ <select idref="audit_rules_kernel_module_loading" selected="true"/>
+-<select idref="audit_rules_immutable" selected="true"/>
++<!-- <select idref="audit_rules_immutable" selected="true"/> reason: Missing remediation -->
+ <select idref="service_chronyd_or_ntpd_enabled" selected="true"/>
+ <!-- <select idref="chronyd_specify_remote_server" selected="true"/> reason: needs to be implemented for RHEL-7 for chronyd service -->
+ <!-- <select idref="chronyd_specify_multiple_servers" selected="true"/> reason: needs to be implemented for RHEL-7 for chronyd service -->
+@@ -77,9 +77,9 @@
+ <select idref="account_disable_post_pw_expiration" selected="true"/>
+ <select idref="accounts_passwords_pam_faillock_deny" selected="true"/>
+ <select idref="accounts_passwords_pam_faillock_unlock_time" selected="true"/>
+-<select idref="dconf_gnome_screensaver_idle_delay" selected="true"/>
+-<select idref="dconf_gnome_screensaver_idle_activation_enabled" selected="true"/>
+-<select idref="dconf_gnome_screensaver_lock_enabled" selected="true"/>
++<!-- <select idref="dconf_gnome_screensaver_idle_delay" selected="true"/> reason: Missing remediation -->
++<!-- <select idref="dconf_gnome_screensaver_idle_activation_enabled" selected="true"/> reason: Missing remediation -->
++<!-- <select idref="dconf_gnome_screensaver_lock_enabled" selected="true"/> reason: Missing remediation -->
+ <!-- <select idref="dconf_gnome_screensaver_mode_blank" selected="true"/> reason: needs to be created for RHEL-7 -->
+ <select idref="sshd_set_idle_timeout" selected="true"/>
+ <select idref="accounts_password_pam_minlen" selected="true"/>

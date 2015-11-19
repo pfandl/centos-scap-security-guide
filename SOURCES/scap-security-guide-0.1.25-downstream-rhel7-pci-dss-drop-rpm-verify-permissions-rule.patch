@@ -1,0 +1,10 @@
+--- scap-security-guide-0.1.25/RHEL/7/input/profiles/pci-dss.xml.orig	2015-10-02 10:52:46.420297787 +0200
++++ scap-security-guide-0.1.25/RHEL/7/input/profiles/pci-dss.xml	2015-10-02 10:54:06.309879851 +0200
+@@ -56,7 +56,6 @@
+ <select idref="service_chronyd_or_ntpd_enabled" selected="true"/>
+ <!-- <select idref="chronyd_specify_remote_server" selected="true"/> reason: needs to be implemented for RHEL-7 for chronyd service -->
+ <!-- <select idref="chronyd_specify_multiple_servers" selected="true"/> reason: needs to be implemented for RHEL-7 for chronyd service -->
+-<select idref="rpm_verify_permissions" selected="true"/>
+ <select idref="rpm_verify_hashes" selected="true"/>
+ <!-- <select idref="install_hids" selected="true"/> reason: needs to be implemented for both RHEL-6 & RHEL-7 -->
+ <!-- <select idref="rsyslog_file_permissions" selected="true"/> reason: needs to be implemented for RHEL-7 -->

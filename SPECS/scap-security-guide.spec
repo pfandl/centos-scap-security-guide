@@ -1,29 +1,23 @@
-%global		redhatssgversion	19
+%global		redhatssgversion	25
 
 Name:		scap-security-guide
 Version:	0.1.%{redhatssgversion}
-Release:	2%{?dist}
+Release:	3%{?dist}
 Summary:	Security guidance and baselines in SCAP formats
 
 Group:		System Environment/Base
 License:	Public Domain
-URL:		https://fedorahosted.org/scap-security-guide/
-
-Source0:	http://repos.ssgproject.org/sources/%{name}-%{version}.tar.gz
-Patch1:		scap-security-guide-0.1.19-rhel7-include-only-rht-ccp-profile.patch
-Patch2:		scap-security-guide-0.1.19-rhel7-drop-restorecond-since-in-optional.patch
-Patch3:		scap-security-guide-0.1.19-rhel7-drop-cpuspeed-rule-since-obsolete.patch
-Patch4:		scap-security-guide-0.1.19-update-man-page-for-rhel7-content.patch
-Patch5:		scap-security-guide-0.1.19-rhel7-update-pam-XCCDF-to-use-pam_pwquality.patch
-Patch6:		scap-security-guide-0.1.20-rhel7-shared-fix-limit-password-reuse-remediation.patch
-Patch7:		scap-security-guide-0.1.20-rhel6-rhel7-PR#280-set-deny-prerequisite-#1.patch
-Patch8:		scap-security-guide-0.1.20-rhel6-rhel7-set-deny-prerequisite-#2.patch
-Patch9:		scap-security-guide-0.1.20-shared-fix-set-deny-for-failed-password-attempts-remediation.patch
-Patch10:	scap-security-guide-0.1.20-rhel7-specify-exact-profile-name-when-generating-guide.patch
+URL:		https://github.com/OpenSCAP/scap-security-guide
+Source0:	%{name}-%{version}.tar.gz
+Patch1:		scap-security-guide-0.1.19-rhel7-drop-cpuspeed-rule-since-obsolete.patch
+Patch2:		scap-security-guide-0.1.25-update-upstream-manual-page.patch
+Patch3:		scap-security-guide-0.1.25-add-adjtimex-settimeofday-stime-rhel7-remediation.patch
+Patch4:		scap-security-guide-0.1.25-downstream-rhel7-pci-dss-disable-selected-rules.patch
+Patch5:		scap-security-guide-0.1.25-downstream-rhel7-pci-dss-drop-rpm-verify-permissions-rule.patch
 BuildArch:	noarch
 
-BuildRequires:	libxslt, expat, python, openscap-scanner >= 1.1.1, python-lxml
-Requires:	xml-common, openscap-scanner >= 1.1.1
+BuildRequires:	libxslt, expat, python, openscap-scanner >= 1.2.5, python-lxml
+Requires:	xml-common, openscap-scanner >= 1.2.5
 
 %description
 The scap-security-guide project provides a guide for configuration of the
@@ -36,31 +30,43 @@ Enterprise Linux 7 system administrator can use the oscap command-line tool
 from the openscap-utils package to verify that the system conforms to provided
 guideline. Refer to scap-security-guide(8) manual page for further information.
 
+%package	doc
+Summary:	HTML formatted documents containing security guides generated from XCCDF benchmarks.
+Group:		System Environment/Base
+Requires:	%{name} = %{version}-%{release}
+
+%description	doc
+The %{name}-doc package contains HTML formatted documents containing security guides that have
+been generated from XCCDF benchmarks present in %{name} package.
+
 %prep
 %setup -q -n %{name}-%{version}
-# For RHEL-7 include only RHT-CCP profile
-%patch1 -p1 -b .rht-ccp-only
-# Drop restorecond due to https://github.com/OpenSCAP/scap-security-guide/issues/258
-%patch2 -p1 -E -b .drop-restorecond
 # Drop cpuspeed rule since obsoleted in Fedora-16 by cpupower from kernel-tools RPM
 # http://marc.info/?l=fedora-devel-list&m=131107769617369&w=2
-%patch3 -p1 -b .drop-cpuspeed
-# Update manual page to be more appropriate against RHEL-7
-%patch4 -p1 -b .manual-page
-# Update pam.xml to use pam_pwquality instead of pam_cracklib
-%patch5 -p1 -b .replace-pam_cracklib
-# Fix 'Limit Password Reuse' remediation error
-%patch6 -p1 -b .reuse
-# Fix 'Set Deny For Failed Password Attempts' remediation error
-%patch7 -p1
-%patch8 -p1
-%patch9 -p1 -b .set-deny
-# Specify exact profile name when generating RHEL-7 HTML guide
-%patch10 -p1 -b .exact-profile
+%patch1 -p1 -b .drop-cpuspeed
+# Update manual page to drop the part dedicated to Fedora content
+%patch2 -p1 -b .man_page_update
+# Downstream -- Add RHEL-7 remediation for 'audit_rules_time_adjtimex', 'audit_rules_time_settimeofday', and
+# 'audit_rules_time_stime' rules
+%patch3 -p1 -b .adjtimex_settimeofday_stime
+# Downstream
+# RHEL-7 PCI-DSS profile disable selected rules:
+# * dconf_gnome_screensaver_idle_delay -- missing RHEL-7 remediation
+# * dconf_gnome_screensaver_idle_activation -- missing RHEL-7 remediation
+# * dconf_gnome_screensaver_lock_enabled -- missing RHEL-7 remediation
+# * audit_rules_login_events -- incorrect OVAL, see https://github.com/OpenSCAP/scap-security-guide/issues/607
+# * audit_rules_privileged_commands -- missing RHEL-7 remediation, and
+# * audit_rules_immutable -- missing RHEL-7 remediation
+%patch4 -p1 -b .rhel7_pcidss_downstream_disabled
+# Temporarily drop "Verify and Correct File Permissions with RPM"
+# rule from RHEL-7's PCI-DSS profile (RH BZ#1267861)
+%patch5 -p1 -b .rhel7_pcidss_drop_rpm_verify_permissions_rule
 
 %build
-(cd RHEL/6 && make dist)
 (cd RHEL/7 && make dist)
+(cd RHEL/6 && make dist)
+(cd Firefox && make dist)
+(cd JRE && make dist)
 
 %install
 
@@ -68,21 +74,110 @@ mkdir -p %{buildroot}%{_datadir}/xml/scap/ssg/content
 mkdir -p %{buildroot}%{_mandir}/en/man8/
 
 # Add in RHEL-7 core content (SCAP)
-cp -a RHEL/7/dist/content/* %{buildroot}%{_datadir}/xml/scap/ssg/content/
+cp -a RHEL/7/dist/content/ssg-rhel7-cpe-dictionary.xml %{buildroot}%{_datadir}/xml/scap/ssg/content/
+cp -a RHEL/7/dist/content/ssg-rhel7-cpe-oval.xml %{buildroot}%{_datadir}/xml/scap/ssg/content/
+cp -a RHEL/7/dist/content/ssg-rhel7-ds.xml %{buildroot}%{_datadir}/xml/scap/ssg/content/
+cp -a RHEL/7/dist/content/ssg-rhel7-oval.xml %{buildroot}%{_datadir}/xml/scap/ssg/content/
+cp -a RHEL/7/dist/content/ssg-rhel7-xccdf.xml %{buildroot}%{_datadir}/xml/scap/ssg/content/
 
 # Add in RHEL-6 datastream (SCAP)
 cp -a RHEL/6/dist/content/ssg-rhel6-ds.xml %{buildroot}%{_datadir}/xml/scap/ssg/content
 
+# Add in Firefox datastream (SCAP)
+cp -a Firefox/dist/content/ssg-firefox-ds.xml %{buildroot}%{_datadir}/xml/scap/ssg/content
+
+# Add in Java Runtime Environment (JRE) datastream (SCAP)
+cp -a JRE/dist/content/ssg-jre-ds.xml %{buildroot}%{_datadir}/xml/scap/ssg/content
+
+# Add in library for remediations
+mkdir -p %{buildroot}%{_datadir}/%{name}
+cp -a shared/fixes/bash/templates/remediation_functions %{buildroot}%{_datadir}/%{name}/remediation_functions
+
+# Add in RHEL-6 kickstart files
+mkdir -p %{buildroot}%{_datadir}/%{name}/kickstart
+cp -a RHEL/6/kickstart/ssg-rhel6-stig-ks.cfg  %{buildroot}%{_datadir}/%{name}/kickstart/
+cp -a RHEL/6/kickstart/ssg-rhel6-usgcb-server-with-gui-ks.cfg %{buildroot}%{_datadir}/%{name}/kickstart/
+# Add in RHEL-7 kickstart files
+cp -a RHEL/7/kickstart/ssg-rhel7-pci-dss-server-with-gui-oaa-ks.cfg %{buildroot}%{_datadir}/%{name}/kickstart/
+
 # Add in manpage
-cp -a RHEL/6/input/auxiliary/scap-security-guide.8 %{buildroot}%{_mandir}/en/man8/scap-security-guide.8
+cp -a docs/scap-security-guide.8 %{buildroot}%{_mandir}/en/man8/scap-security-guide.8
 
 %files
 %defattr(-,root,root,-)
 %{_datadir}/xml/scap
+%{_datadir}/%{name}
 %lang(en) %{_mandir}/en/man8/scap-security-guide.8.gz
-%doc RHEL/6/LICENSE RHEL/6/output/rhel6-guide.html RHEL/7/output/rhel7-ccp-guide.html RHEL/6/output/table-rhel6-cces.html RHEL/7/output/table-rhel7-cces.html RHEL/6/output/table-rhel6-nistrefs-common.html RHEL/6/output/table-rhel6-nistrefs.html RHEL/6/output/table-rhel6-srgmap-flat.html RHEL/6/output/table-rhel6-srgmap-flat.xhtml RHEL/6/output/table-rhel6-srgmap.html RHEL/6/output/table-rhel6-stig.html RHEL/6/input/auxiliary/DISCLAIMER
+%doc ./LICENSE RHEL/6/output/table-rhel6-cces.html RHEL/7/output/table-rhel7-cces.html RHEL/6/output/table-rhel6-nistrefs-common.html RHEL/6/output/table-rhel6-nistrefs.html RHEL/6/output/table-rhel6-srgmap-flat.html RHEL/6/output/table-rhel6-srgmap-flat.xhtml RHEL/6/output/table-rhel6-srgmap.html RHEL/6/output/table-rhel6-stig.html RHEL/6/input/auxiliary/DISCLAIMER
+
+%files doc
+%defattr(-,root,root,-)
+%doc RHEL/6/output/ssg-rhel6-guide-*.html RHEL/7/output/ssg-rhel7-guide-*.html JRE/output/ssg-jre-guide-*.html Firefox/output/ssg-firefox-guide-*.html
 
 %changelog
+* Fri Oct 02 2015 Jan iankko Lieskovsky <jlieskov@redhat.com> 0.1.25-3
+- Drop "Verify and Correct File Permissions with RPM" rule from the PCI-DSS
+  profile for Red Hat Enterprise Linux 7 (RH BZ#1267861)
+
+* Wed Sep 09 2015 Jan iankko Lieskovsky <jlieskov@redhat.com> 0.1.25-2
+- Update R and BR for the openscap-scanner package to 1.2.5 per RHBZ#1202762#c7
+
+* Wed Aug 19 2015 Jan iankko Lieskovsky <jlieskov@redhat.com> 0.1.25-1
+- Rebase to upstream 0.1.25 release
+
+* Tue Aug 04 2015 Jan iankko Lieskovsky <jlieskov@redhat.com> 0.1.24-4
+- Fix false-positive in OVAL check for 'accounts_passwords_pam_faillock_deny'
+  rule
+
+* Mon Aug 03 2015 Jan iankko Lieskovsky <jlieskov@redhat.com> 0.1.24-3
+- Add remediation script for 'accounts_passwords_pam_faillock_unlock_time' rule
+  for Red Hat Enterprise Linux 7 product
+- Override title and description for all existing profiles for Red Hat
+  Enterprise Linux 6 product that are extending another SCAP profile
+  (RHBZ#1246529)
+- Correct various issues in the included Oscap Anaconda Addon PCI-DSS profile
+  kickstart file for Red Hat Enterprise Linux 7 product
+- Add remediation script for 'audit_rules_time_clock_settime' rule for
+  Red Hat Enterprise Linux 7 product
+- Add remediation scripts for 'audit_rules_time_adjtimex',
+  'audit_rules_time_settimeofday', and 'audit_rules_time_stime' rules for
+  Red Hat Enterprise Linux 7 product
+- Tag current PCI-DSS profile for Red Hat Enterprise Linux 7 product with
+  "Draft" label
+- Disable the following rules in the PCI-DSS profile for the Red Hat Enterprise
+  Linux 7 product:
+  * dconf_gnome_screensaver_idle_delay -- missing remediation script,
+  * dconf_gnome_screensaver_idle_activation -- missing remediation script,
+  * dconf_gnome_screensaver_lock_enabled -- missing remediation script,
+  * audit_rules_login_events -- incorrect OVAL check (upstream issue #607),
+  * audit_rules_privileged_commands -- missing remediation script, and
+  * audit_rules_immutable -- missing remediation script.
+
+* Mon Aug 03 2015 Martin Preisler <mpreisle@redhat.com> 0.1.24-2
+- Break-down firewalld rule description for Red Hat Enterprise Linux 7 product
+  into multiple lines, prevents HTML guide UX issues
+
+* Tue Jul 07 2015 Jan iankko Lieskovsky <jlieskov@redhat.com> 0.1.24-1
+- Rebase to upstream scap-security-guide-0.1.24 version
+- Start producing the -doc subpackage to provide the HTML formatted
+  documents containing security guides generated from shipped XCCDF benchmarks
+
+* Mon Jun 22 2015 Jan iankko Lieskovsky <jlieskov@redhat.com> 0.1.23-1
+- Rebase to upstream scap-security-guide-0.1.23 version
+- Update upstream tarball source URL to GitHub archive location
+- Drop the following patches that have been accepted upstream:
+  * scap-security-guide-0.1.19-rhel7-include-only-rht-ccp-profile.patch
+  * scap-security-guide-0.1.19-rhel7-drop-restorecond-since-in-optional.patch
+  * scap-security-guide-0.1.19-update-man-page-for-rhel7-content.patch
+  * scap-security-guide-0.1.19-rhel7-update-pam-XCCDF-to-use-pam_pwquality.patch
+  * scap-security-guide-0.1.20-rhel7-shared-fix-limit-password-reuse-remediation.patch
+  * scap-security-guide-0.1.20-rhel6-rhel7-PR#280-set-deny-prerequisite-#1.patch
+  * scap-security-guide-0.1.20-rhel6-rhel7-set-deny-prerequisite-#2.patch
+  * scap-security-guide-0.1.20-shared-fix-set-deny-for-failed-password-attempts-remediation.patch
+  * scap-security-guide-0.1.20-rhel7-specify-exact-profile-name-when-generating-guide.patch
+- Include the datastream versions of Firefox and Java Runtime Environment (JRE) benchmarks
+- Include USGCB and DISA STIG profile kickstart files for Red Hat Enterprise Linux 6
+
 * Tue Oct 21 2014 Jan iankko Lieskovsky <jlieskov@redhat.com> 0.1.19-2
 - Fix Limit Password Reuse remediation script error
 - Fix Set Deny For Failed Password Attempts remediation script error
