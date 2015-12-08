@@ -1,0 +1,249 @@
+diff -uNrp scap-security-guide-0.1.25.orig/RHEL/7/input/profiles/pci-dss.xml scap-security-guide-0.1.25/RHEL/7/input/profiles/pci-dss.xml
+--- scap-security-guide-0.1.25.orig/RHEL/7/input/profiles/pci-dss.xml	2015-12-08 07:06:53.929233818 -0600
++++ scap-security-guide-0.1.25/RHEL/7/input/profiles/pci-dss.xml	2015-12-08 07:30:17.747857532 -0600
+@@ -1,5 +1,5 @@
+ <Profile id="pci-dss" xmlns="http://checklists.nist.gov/xccdf/1.1">
+-<title>Draft PCI-DSS v3 Control Baseline for Red Hat Enterprise Linux 7</title>
++<title>Draft PCI-DSS v3 Control Baseline for CentOS Linux 7</title>
+ <description>This is a *draft* profile for PCI-DSS v3</description>
+ 
+ <refine-value idref="var_password_pam_unix_remember" selector="4" />
+@@ -54,20 +54,20 @@
+ <select idref="audit_rules_kernel_module_loading" selected="true"/>
+ <!-- <select idref="audit_rules_immutable" selected="true"/> reason: Missing remediation -->
+ <select idref="service_chronyd_or_ntpd_enabled" selected="true"/>
+-<!-- <select idref="chronyd_specify_remote_server" selected="true"/> reason: needs to be implemented for RHEL-7 for chronyd service -->
+-<!-- <select idref="chronyd_specify_multiple_servers" selected="true"/> reason: needs to be implemented for RHEL-7 for chronyd service -->
++<!-- <select idref="chronyd_specify_remote_server" selected="true"/> reason: needs to be implemented for CentOS-7 for chronyd service -->
++<!-- <select idref="chronyd_specify_multiple_servers" selected="true"/> reason: needs to be implemented for CentOS-7 for chronyd service -->
+ <select idref="rpm_verify_hashes" selected="true"/>
+-<!-- <select idref="install_hids" selected="true"/> reason: needs to be implemented for both RHEL-6 & RHEL-7 -->
+-<!-- <select idref="rsyslog_file_permissions" selected="true"/> reason: needs to be implemented for RHEL-7 -->
+-<!-- <select idref="userowner_rsyslog_files" selected="true"/> reason: needs to be implemented for RHEL-7 -->
+-<!-- <select idref="groupowner_rsyslog_files" selected="true"/> reason: needs to be implemented for RHEL-7 -->
++<!-- <select idref="install_hids" selected="true"/> reason: needs to be implemented for both CentOS-6 & CentOS-7 -->
++<!-- <select idref="rsyslog_file_permissions" selected="true"/> reason: needs to be implemented for CentOS-7 -->
++<!-- <select idref="userowner_rsyslog_files" selected="true"/> reason: needs to be implemented for CentOS-7 -->
++<!-- <select idref="groupowner_rsyslog_files" selected="true"/> reason: needs to be implemented for CentOS-7 -->
+ <select idref="ensure_logrotate_activated" selected="true"/>
+ <select idref="package_aide_installed" selected="true"/>
+ <select idref="disable_prelink" selected="true"/>
+-<!-- <select idref="aide_build_database" selected="true"/> reason: needs to be implemented for both RHEL-6 & RHEL-7 -->
++<!-- <select idref="aide_build_database" selected="true"/> reason: needs to be implemented for both CentOS-6 & CentOS-7 -->
+ <select idref="aide_periodic_cron_checking" selected="true"/>
+-<!-- <select idref="account_unique_name" selected="true"/> reason: needs to be implemented for both RHEL-6 & RHEL-7 -->
+-<!-- <select idref="gid_passwd_group_same" selected="true"/> reason: needs to be implemented for both RHEL-6 & RHEL-7 -->
++<!-- <select idref="account_unique_name" selected="true"/> reason: needs to be implemented for both CentOS-6 & CentOS-7 -->
++<!-- <select idref="gid_passwd_group_same" selected="true"/> reason: needs to be implemented for both CentOS-6 & CentOS-7 -->
+ <select idref="accounts_password_all_shadowed" selected="true"/>
+ <select idref="no_empty_passwords" selected="true"/>
+ <select idref="display_login_attempts" selected="true"/>
+@@ -77,19 +77,19 @@
+ <!-- <select idref="dconf_gnome_screensaver_idle_delay" selected="true"/> reason: Missing remediation -->
+ <!-- <select idref="dconf_gnome_screensaver_idle_activation_enabled" selected="true"/> reason: Missing remediation -->
+ <!-- <select idref="dconf_gnome_screensaver_lock_enabled" selected="true"/> reason: Missing remediation -->
+-<!-- <select idref="dconf_gnome_screensaver_mode_blank" selected="true"/> reason: needs to be created for RHEL-7 -->
++<!-- <select idref="dconf_gnome_screensaver_mode_blank" selected="true"/> reason: needs to be created for CentOS-7 -->
+ <select idref="sshd_set_idle_timeout" selected="true"/>
+ <select idref="accounts_password_pam_minlen" selected="true"/>
+ <select idref="accounts_password_pam_dcredit" selected="true"/>
+ <select idref="accounts_password_pam_ucredit" selected="true"/>
+ <select idref="accounts_password_pam_lcredit" selected="true"/>
+-<!-- <select idref="accounts_password_pam_unix_remember" selected="true"/> reason: needs to be ported to RHEL-7 -->
++<!-- <select idref="accounts_password_pam_unix_remember" selected="true"/> reason: needs to be ported to CentOS-7 -->
+ <select idref="accounts_maximum_age_login_defs" selected="true"/>
+ <select idref="ensure_redhat_gpgkey_installed" selected="true"/>
+ <select idref="ensure_gpgcheck_globally_activated" selected="true"/>
+ <select idref="ensure_gpgcheck_never_disabled" selected="true"/>
+ <select idref="security_patches_up_to_date" selected="true"/>
+-<!-- <select idref="smartcard_auth" selected="true"/> reason: needs to be ported to RHEL-7 -->
++<!-- <select idref="smartcard_auth" selected="true"/> reason: needs to be ported to CentOS-7 -->
+ <select idref="set_password_hashing_algorithm_systemauth" selected="true"/>
+ <select idref="set_password_hashing_algorithm_logindefs" selected="true"/>
+ <select idref="set_password_hashing_algorithm_libuserconf" selected="true"/>
+diff -uNrp scap-security-guide-0.1.25.orig/RHEL/7/input/profiles/pci-dss.xml.rhel7_pcidss_downstream_disabled scap-security-guide-0.1.25/RHEL/7/input/profiles/pci-dss.xml.rhel7_pcidss_downstream_disabled
+--- scap-security-guide-0.1.25.orig/RHEL/7/input/profiles/pci-dss.xml.rhel7_pcidss_downstream_disabled	2015-08-19 10:54:02.000000000 -0500
++++ scap-security-guide-0.1.25/RHEL/7/input/profiles/pci-dss.xml.rhel7_pcidss_downstream_disabled	2015-12-08 07:31:08.882743495 -0600
+@@ -1,5 +1,5 @@
+ <Profile id="pci-dss" xmlns="http://checklists.nist.gov/xccdf/1.1">
+-<title>Draft PCI-DSS v3 Control Baseline for Red Hat Enterprise Linux 7</title>
++<title>Draft PCI-DSS v3 Control Baseline for CentOS Linux 7</title>
+ <description>This is a *draft* profile for PCI-DSS v3</description>
+ 
+ <refine-value idref="var_password_pam_unix_remember" selector="4" />
+@@ -54,21 +54,21 @@
+ <select idref="audit_rules_kernel_module_loading" selected="true"/>
+ <select idref="audit_rules_immutable" selected="true"/>
+ <select idref="service_chronyd_or_ntpd_enabled" selected="true"/>
+-<!-- <select idref="chronyd_specify_remote_server" selected="true"/> reason: needs to be implemented for RHEL-7 for chronyd service -->
+-<!-- <select idref="chronyd_specify_multiple_servers" selected="true"/> reason: needs to be implemented for RHEL-7 for chronyd service -->
++<!-- <select idref="chronyd_specify_remote_server" selected="true"/> reason: needs to be implemented for CentOS-7 for chronyd service -->
++<!-- <select idref="chronyd_specify_multiple_servers" selected="true"/> reason: needs to be implemented for CentOS-7 for chronyd service -->
+ <select idref="rpm_verify_permissions" selected="true"/>
+ <select idref="rpm_verify_hashes" selected="true"/>
+-<!-- <select idref="install_hids" selected="true"/> reason: needs to be implemented for both RHEL-6 & RHEL-7 -->
+-<!-- <select idref="rsyslog_file_permissions" selected="true"/> reason: needs to be implemented for RHEL-7 -->
+-<!-- <select idref="userowner_rsyslog_files" selected="true"/> reason: needs to be implemented for RHEL-7 -->
+-<!-- <select idref="groupowner_rsyslog_files" selected="true"/> reason: needs to be implemented for RHEL-7 -->
++<!-- <select idref="install_hids" selected="true"/> reason: needs to be implemented for both CentOS-6 & CentOS-7 -->
++<!-- <select idref="rsyslog_file_permissions" selected="true"/> reason: needs to be implemented for CentOS-7 -->
++<!-- <select idref="userowner_rsyslog_files" selected="true"/> reason: needs to be implemented for CentOS-7 -->
++<!-- <select idref="groupowner_rsyslog_files" selected="true"/> reason: needs to be implemented for CentOS-7 -->
+ <select idref="ensure_logrotate_activated" selected="true"/>
+ <select idref="package_aide_installed" selected="true"/>
+ <select idref="disable_prelink" selected="true"/>
+-<!-- <select idref="aide_build_database" selected="true"/> reason: needs to be implemented for both RHEL-6 & RHEL-7 -->
++<!-- <select idref="aide_build_database" selected="true"/> reason: needs to be implemented for both CentOS-6 & CentOS-7 -->
+ <select idref="aide_periodic_cron_checking" selected="true"/>
+-<!-- <select idref="account_unique_name" selected="true"/> reason: needs to be implemented for both RHEL-6 & RHEL-7 -->
+-<!-- <select idref="gid_passwd_group_same" selected="true"/> reason: needs to be implemented for both RHEL-6 & RHEL-7 -->
++<!-- <select idref="account_unique_name" selected="true"/> reason: needs to be implemented for both CentOS-6 & CentOS-7 -->
++<!-- <select idref="gid_passwd_group_same" selected="true"/> reason: needs to be implemented for both CentOS-6 & CentOS-7 -->
+ <select idref="accounts_password_all_shadowed" selected="true"/>
+ <select idref="no_empty_passwords" selected="true"/>
+ <select idref="display_login_attempts" selected="true"/>
+@@ -78,19 +78,19 @@
+ <select idref="dconf_gnome_screensaver_idle_delay" selected="true"/>
+ <select idref="dconf_gnome_screensaver_idle_activation_enabled" selected="true"/>
+ <select idref="dconf_gnome_screensaver_lock_enabled" selected="true"/>
+-<!-- <select idref="dconf_gnome_screensaver_mode_blank" selected="true"/> reason: needs to be created for RHEL-7 -->
++<!-- <select idref="dconf_gnome_screensaver_mode_blank" selected="true"/> reason: needs to be created for CentOS-7 -->
+ <select idref="sshd_set_idle_timeout" selected="true"/>
+ <select idref="accounts_password_pam_minlen" selected="true"/>
+ <select idref="accounts_password_pam_dcredit" selected="true"/>
+ <select idref="accounts_password_pam_ucredit" selected="true"/>
+ <select idref="accounts_password_pam_lcredit" selected="true"/>
+-<!-- <select idref="accounts_password_pam_unix_remember" selected="true"/> reason: needs to be ported to RHEL-7 -->
++<!-- <select idref="accounts_password_pam_unix_remember" selected="true"/> reason: needs to be ported to CentOS-7 -->
+ <select idref="accounts_maximum_age_login_defs" selected="true"/>
+ <select idref="ensure_redhat_gpgkey_installed" selected="true"/>
+ <select idref="ensure_gpgcheck_globally_activated" selected="true"/>
+ <select idref="ensure_gpgcheck_never_disabled" selected="true"/>
+ <select idref="security_patches_up_to_date" selected="true"/>
+-<!-- <select idref="smartcard_auth" selected="true"/> reason: needs to be ported to RHEL-7 -->
++<!-- <select idref="smartcard_auth" selected="true"/> reason: needs to be ported to CentOS-7 -->
+ <select idref="set_password_hashing_algorithm_systemauth" selected="true"/>
+ <select idref="set_password_hashing_algorithm_logindefs" selected="true"/>
+ <select idref="set_password_hashing_algorithm_libuserconf" selected="true"/>
+diff -uNrp scap-security-guide-0.1.25.orig/RHEL/7/input/profiles/pci-dss.xml.rhel7_pcidss_drop_rpm_verify_permissions_rule scap-security-guide-0.1.25/RHEL/7/input/profiles/pci-dss.xml.rhel7_pcidss_drop_rpm_verify_permissions_rule
+--- scap-security-guide-0.1.25.orig/RHEL/7/input/profiles/pci-dss.xml.rhel7_pcidss_drop_rpm_verify_permissions_rule	2015-12-08 07:06:53.928233822 -0600
++++ scap-security-guide-0.1.25/RHEL/7/input/profiles/pci-dss.xml.rhel7_pcidss_drop_rpm_verify_permissions_rule	2015-12-08 07:31:31.811691561 -0600
+@@ -1,5 +1,5 @@
+ <Profile id="pci-dss" xmlns="http://checklists.nist.gov/xccdf/1.1">
+-<title>Draft PCI-DSS v3 Control Baseline for Red Hat Enterprise Linux 7</title>
++<title>Draft PCI-DSS v3 Control Baseline for CentOS Linux 7</title>
+ <description>This is a *draft* profile for PCI-DSS v3</description>
+ 
+ <refine-value idref="var_password_pam_unix_remember" selector="4" />
+@@ -54,21 +54,21 @@
+ <select idref="audit_rules_kernel_module_loading" selected="true"/>
+ <!-- <select idref="audit_rules_immutable" selected="true"/> reason: Missing remediation -->
+ <select idref="service_chronyd_or_ntpd_enabled" selected="true"/>
+-<!-- <select idref="chronyd_specify_remote_server" selected="true"/> reason: needs to be implemented for RHEL-7 for chronyd service -->
+-<!-- <select idref="chronyd_specify_multiple_servers" selected="true"/> reason: needs to be implemented for RHEL-7 for chronyd service -->
++<!-- <select idref="chronyd_specify_remote_server" selected="true"/> reason: needs to be implemented for CentOS-7 for chronyd service -->
++<!-- <select idref="chronyd_specify_multiple_servers" selected="true"/> reason: needs to be implemented for CentOS-7 for chronyd service -->
+ <select idref="rpm_verify_permissions" selected="true"/>
+ <select idref="rpm_verify_hashes" selected="true"/>
+-<!-- <select idref="install_hids" selected="true"/> reason: needs to be implemented for both RHEL-6 & RHEL-7 -->
+-<!-- <select idref="rsyslog_file_permissions" selected="true"/> reason: needs to be implemented for RHEL-7 -->
+-<!-- <select idref="userowner_rsyslog_files" selected="true"/> reason: needs to be implemented for RHEL-7 -->
+-<!-- <select idref="groupowner_rsyslog_files" selected="true"/> reason: needs to be implemented for RHEL-7 -->
++<!-- <select idref="install_hids" selected="true"/> reason: needs to be implemented for both CentOS-6 & CentOS-7 -->
++<!-- <select idref="rsyslog_file_permissions" selected="true"/> reason: needs to be implemented for CentOS-7 -->
++<!-- <select idref="userowner_rsyslog_files" selected="true"/> reason: needs to be implemented for CentOS-7 -->
++<!-- <select idref="groupowner_rsyslog_files" selected="true"/> reason: needs to be implemented for CentOS-7 -->
+ <select idref="ensure_logrotate_activated" selected="true"/>
+ <select idref="package_aide_installed" selected="true"/>
+ <select idref="disable_prelink" selected="true"/>
+-<!-- <select idref="aide_build_database" selected="true"/> reason: needs to be implemented for both RHEL-6 & RHEL-7 -->
++<!-- <select idref="aide_build_database" selected="true"/> reason: needs to be implemented for both CentOS-6 & CentOS-7 -->
+ <select idref="aide_periodic_cron_checking" selected="true"/>
+-<!-- <select idref="account_unique_name" selected="true"/> reason: needs to be implemented for both RHEL-6 & RHEL-7 -->
+-<!-- <select idref="gid_passwd_group_same" selected="true"/> reason: needs to be implemented for both RHEL-6 & RHEL-7 -->
++<!-- <select idref="account_unique_name" selected="true"/> reason: needs to be implemented for both CentOS-6 & CentOS-7 -->
++<!-- <select idref="gid_passwd_group_same" selected="true"/> reason: needs to be implemented for both CentOS-6 & CentOS-7 -->
+ <select idref="accounts_password_all_shadowed" selected="true"/>
+ <select idref="no_empty_passwords" selected="true"/>
+ <select idref="display_login_attempts" selected="true"/>
+@@ -78,19 +78,19 @@
+ <!-- <select idref="dconf_gnome_screensaver_idle_delay" selected="true"/> reason: Missing remediation -->
+ <!-- <select idref="dconf_gnome_screensaver_idle_activation_enabled" selected="true"/> reason: Missing remediation -->
+ <!-- <select idref="dconf_gnome_screensaver_lock_enabled" selected="true"/> reason: Missing remediation -->
+-<!-- <select idref="dconf_gnome_screensaver_mode_blank" selected="true"/> reason: needs to be created for RHEL-7 -->
++<!-- <select idref="dconf_gnome_screensaver_mode_blank" selected="true"/> reason: needs to be created for CentOS-7 -->
+ <select idref="sshd_set_idle_timeout" selected="true"/>
+ <select idref="accounts_password_pam_minlen" selected="true"/>
+ <select idref="accounts_password_pam_dcredit" selected="true"/>
+ <select idref="accounts_password_pam_ucredit" selected="true"/>
+ <select idref="accounts_password_pam_lcredit" selected="true"/>
+-<!-- <select idref="accounts_password_pam_unix_remember" selected="true"/> reason: needs to be ported to RHEL-7 -->
++<!-- <select idref="accounts_password_pam_unix_remember" selected="true"/> reason: needs to be ported to CentOS-7 -->
+ <select idref="accounts_maximum_age_login_defs" selected="true"/>
+ <select idref="ensure_redhat_gpgkey_installed" selected="true"/>
+ <select idref="ensure_gpgcheck_globally_activated" selected="true"/>
+ <select idref="ensure_gpgcheck_never_disabled" selected="true"/>
+ <select idref="security_patches_up_to_date" selected="true"/>
+-<!-- <select idref="smartcard_auth" selected="true"/> reason: needs to be ported to RHEL-7 -->
++<!-- <select idref="smartcard_auth" selected="true"/> reason: needs to be ported to CentOS-7 -->
+ <select idref="set_password_hashing_algorithm_systemauth" selected="true"/>
+ <select idref="set_password_hashing_algorithm_logindefs" selected="true"/>
+ <select idref="set_password_hashing_algorithm_libuserconf" selected="true"/>
+diff -uNrp scap-security-guide-0.1.25.orig/RHEL/7/input/profiles/rht-ccp.xml scap-security-guide-0.1.25/RHEL/7/input/profiles/rht-ccp.xml
+--- scap-security-guide-0.1.25.orig/RHEL/7/input/profiles/rht-ccp.xml	2015-08-19 10:54:02.000000000 -0500
++++ scap-security-guide-0.1.25/RHEL/7/input/profiles/rht-ccp.xml	2015-12-08 07:33:09.162465695 -0600
+@@ -1,6 +1,6 @@
+ <Profile id="rht-ccp" xmlns="http://checklists.nist.gov/xccdf/1.1">
+-<title>Red Hat Corporate Profile for Certified Cloud Providers (RH CCP)</title>
+-<description>This is a *draft* SCAP profile for Red Hat Certified Cloud Providers</description>
++<title>CentOS Profile for Cloud Providers (CPCP)</title>
++<description>This is a *draft* SCAP profile for CentOS Cloud Providers</description>
+ <!-- CONFIGURATION OPTIONS -->
+ <refine-value idref="var_selinux_state" selector="enforcing"/>
+ <refine-value idref="var_selinux_policy_name" selector="targeted"/>
+@@ -98,11 +98,11 @@
+ <select idref="kernel_module_ipv6_option_disabled" selected="true"/>
+ <select idref="service_ip6tables_enabled" selected="true"/>
+ 
+-This requirement does not apply against Red Hat Enterprise Linux 7:
++This requirement does not apply against CentOS Linux 7:
+ see: https://github.com/OpenSCAP/scap-security-guide/issues/66 for details.
+ <select idref="kernel_module_rds_disabled" selected="true"/>
+ 
+-This requirement does not apply against Red Hat Enterprise Linux 7:
++This requirement does not apply against CentOS Linux 7:
+ see: https://github.com/OpenSCAP/scap-security-guide/issues/67 for details.
+ <select idref="kernel_module_tipc_disabled" selected="true"/>
+ 
+diff -uNrp scap-security-guide-0.1.25.orig/RHEL/7/input/profiles/standard.xml scap-security-guide-0.1.25/RHEL/7/input/profiles/standard.xml
+--- scap-security-guide-0.1.25.orig/RHEL/7/input/profiles/standard.xml	2015-08-19 10:54:02.000000000 -0500
++++ scap-security-guide-0.1.25/RHEL/7/input/profiles/standard.xml	2015-12-08 07:27:34.453179300 -0600
+@@ -1,6 +1,6 @@
+ <Profile id="standard">
+ <title>Standard System Security Profile</title>
+-<description>This profile contains rules to ensure standard security base of Red Hat Enterprise Linux 7 system.</description>
++<description>This profile contains rules to ensure standard security base of CentOS Linux 7 system.</description>
+ 
+ <!-- STANDARD SYSTEM SECURITY CHECKS -->
+ <select idref="security_patches_up_to_date" selected="true"/>
+diff -uNrp scap-security-guide-0.1.25.orig/RHEL/7/input/profiles/stig-rhel7-server-upstream.xml scap-security-guide-0.1.25/RHEL/7/input/profiles/stig-rhel7-server-upstream.xml
+--- scap-security-guide-0.1.25.orig/RHEL/7/input/profiles/stig-rhel7-server-upstream.xml	2015-08-19 10:54:02.000000000 -0500
++++ scap-security-guide-0.1.25/RHEL/7/input/profiles/stig-rhel7-server-upstream.xml	2015-12-08 07:33:44.930380583 -0600
+@@ -1,5 +1,5 @@
+ <Profile id="stig-rhel7-server-upstream" extends="common">
+-<title override="true">Pre-release Draft STIG for Red Hat Enterprise Linux 7 Server</title>
++<title override="true">Pre-release Draft STIG for CentOS Linux 7 Server</title>
+ <description override="true">This profile is being developed under the DoD consensus model to become a STIG in coordination with DISA FSO.</description>
+ 
+ <!-- STIG refinement values. Note these are set by DISA FSO,
+diff -uNrp scap-security-guide-0.1.25.orig/RHEL/7/input/profiles/usgcb-rhel7-server.xml scap-security-guide-0.1.25/RHEL/7/input/profiles/usgcb-rhel7-server.xml
+--- scap-security-guide-0.1.25.orig/RHEL/7/input/profiles/usgcb-rhel7-server.xml	2015-08-19 10:54:02.000000000 -0500
++++ scap-security-guide-0.1.25/RHEL/7/input/profiles/usgcb-rhel7-server.xml	2015-12-08 07:34:34.081261816 -0600
+@@ -1,6 +1,6 @@
+ <Profile id="usgcb-rhel7-server">
+ <title>United States Government Configuration Baseline (USGCB)</title>
+-<description>This profile is a working draft for a USGCB submission against RHEL7 Server.</description>
++<description>This profile is a working draft for a USGCB submission against CentOS-7 Server.</description>
+ 
+ <refine-value idref="var_password_pam_unix_remember" selector="5" />
+ <refine-value idref="var_accounts_maximum_age_login_defs" selector="60" />
