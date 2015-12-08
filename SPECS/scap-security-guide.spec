@@ -2,7 +2,7 @@
 
 Name:		scap-security-guide
 Version:	0.1.%{redhatssgversion}
-Release:	3%{?dist}
+Release:	3%{?dist}.0.1
 Summary:	Security guidance and baselines in SCAP formats
 
 Group:		System Environment/Base
@@ -14,6 +14,7 @@ Patch2:		scap-security-guide-0.1.25-update-upstream-manual-page.patch
 Patch3:		scap-security-guide-0.1.25-add-adjtimex-settimeofday-stime-rhel7-remediation.patch
 Patch4:		scap-security-guide-0.1.25-downstream-rhel7-pci-dss-disable-selected-rules.patch
 Patch5:		scap-security-guide-0.1.25-downstream-rhel7-pci-dss-drop-rpm-verify-permissions-rule.patch
+Patch99:	scap-security-guide-0.1.25-centos-menu-branding.patch
 BuildArch:	noarch
 
 BuildRequires:	libxslt, expat, python, openscap-scanner >= 1.2.5, python-lxml
@@ -61,6 +62,8 @@ been generated from XCCDF benchmarks present in %{name} package.
 # Temporarily drop "Verify and Correct File Permissions with RPM"
 # rule from RHEL-7's PCI-DSS profile (RH BZ#1267861)
 %patch5 -p1 -b .rhel7_pcidss_drop_rpm_verify_permissions_rule
+
+%patch99 -p1 -b .centos
 
 %build
 (cd RHEL/7 && make dist)
@@ -115,8 +118,9 @@ cp -a docs/scap-security-guide.8 %{buildroot}%{_mandir}/en/man8/scap-security-gu
 %doc RHEL/6/output/ssg-centos6-guide-*.html RHEL/7/output/ssg-centos7-guide-*.html JRE/output/ssg-jre-guide-*.html Firefox/output/ssg-firefox-guide-*.html
 
 %changelog
-* Wed Nov 25 2015 brian@bstinson.com 0.1.25-3.centos
+* Wed Nov 25 2015 brian@bstinson.com 0.1.25-3.centos.0.1
 - Use the CentOS SCAP content 
+- scap-security-guide-0.1.25-centos-menu-branding.patch
 
 * Fri Oct 02 2015 Jan iankko Lieskovsky <jlieskov@redhat.com> 0.1.25-3
 - Drop "Verify and Correct File Permissions with RPM" rule from the PCI-DSS
