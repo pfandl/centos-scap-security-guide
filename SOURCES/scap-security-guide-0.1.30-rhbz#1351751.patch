@@ -1,0 +1,144 @@
+From 989cb130cb7d03f27294313c3ee2f1f4d61568db Mon Sep 17 00:00:00 2001
+From: Jan Lieskovsky <jlieskov@redhat.com>
+Date: Tue, 28 Jun 2016 13:04:24 +0200
+Subject: [PATCH 1/2] [Enhancement] [RHEL/6] [RHEL/7] Include the generated
+ HTML tables for RHEL-6 and RHEL-7 products into the produced RPM package
+
+Part of #1297
+---
+ RHEL/6/Makefile             |  5 +++--
+ RHEL/7/Makefile             |  2 ++
+ scap-security-guide.spec.in | 36 +++++++++++++++++++++++-------------
+ 3 files changed, 28 insertions(+), 15 deletions(-)
+
+diff --git a/RHEL/6/Makefile b/RHEL/6/Makefile
+index 782d0f7..ac7d74e 100644
+--- a/RHEL/6/Makefile
++++ b/RHEL/6/Makefile
+@@ -69,8 +69,7 @@ table-stigs: $(OUT)/xccdf-unlinked-final.xml table-srgmap checks
+ 		$(TRANS)/xccdf-apply-overlay-stig.xslt $<
+ 	xsltproc -o $(OUT)/table-$(PROD)-stig.html $(TRANS)/xccdf2table-stig.xslt $(OUT)/unlinked-stig-$(PROD)-xccdf.xml
+ 
+-tables: table-refs table-idents table-stigs
+-#tables: table-refs table-idents table-srgmap table-stigs
++tables: table-refs table-idents table-srgmap table-stigs
+ 
+ content: $(OUT)/xccdf-unlinked-final.xml checks
+ 	cp $< $(OUT)/unlinked-$(PROD)-xccdf.xml
+@@ -180,6 +179,8 @@ dist: tables guide content
+ 	cp $(OUT)/$(ID)-$(PROD)-cpe-dictionary.xml $(DIST)/content
+ 	cp $(OUT)/$(ID)-$(PROD)-cpe-oval.xml $(DIST)/content
+ 	cp $(OUT)/$(ID)-$(PROD)-ds.xml $(DIST)/content
++	mkdir -p $(DIST)/tables
++	cp $(OUT)/table-*.{x,}html $(DIST)/tables
+ 	mkdir -p $(DIST)/guide
+ 	cp $(OUT)/*-guide-*.html $(DIST)/guide
+ 	cp $(OUT)/$(ID)-centos6-xccdf.xml $(DIST)/content
+diff --git a/RHEL/7/Makefile b/RHEL/7/Makefile
+index fc9f284..0cafa7c 100644
+--- a/RHEL/7/Makefile
++++ b/RHEL/7/Makefile
+@@ -183,6 +183,8 @@ dist: tables guide content
+ 	cp $(OUT)/$(ID)-$(PROD)-cpe-dictionary.xml $(DIST)/content
+ 	cp $(OUT)/$(ID)-$(PROD)-cpe-oval.xml $(DIST)/content
+ 	cp $(OUT)/$(ID)-$(PROD)-ds.xml $(DIST)/content
++	mkdir -p $(DIST)/tables
++	cp $(OUT)/table-*.{x,}html $(DIST)/tables
+ 	mkdir -p $(DIST)/guide
+ 	cp $(OUT)/*-guide-*.html $(DIST)/guide
+ 	cp $(OUT)/$(ID)-centos7-xccdf.xml $(DIST)/content
+diff --git a/scap-security-guide.spec.in b/scap-security-guide.spec.in
+index ae3cc05..6fbb800 100644
+--- a/scap-security-guide.spec.in
++++ b/scap-security-guide.spec.in
+@@ -82,30 +82,40 @@ rm %{buildroot}%{_datadir}/xml/scap/ssg/content/*-cpe-dictionary.xml
+ # We do this after the filtering on Fedora because we don't ship JBossEAP5 datastreams
+ cp -a JBossEAP5/eap5-* %{buildroot}%{_datadir}/xml/scap/ssg/content/
+ 
+-# Docs
+-mkdir -p %{buildroot}/%{_docdir}/%{name}/guides
+-cp -a RHEL/6/output/*-guide-*.html %{buildroot}/%{_docdir}/%{name}/guides
+-cp -a RHEL/7/output/*-guide-*.html %{buildroot}/%{_docdir}/%{name}/guides
+-cp -a Firefox/output/*-guide-*.html %{buildroot}/%{_docdir}/%{name}/guides
+-cp -a JRE/output/*-guide-*.html %{buildroot}/%{_docdir}/%{name}/guides
++# Add in HTML tables for selected products
++mkdir -p %{buildroot}/%{_docdir}/%{name}-%{version}/tables
++cp -a RHEL/6/dist/tables/* %{buildroot}/%{_docdir}/%{name}-%{version}/tables
++cp -a RHEL/7/dist/tables/* %{buildroot}/%{_docdir}/%{name}-%{version}/tables
++
++# Add in LICENSE and README.md
++cp -a LICENSE README.md %{buildroot}/%{_docdir}/%{name}-%{version}
++
++# scap-security-guide-doc subpackage contains just HTML guides for supported products
++mkdir -p %{buildroot}/%{_docdir}/%{name}-%{version}/guides
++cp -a RHEL/6/output/*-guide-*.html %{buildroot}/%{_docdir}/%{name}-%{version}/guides
++cp -a RHEL/7/output/*-guide-*.html %{buildroot}/%{_docdir}/%{name}-%{version}/guides
++cp -a Firefox/output/*-guide-*.html %{buildroot}/%{_docdir}/%{name}-%{version}/guides
++cp -a JRE/output/*-guide-*.html %{buildroot}/%{_docdir}/%{name}-%{version}/guides
+ # outside of the normal build system, different guide
+-cp -a JBossEAP5/docs/JBossEAP5_Guide.html %{buildroot}/%{_docdir}/%{name}/guides
++cp -a JBossEAP5/docs/JBossEAP5_Guide.html %{buildroot}/%{_docdir}/%{name}-%{version}/guides
+ 
+ %if 0%{?fedora}
+-cp -a Fedora/output/*-guide-*.html %{buildroot}/%{_docdir}/%{name}/guides
+-cp -a Chromium/output/*-guide-*.html %{buildroot}/%{_docdir}/%{name}/guides
+-#cp -a Webmin/output/*-guide-*.html %{buildroot}/%{_defaultdocdir}/%{name}/guides
++cp -a Fedora/output/*-guide-*.html %{buildroot}/%{_docdir}/%{name}-%{version}/guides
++cp -a Chromium/output/*-guide-*.html %{buildroot}/%{_docdir}/%{name}-%{version}/guides
++#cp -a Webmin/output/*-guide-*.html %{buildroot}/%{_defaultdocdir}/%{name}-%{version}/guides
+ %endif
+ 
+ %files
+ %{_datadir}/xml/scap
+ %{_datadir}/%{name}
+ %lang(en) %{_mandir}/en/man8/scap-security-guide.8.*
+-%doc LICENSE
+-%doc README.md
++%doc %{_docdir}/%{name}-%{version}/tables/*.html
++%doc %{_docdir}/%{name}-%{version}/tables/*.xhtml
++%doc %{_docdir}/%{name}-%{version}/LICENSE
++%doc %{_docdir}/%{name}-%{version}/README.md
+ 
+ %files doc
+-%doc %{_docdir}/%{name}/guides/*.html
++%doc %{_docdir}/%{name}-%{version}/guides/*.html
+ 
+ %changelog
+ * __DATE__ __REL_MANAGER__ <__REL_MANAGER_MAIL__> __VERSION__-__RELEASE__
+
+From 33ea7d73d7a53b465c15ac6289fe8833749622dc Mon Sep 17 00:00:00 2001
+From: Jan Lieskovsky <jlieskov@redhat.com>
+Date: Tue, 28 Jun 2016 18:50:17 +0200
+Subject: [PATCH 2/2] [Enhancement][RHEL/6][RHEL/7] Provide currently available
+ RHEL-6 and RHEL-7 kickstart files in the produced RPM package
+
+Fixes (together with previous commit): #1297
+---
+ scap-security-guide.spec.in | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/scap-security-guide.spec.in b/scap-security-guide.spec.in
+index 6fbb800..056e84c 100644
+--- a/scap-security-guide.spec.in
++++ b/scap-security-guide.spec.in
+@@ -90,6 +90,11 @@ cp -a RHEL/7/dist/tables/* %{buildroot}/%{_docdir}/%{name}-%{version}/tables
+ # Add in LICENSE and README.md
+ cp -a LICENSE README.md %{buildroot}/%{_docdir}/%{name}-%{version}
+ 
++# Add in kickstart files for selected products
++mkdir -p %{buildroot}%{_datadir}/%{name}/kickstart
++cp -a RHEL/6/kickstart/*-ks.cfg %{buildroot}%{_datadir}/%{name}/kickstart
++cp -a RHEL/7/kickstart/*-ks.cfg %{buildroot}%{_datadir}/%{name}/kickstart
++
+ # scap-security-guide-doc subpackage contains just HTML guides for supported products
+ mkdir -p %{buildroot}/%{_docdir}/%{name}-%{version}/guides
+ cp -a RHEL/6/output/*-guide-*.html %{buildroot}/%{_docdir}/%{name}-%{version}/guides
+@@ -107,7 +112,7 @@ cp -a Chromium/output/*-guide-*.html %{buildroot}/%{_docdir}/%{name}-%{version}/
+ 
+ %files
+ %{_datadir}/xml/scap
+-%{_datadir}/%{name}
++%{_datadir}/%{name}/kickstart
+ %lang(en) %{_mandir}/en/man8/scap-security-guide.8.*
+ %doc %{_docdir}/%{name}-%{version}/tables/*.html
+ %doc %{_docdir}/%{name}-%{version}/tables/*.xhtml

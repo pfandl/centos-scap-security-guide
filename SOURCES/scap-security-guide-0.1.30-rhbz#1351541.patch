@@ -1,0 +1,22 @@
+From e4d8a19ff626f416a4972344b529ff9fd5bc1c6f Mon Sep 17 00:00:00 2001
+From: Jan Lieskovsky <jlieskov@redhat.com>
+Date: Thu, 30 Jun 2016 14:30:52 +0200
+Subject: [PATCH] [BugFix] [RHEL/6] Make the title of the RHEL-6
+ stig-rhel6-server-gui-upstream profile consistent with its RHEL-7 equivalent
+
+Fixes #1319
+---
+ RHEL/6/input/profiles/stig-rhel6-server-gui-upstream.xml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/RHEL/6/input/profiles/stig-rhel6-server-gui-upstream.xml b/RHEL/6/input/profiles/stig-rhel6-server-gui-upstream.xml
+index 669ac2b..d5351d8 100644
+--- a/RHEL/6/input/profiles/stig-rhel6-server-gui-upstream.xml
++++ b/RHEL/6/input/profiles/stig-rhel6-server-gui-upstream.xml
+@@ -1,5 +1,5 @@
+ <Profile id="stig-rhel6-server-gui-upstream" extends="stig-rhel6-server-upstream">
+-<title override="true">Upstream STIG for Red Hat Enterprise Linux 6 Server</title>
++<title override="true">Upstream STIG for Red Hat Enterprise Linux 6 Server Running GUIs</title>
+ <description override="true">This profile is developed under the DoD consensus model and DISA FSO Vendor STIG process,
+ serving as the upstream development environment for the Red Hat Enterprise Linux 6 Server STIG.
+ 

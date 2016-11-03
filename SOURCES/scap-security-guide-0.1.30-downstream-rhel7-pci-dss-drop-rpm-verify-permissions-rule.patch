@@ -1,0 +1,10 @@
+--- scap-security-guide-0.1.30/RHEL/7/input/profiles/pci-dss.xml.orig	2016-06-22 16:59:38.965107812 +0200
++++ scap-security-guide-0.1.30/RHEL/7/input/profiles/pci-dss.xml	2016-06-22 17:00:06.538687935 +0200
+@@ -57,7 +57,6 @@
+ <select idref="service_chronyd_or_ntpd_enabled" selected="true"/>
+ <select idref="chronyd_or_ntpd_specify_remote_server" selected="true"/>
+ <select idref="chronyd_or_ntpd_specify_multiple_servers" selected="true"/>
+-<select idref="rpm_verify_permissions" selected="true"/>
+ <select idref="rpm_verify_hashes" selected="true"/>
+ <select idref="install_hids" selected="true"/>
+ <select idref="rsyslog_files_permissions" selected="true"/>

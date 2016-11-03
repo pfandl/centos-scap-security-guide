@@ -1,20 +1,20 @@
-%global		redhatssgversion	25
+%global		redhatssgversion	30
 
 Name:		scap-security-guide
 Version:	0.1.%{redhatssgversion}
-Release:	3%{?dist}.0.1
+Release:	3%{?dist}
 Summary:	Security guidance and baselines in SCAP formats
 
 Group:		System Environment/Base
 License:	Public Domain
 URL:		https://github.com/OpenSCAP/scap-security-guide
 Source0:	%{name}-%{version}.tar.gz
-Patch1:		scap-security-guide-0.1.19-rhel7-drop-cpuspeed-rule-since-obsolete.patch
-Patch2:		scap-security-guide-0.1.25-update-upstream-manual-page.patch
-Patch3:		scap-security-guide-0.1.25-add-adjtimex-settimeofday-stime-rhel7-remediation.patch
-Patch4:		scap-security-guide-0.1.25-downstream-rhel7-pci-dss-disable-selected-rules.patch
-Patch5:		scap-security-guide-0.1.25-downstream-rhel7-pci-dss-drop-rpm-verify-permissions-rule.patch
-Patch99:	scap-security-guide-0.1.25-centos-menu-branding.patch
+Patch1:		scap-security-guide-0.1.25-update-upstream-manual-page.patch
+Patch2:		scap-security-guide-0.1.30-downstream-rhel7-pci-dss-drop-rpm-verify-permissions-rule.patch
+Patch3:		scap-security-guide-0.1.30-rhbz#1351541.patch
+Patch4:		scap-security-guide-0.1.30-rhbz#1344581.patch
+Patch5:		scap-security-guide-0.1.30-rhbz#1351751.patch
+Patch6:		scap-security-guide-0.1.30-downstream-rhbz#1357019.patch
 BuildArch:	noarch
 
 BuildRequires:	libxslt, expat, python, openscap-scanner >= 1.2.5, python-lxml
@@ -42,28 +42,23 @@ been generated from XCCDF benchmarks present in %{name} package.
 
 %prep
 %setup -q -n %{name}-%{version}
-# Drop cpuspeed rule since obsoleted in Fedora-16 by cpupower from kernel-tools RPM
-# http://marc.info/?l=fedora-devel-list&m=131107769617369&w=2
-%patch1 -p1 -b .drop-cpuspeed
 # Update manual page to drop the part dedicated to Fedora content
-%patch2 -p1 -b .man_page_update
-# Downstream -- Add RHEL-7 remediation for 'audit_rules_time_adjtimex', 'audit_rules_time_settimeofday', and
-# 'audit_rules_time_stime' rules
-%patch3 -p1 -b .adjtimex_settimeofday_stime
-# Downstream
-# RHEL-7 PCI-DSS profile disable selected rules:
-# * dconf_gnome_screensaver_idle_delay -- missing RHEL-7 remediation
-# * dconf_gnome_screensaver_idle_activation -- missing RHEL-7 remediation
-# * dconf_gnome_screensaver_lock_enabled -- missing RHEL-7 remediation
-# * audit_rules_login_events -- incorrect OVAL, see https://github.com/OpenSCAP/scap-security-guide/issues/607
-# * audit_rules_privileged_commands -- missing RHEL-7 remediation, and
-# * audit_rules_immutable -- missing RHEL-7 remediation
-%patch4 -p1 -b .rhel7_pcidss_downstream_disabled
+%patch1 -p1 -b .man_page_update
 # Temporarily drop "Verify and Correct File Permissions with RPM"
 # rule from RHEL-7's PCI-DSS profile (RH BZ#1267861)
-%patch5 -p1 -b .rhel7_pcidss_drop_rpm_verify_permissions_rule
-
-%patch99 -p1 -b .centos
+%patch2 -p1 -b .rhel7_pcidss_drop_rpm_verify_permissions_rule
+# Fix for RHBZ#1351541
+%patch3 -p1 -b .rhbz#1351541
+# Fix for RHBZ#1344581
+%patch4 -p1 -b .rhbz#1344581
+# Fix for RHBZ#1351751
+%patch5 -p1 -b .rhbz#1351751
+# Downstream fix for RHBZ#1357019 (slightly differs from upstream
+# https://patch-diff.githubusercontent.com/raw/OpenSCAP/scap-security-guide/pull/1388.patch
+# version because 'smartcard-auth.sh' remediation in upstream got moved
+# to different location already). The rest of the change (except the path)
+# is identical with upstream form
+%patch6 -p1 -b .rhbz#1357019
 
 %build
 (cd RHEL/7 && make dist)
@@ -79,12 +74,12 @@ mkdir -p %{buildroot}%{_mandir}/en/man8/
 # Add in RHEL-7 core content (SCAP)
 cp -a RHEL/7/dist/content/ssg-rhel7-cpe-dictionary.xml %{buildroot}%{_datadir}/xml/scap/ssg/content/
 cp -a RHEL/7/dist/content/ssg-rhel7-cpe-oval.xml %{buildroot}%{_datadir}/xml/scap/ssg/content/
-cp -a RHEL/7/dist/content/ssg-centos7-ds.xml %{buildroot}%{_datadir}/xml/scap/ssg/content/
+cp -a RHEL/7/dist/content/ssg-rhel7-ds.xml %{buildroot}%{_datadir}/xml/scap/ssg/content/
 cp -a RHEL/7/dist/content/ssg-rhel7-oval.xml %{buildroot}%{_datadir}/xml/scap/ssg/content/
-cp -a RHEL/7/dist/content/ssg-centos7-xccdf.xml %{buildroot}%{_datadir}/xml/scap/ssg/content/
+cp -a RHEL/7/dist/content/ssg-rhel7-xccdf.xml %{buildroot}%{_datadir}/xml/scap/ssg/content/
 
 # Add in RHEL-6 datastream (SCAP)
-cp -a RHEL/6/dist/content/ssg-centos6-ds.xml %{buildroot}%{_datadir}/xml/scap/ssg/content
+cp -a RHEL/6/dist/content/ssg-rhel6-ds.xml %{buildroot}%{_datadir}/xml/scap/ssg/content
 
 # Add in Firefox datastream (SCAP)
 cp -a Firefox/dist/content/ssg-firefox-ds.xml %{buildroot}%{_datadir}/xml/scap/ssg/content
@@ -92,16 +87,10 @@ cp -a Firefox/dist/content/ssg-firefox-ds.xml %{buildroot}%{_datadir}/xml/scap/s
 # Add in Java Runtime Environment (JRE) datastream (SCAP)
 cp -a JRE/dist/content/ssg-jre-ds.xml %{buildroot}%{_datadir}/xml/scap/ssg/content
 
-# Add in library for remediations
-mkdir -p %{buildroot}%{_datadir}/%{name}
-cp -a shared/fixes/bash/templates/remediation_functions %{buildroot}%{_datadir}/%{name}/remediation_functions
-
-# Add in RHEL-6 kickstart files
+# Add in currently available kickstart files
 mkdir -p %{buildroot}%{_datadir}/%{name}/kickstart
-cp -a RHEL/6/kickstart/ssg-rhel6-stig-ks.cfg  %{buildroot}%{_datadir}/%{name}/kickstart/
-cp -a RHEL/6/kickstart/ssg-rhel6-usgcb-server-with-gui-ks.cfg %{buildroot}%{_datadir}/%{name}/kickstart/
-# Add in RHEL-7 kickstart files
-cp -a RHEL/7/kickstart/ssg-rhel7-pci-dss-server-with-gui-oaa-ks.cfg %{buildroot}%{_datadir}/%{name}/kickstart/
+cp -a RHEL/6/kickstart/*-ks.cfg %{buildroot}%{_datadir}/%{name}/kickstart
+cp -a RHEL/7/kickstart/*-ks.cfg %{buildroot}%{_datadir}/%{name}/kickstart
 
 # Add in manpage
 cp -a docs/scap-security-guide.8 %{buildroot}%{_mandir}/en/man8/scap-security-guide.8
@@ -111,16 +100,46 @@ cp -a docs/scap-security-guide.8 %{buildroot}%{_mandir}/en/man8/scap-security-gu
 %{_datadir}/xml/scap
 %{_datadir}/%{name}
 %lang(en) %{_mandir}/en/man8/scap-security-guide.8.gz
-%doc ./LICENSE RHEL/6/output/table-rhel6-cces.html RHEL/7/output/table-rhel7-cces.html RHEL/6/output/table-rhel6-nistrefs-common.html RHEL/6/output/table-rhel6-nistrefs.html RHEL/6/output/table-rhel6-srgmap-flat.html RHEL/6/output/table-rhel6-srgmap-flat.xhtml RHEL/6/output/table-rhel6-srgmap.html RHEL/6/output/table-rhel6-stig.html RHEL/6/input/auxiliary/DISCLAIMER
+%doc RHEL/6/dist/tables/*.html
+%doc RHEL/6/dist/tables/*.xhtml
+%doc RHEL/7/dist/tables/*.html
+%doc RHEL/7/dist/tables/*.xhtml
+%doc ./LICENSE
+%doc RHEL/6/input/auxiliary/DISCLAIMER
 
 %files doc
 %defattr(-,root,root,-)
-%doc RHEL/6/output/ssg-centos6-guide-*.html RHEL/7/output/ssg-centos7-guide-*.html JRE/output/ssg-jre-guide-*.html Firefox/output/ssg-firefox-guide-*.html
+%doc RHEL/6/output/ssg-rhel6-guide-*.html
+%doc RHEL/7/output/ssg-rhel7-guide-*.html
+%doc JRE/output/ssg-jre-guide-*.html
+%doc Firefox/output/ssg-firefox-guide-*.html
 
 %changelog
-* Wed Nov 25 2015 brian@bstinson.com 0.1.25-3.centos.0.1
-- Use the CentOS SCAP content 
-- scap-security-guide-0.1.25-centos-menu-branding.patch
+* Wed Aug 10 2016 Jan iankko Lieskovsky <jlieskov@redhat.com> 0.1.30-3
+- Correct the remediation script for 'Enable Smart Card Login' rule
+  for Red Hat Enterprise Linux 7 (RH BZ#1357019)
+
+* Thu Jul 14 2016 Jan iankko Lieskovsky <jlieskov@redhat.com> 0.1.30-2
+- Fix issue of two STIG profiles for Red Hat Enterprise Linux 6 benchmark
+  having the identical title (RH BZ#1351541)
+- Enhance the shared OVAL check for 'Set Deny For Failed Password Attempts'
+  rule and also Red Hat Enterprise Linux 7 OVAL check for 'Configure the root
+  Account for Failed Password Attempts' rule to report correct system status
+  WRT to these requirements also in the case the SSSD daemon is used
+  (RH BZ#1344581)
+- Include currently available kickstart files and produced HTML tables for
+  Red Hat Enterprise Linux 6 and 7 products into the produced RPM package
+  (RH BZ#1351751)
+
+* Wed Jun 22 2016 Jan iankko Lieskovsky <jlieskov@redhat.com> 0.1.30-1
+- Update to upstream's 0.1.30 release:
+  https://github.com/OpenSCAP/scap-security-guide/releases/tag/v0.1.30
+  (RH BZ#1289533)
+- Drop remediation functions library since starting from 0.1.30 release
+  remediation scripts are part of the benchmarks directly
+- Drop three patches that have been accepted upstream in the meantime
+- Update drop-rpm-verify-permissions-rule patch to work properly against
+  0.1.30 release
 
 * Fri Oct 02 2015 Jan iankko Lieskovsky <jlieskov@redhat.com> 0.1.25-3
 - Drop "Verify and Correct File Permissions with RPM" rule from the PCI-DSS
