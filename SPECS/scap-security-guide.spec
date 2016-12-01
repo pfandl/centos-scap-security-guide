@@ -2,7 +2,7 @@
 
 Name:		scap-security-guide
 Version:	0.1.%{redhatssgversion}
-Release:	3%{?dist}
+Release:	3%{?dist}.0.2
 Summary:	Security guidance and baselines in SCAP formats
 
 Group:		System Environment/Base
@@ -15,6 +15,7 @@ Patch3:		scap-security-guide-0.1.30-rhbz#1351541.patch
 Patch4:		scap-security-guide-0.1.30-rhbz#1344581.patch
 Patch5:		scap-security-guide-0.1.30-rhbz#1351751.patch
 Patch6:		scap-security-guide-0.1.30-downstream-rhbz#1357019.patch
+Patch99:	scap-security-guide-0.1.25-centos-menu-branding.patch
 BuildArch:	noarch
 
 BuildRequires:	libxslt, expat, python, openscap-scanner >= 1.2.5, python-lxml
@@ -60,6 +61,8 @@ been generated from XCCDF benchmarks present in %{name} package.
 # is identical with upstream form
 %patch6 -p1 -b .rhbz#1357019
 
+%patch99 -p1 -b .centos
+
 %build
 (cd RHEL/7 && make dist)
 (cd RHEL/6 && make dist)
@@ -74,12 +77,12 @@ mkdir -p %{buildroot}%{_mandir}/en/man8/
 # Add in RHEL-7 core content (SCAP)
 cp -a RHEL/7/dist/content/ssg-rhel7-cpe-dictionary.xml %{buildroot}%{_datadir}/xml/scap/ssg/content/
 cp -a RHEL/7/dist/content/ssg-rhel7-cpe-oval.xml %{buildroot}%{_datadir}/xml/scap/ssg/content/
-cp -a RHEL/7/dist/content/ssg-rhel7-ds.xml %{buildroot}%{_datadir}/xml/scap/ssg/content/
+cp -a RHEL/7/dist/content/ssg-centos7-ds.xml %{buildroot}%{_datadir}/xml/scap/ssg/content/
 cp -a RHEL/7/dist/content/ssg-rhel7-oval.xml %{buildroot}%{_datadir}/xml/scap/ssg/content/
-cp -a RHEL/7/dist/content/ssg-rhel7-xccdf.xml %{buildroot}%{_datadir}/xml/scap/ssg/content/
+cp -a RHEL/7/dist/content/ssg-centos7-xccdf.xml %{buildroot}%{_datadir}/xml/scap/ssg/content/
 
 # Add in RHEL-6 datastream (SCAP)
-cp -a RHEL/6/dist/content/ssg-rhel6-ds.xml %{buildroot}%{_datadir}/xml/scap/ssg/content
+cp -a RHEL/6/dist/content/ssg-centos6-ds.xml %{buildroot}%{_datadir}/xml/scap/ssg/content
 
 # Add in Firefox datastream (SCAP)
 cp -a Firefox/dist/content/ssg-firefox-ds.xml %{buildroot}%{_datadir}/xml/scap/ssg/content
@@ -109,12 +112,19 @@ cp -a docs/scap-security-guide.8 %{buildroot}%{_mandir}/en/man8/scap-security-gu
 
 %files doc
 %defattr(-,root,root,-)
-%doc RHEL/6/output/ssg-rhel6-guide-*.html
-%doc RHEL/7/output/ssg-rhel7-guide-*.html
+%doc RHEL/6/output/ssg-centos6-guide-*.html
+%doc RHEL/7/output/ssg-centos7-guide-*.html
 %doc JRE/output/ssg-jre-guide-*.html
 %doc Firefox/output/ssg-firefox-guide-*.html
 
 %changelog
+* Thu Dec  1 2016 Johnny Hughes <johnny@centos.org> 0.1.30-3.0.2
+- fix branding issue on ospp-rhel7-server.xml 
+
+* Tue Nov 15 2016 Johnny Hughes <johnny@centos.org> 0.1.30-3
+- Use the CentOS SCAP content
+- scap-security-guide-0.1.25-centos-menu-branding.patch
+
 * Wed Aug 10 2016 Jan iankko Lieskovsky <jlieskov@redhat.com> 0.1.30-3
 - Correct the remediation script for 'Enable Smart Card Login' rule
   for Red Hat Enterprise Linux 7 (RH BZ#1357019)
