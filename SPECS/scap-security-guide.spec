@@ -2,7 +2,7 @@
 
 Name:		scap-security-guide
 Version:	0.1.%{redhatssgversion}
-Release:	3%{?dist}.0.2
+Release:	3%{?dist}.0.3
 Summary:	Security guidance and baselines in SCAP formats
 
 Group:		System Environment/Base
@@ -16,6 +16,7 @@ Patch4:		scap-security-guide-0.1.30-rhbz#1344581.patch
 Patch5:		scap-security-guide-0.1.30-rhbz#1351751.patch
 Patch6:		scap-security-guide-0.1.30-downstream-rhbz#1357019.patch
 Patch99:	scap-security-guide-0.1.25-centos-menu-branding.patch
+Patch100:	scap-security-guide-0.1.30-centos-menu-branding-2.patch
 BuildArch:	noarch
 
 BuildRequires:	libxslt, expat, python, openscap-scanner >= 1.2.5, python-lxml
@@ -62,6 +63,10 @@ been generated from XCCDF benchmarks present in %{name} package.
 %patch6 -p1 -b .rhbz#1357019
 
 %patch99 -p1 -b .centos
+%patch100 -p1 -b .centos
+
+# Remove the RHEL Certified Cloud Provider profile for debranding purposes
+%{__rm} RHEL/7/input/profiles/rht-ccp.xml
 
 %build
 (cd RHEL/7 && make dist)
@@ -118,6 +123,10 @@ cp -a docs/scap-security-guide.8 %{buildroot}%{_mandir}/en/man8/scap-security-gu
 %doc Firefox/output/ssg-firefox-guide-*.html
 
 %changelog
+* Fri Dec 02 2016 brian@bstinson.com 0.1.-3.0.3
+- Remove the Red Hat Certified Cloud Provider profile
+- add 2nd branding patch
+
 * Thu Dec  1 2016 Johnny Hughes <johnny@centos.org> 0.1.30-3.0.2
 - fix branding issue on ospp-rhel7-server.xml 
 
