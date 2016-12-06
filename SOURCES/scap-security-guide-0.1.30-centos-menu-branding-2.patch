@@ -1,0 +1,63 @@
+diff -uNrp scap-security-guide-0.1.30.orig/RHEL/7/input/guide.xml scap-security-guide-0.1.30/RHEL/7/input/guide.xml
+--- scap-security-guide-0.1.30.orig/RHEL/7/input/guide.xml	2016-06-22 12:56:46.000000000 +0000
++++ scap-security-guide-0.1.30/RHEL/7/input/guide.xml	2016-12-04 12:58:05.537287951 +0000
+@@ -2,9 +2,9 @@
+ <Benchmark xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:dc="http://purl.org/dc/elements/1.1/" id="RHEL-7" xsi:schemaLocation="http://checklists.nist.gov/xccdf/1.1 xccdf-1.1.4.xsd" style="SCAP_1.1" resolved="false" xml:lang="en-US" >
+ 
+ <status date="2011-12-20">draft</status>
+-<title>Guide to the Secure Configuration of Red Hat Enterprise Linux 7</title>
++<title>Guide to the Secure Configuration of CentOS Linux 7</title>
+ <description>This guide presents a catalog of security-relevant
+-configuration settings for Red Hat Enterprise Linux 7 formatted in the
++configuration settings for CentOS Linux 7 formatted in the
+ eXtensible Configuration Checklist Description Format (XCCDF).  
+ <br/>
+ <br/>
+@@ -22,7 +22,7 @@ providing baselines that meet a diverse
+ XCCDF <i>Profiles</i>, which are selections of items that form checklists and
+ can be used as baselines, are available with this guide.  They can be
+ processed, in an automated fashion, with tools that support the Security
+-Content Automation Protocol (SCAP).  The DISA STIG for Red Hat Enterprise Linux 7 is one example of
++Content Automation Protocol (SCAP).  The DISA STIG for CentOS Linux 7 is one example of
+ a baseline created from this guidance.
+ </description>
+ <notice id="terms_of_use">Do not attempt to implement any of the settings in
+@@ -32,7 +32,7 @@ other parties, and makes no guarantees,
+ quality, reliability, or any other characteristic.</notice>
+ 
+ <front-matter>The SCAP Security Guide Project<br/>https://fedorahosted.org/scap-security-guide</front-matter>
+-<rear-matter>Red Hat and Red Hat Enterprise Linux are either registered
++<rear-matter>Red Hat and Red Hat Enterprise  Linux are either registered
+ trademarks or trademarks of Red Hat, Inc. in the United States and other
+ countries. All other names are registered trademarks or trademarks of their
+ respective companies.</rear-matter>
+diff -uNrp scap-security-guide-0.1.30.orig/RHEL/7/input/intro/intro.xml scap-security-guide-0.1.30/RHEL/7/input/intro/intro.xml
+--- scap-security-guide-0.1.30.orig/RHEL/7/input/intro/intro.xml	2016-06-22 12:56:46.000000000 +0000
++++ scap-security-guide-0.1.30/RHEL/7/input/intro/intro.xml	2016-12-04 13:02:13.903282198 +0000
+@@ -3,7 +3,7 @@
+ <description>
+ <!-- purpose and scope of guidance -->
+ The purpose of this guidance is to provide security configuration
+-recommendations and baselines for the Red Hat Enterprise Linux (RHEL) 7 operating
++recommendations and baselines for the CentOS Linux 7 operating
+ system. The guidance provided here should be applicable to all variants
+ (Desktop, Server, Advanced Platform) of the product. Recommended
+ settings for the basic operating system are provided, as well as for many
+@@ -33,7 +33,7 @@ to passive monitoring. Whenever practica
+ such data exist, they should be applied. Even if data is expected to
+ be transmitted only over a local network, it should still be encrypted.
+ Encrypting authentication data, such as passwords, is particularly
+-important. Networks of Red Hat Enterprise Linux 7 machines can and should be configured
++important. Networks of CentOS Linux 7 machines can and should be configured
+ so that no unencrypted authentication data is ever transmitted between
+ machines.
+ </description>
+@@ -44,7 +44,7 @@ machines.
+ <title>Minimize Software to Minimize Vulnerability</title>
+ <description>
+ The simplest way to avoid vulnerabilities in software is to avoid
+-installing that software. On RHEL, the RPM Package Manager (originally
++installing that software. On CentOS, the RPM Package Manager (originally
+ Red Hat Package Manager, abbreviated RPM) allows for careful management of
+ the set of software packages installed on a system. Installed software
+ contributes to system vulnerability in several ways. Packages that
