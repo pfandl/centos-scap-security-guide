@@ -1,0 +1,42 @@
+diff --git a/shared/remediations/bash/templates/remediation_functions b/shared/remediations/bash/templates/remediation_functions
+index 1ef7e19..40d8ad3 100644
+--- a/shared/remediations/bash/templates/remediation_functions
++++ b/shared/remediations/bash/templates/remediation_functions
+@@ -774,7 +774,7 @@ function replace_or_append {
+ 
+   # Strip any search characters in the key arg so that the key can be replaced without
+   # adding any search characters to the config file.
+-  stripped_key=${key//[!a-zA-Z]/}
++  stripped_key=$(sed "s/[\^=\$,;+]*//g" <<< $key)
+ 
+   # If there is no print format specified in the last arg, use the default format.
+   if ! [ "x$format" = x ] ; then
+diff --git a/shared/remediations/bash/sshd_use_approved_macs.sh b/shared/remediations/bash/sshd_use_approved_macs.sh
+index c6e1c29..b93809a 100644
+--- a/shared/remediations/bash/sshd_use_approved_macs.sh
++++ b/shared/remediations/bash/sshd_use_approved_macs.sh
+@@ -1,6 +1,6 @@
+ # platform = multi_platform_rhel
+-grep -qi ^MACs /etc/ssh/sshd_config && \
+-  sed -i "s/MACs.*/MACs hmac-sha2-512,hmac-sha2-256,hmac-sha1/gI" /etc/ssh/sshd_config
+-if ! [ $? -eq 0 ]; then
+-    echo "MACs hmac-sha2-512,hmac-sha2-256,hmac-sha1" >> /etc/ssh/sshd_config
+-fi
++
++# Include source function library.
++. /usr/share/scap-security-guide/remediation_functions
++
++replace_or_append '/etc/ssh/sshd_config' '^MACs' 'hmac-sha2-512,hmac-sha2-256,hmac-sha1' 'CCENUM' '%s %s'
+diff --git a/shared/xccdf/remediation_functions.xml b/shared/xccdf/remediation_functions.xml
+index dc14346..f2f2e62 100644
+--- a/shared/xccdf/remediation_functions.xml
++++ b/shared/xccdf/remediation_functions.xml
+@@ -1152,7 +1152,7 @@ function replace_or_append {
+ 
+   # Strip any search characters in the key arg so that the key can be replaced without
+   # adding any search characters to the config file.
+-  stripped_key=${key//[!a-zA-Z]/}
++  stripped_key=$(sed "s/[\^=\$,;+]*//g" &lt;&lt;&lt; $key)
+ 
+   # If there is no print format specified in the last arg, use the default format.
+   if ! [ "x$format" = x ] ; then

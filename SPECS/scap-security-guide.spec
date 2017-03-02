@@ -2,7 +2,7 @@
 
 Name:		scap-security-guide
 Version:	0.1.%{redhatssgversion}
-Release:	3%{?dist}.0.3
+Release:	5%{?dist}
 Summary:	Security guidance and baselines in SCAP formats
 
 Group:		System Environment/Base
@@ -15,8 +15,7 @@ Patch3:		scap-security-guide-0.1.30-rhbz#1351541.patch
 Patch4:		scap-security-guide-0.1.30-rhbz#1344581.patch
 Patch5:		scap-security-guide-0.1.30-rhbz#1351751.patch
 Patch6:		scap-security-guide-0.1.30-downstream-rhbz#1357019.patch
-Patch99:	scap-security-guide-0.1.25-centos-menu-branding.patch
-Patch100:	scap-security-guide-0.1.30-centos-menu-branding-2.patch
+Patch7:		scap-security-guide-0.1.30-zstream-rhbz#1415152.patch
 BuildArch:	noarch
 
 BuildRequires:	libxslt, expat, python, openscap-scanner >= 1.2.5, python-lxml
@@ -61,12 +60,15 @@ been generated from XCCDF benchmarks present in %{name} package.
 # to different location already). The rest of the change (except the path)
 # is identical with upstream form
 %patch6 -p1 -b .rhbz#1357019
-
-%patch99 -p1 -b .centos
-%patch100 -p1 -b .centos
-
-# Remove the RHEL Certified Cloud Provider profile for debranding purposes
-%{__rm} RHEL/7/input/profiles/rht-ccp.xml
+# Z-stream fix for RHBZ#1415152
+# Patch consists of upstream
+# https://patch-diff.githubusercontent.com/raw/OpenSCAP/scap-security-guide/pull/1555.diff
+# and modified version of upstream
+# https://patch-diff.githubusercontent.com/raw/OpenSCAP/scap-security-guide/pull/1471.diff
+# Patch for PR 1471 was modified to remove unrelated changes, and remediations files got
+# moved to different location. Also, changes in 'sshd_use_approved_macs.sh' are slightly
+# different due to commit c6730b867f6760b94ec193e95484a16054b27f48a).
+%patch7 -p1 -b .rhbz#1415152
 
 %build
 (cd RHEL/7 && make dist)
@@ -82,12 +84,12 @@ mkdir -p %{buildroot}%{_mandir}/en/man8/
 # Add in RHEL-7 core content (SCAP)
 cp -a RHEL/7/dist/content/ssg-rhel7-cpe-dictionary.xml %{buildroot}%{_datadir}/xml/scap/ssg/content/
 cp -a RHEL/7/dist/content/ssg-rhel7-cpe-oval.xml %{buildroot}%{_datadir}/xml/scap/ssg/content/
-cp -a RHEL/7/dist/content/ssg-centos7-ds.xml %{buildroot}%{_datadir}/xml/scap/ssg/content/
+cp -a RHEL/7/dist/content/ssg-rhel7-ds.xml %{buildroot}%{_datadir}/xml/scap/ssg/content/
 cp -a RHEL/7/dist/content/ssg-rhel7-oval.xml %{buildroot}%{_datadir}/xml/scap/ssg/content/
-cp -a RHEL/7/dist/content/ssg-centos7-xccdf.xml %{buildroot}%{_datadir}/xml/scap/ssg/content/
+cp -a RHEL/7/dist/content/ssg-rhel7-xccdf.xml %{buildroot}%{_datadir}/xml/scap/ssg/content/
 
 # Add in RHEL-6 datastream (SCAP)
-cp -a RHEL/6/dist/content/ssg-centos6-ds.xml %{buildroot}%{_datadir}/xml/scap/ssg/content
+cp -a RHEL/6/dist/content/ssg-rhel6-ds.xml %{buildroot}%{_datadir}/xml/scap/ssg/content
 
 # Add in Firefox datastream (SCAP)
 cp -a Firefox/dist/content/ssg-firefox-ds.xml %{buildroot}%{_datadir}/xml/scap/ssg/content
@@ -117,22 +119,18 @@ cp -a docs/scap-security-guide.8 %{buildroot}%{_mandir}/en/man8/scap-security-gu
 
 %files doc
 %defattr(-,root,root,-)
-%doc RHEL/6/output/ssg-centos6-guide-*.html
-%doc RHEL/7/output/ssg-centos7-guide-*.html
+%doc RHEL/6/output/ssg-rhel6-guide-*.html
+%doc RHEL/7/output/ssg-rhel7-guide-*.html
 %doc JRE/output/ssg-jre-guide-*.html
 %doc Firefox/output/ssg-firefox-guide-*.html
 
 %changelog
-* Fri Dec 02 2016 brian@bstinson.com 0.1.-3.0.3
-- Remove the Red Hat Certified Cloud Provider profile
-- add 2nd branding patch
+* Tue Feb 14 2017 Watson Sato <wsato@redhat.com> 0.1.30-5
+- Fix template remediation function used by SSHD remediation
+- Reduce scope of patch that fixes SSHD remediation (RH BZ#1415152)
 
-* Thu Dec  1 2016 Johnny Hughes <johnny@centos.org> 0.1.30-3.0.2
-- fix branding issue on ospp-rhel7-server.xml 
-
-* Tue Nov 15 2016 Johnny Hughes <johnny@centos.org> 0.1.30-3
-- Use the CentOS SCAP content
-- scap-security-guide-0.1.25-centos-menu-branding.patch
+* Tue Jan 31 2017 Jan Watson Sato <wsato@redhat.com> 0.1.30-4
+- Correct remediation for SSHD which caused it not to start (RH BZ#1415152)
 
 * Wed Aug 10 2016 Jan iankko Lieskovsky <jlieskov@redhat.com> 0.1.30-3
 - Correct the remediation script for 'Enable Smart Card Login' rule
