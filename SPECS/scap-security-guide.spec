@@ -16,6 +16,8 @@ Patch4:		scap-security-guide-0.1.30-rhbz#1344581.patch
 Patch5:		scap-security-guide-0.1.30-rhbz#1351751.patch
 Patch6:		scap-security-guide-0.1.30-downstream-rhbz#1357019.patch
 Patch7:		scap-security-guide-0.1.30-zstream-rhbz#1415152.patch
+Patch99:        scap-security-guide-0.1.25-centos-menu-branding.patch
+Patch100:       scap-security-guide-0.1.30-centos-menu-branding-2.patch
 BuildArch:	noarch
 
 BuildRequires:	libxslt, expat, python, openscap-scanner >= 1.2.5, python-lxml
@@ -69,6 +71,11 @@ been generated from XCCDF benchmarks present in %{name} package.
 # moved to different location. Also, changes in 'sshd_use_approved_macs.sh' are slightly
 # different due to commit c6730b867f6760b94ec193e95484a16054b27f48a).
 %patch7 -p1 -b .rhbz#1415152
+%patch99 -p1
+%patch100 -p1
+
+# Remove the RHEL Certified Cloud Provider profile for debranding purposes
+%{__rm} RHEL/7/input/profiles/rht-ccp.xml
 
 %build
 (cd RHEL/7 && make dist)
@@ -84,12 +91,12 @@ mkdir -p %{buildroot}%{_mandir}/en/man8/
 # Add in RHEL-7 core content (SCAP)
 cp -a RHEL/7/dist/content/ssg-rhel7-cpe-dictionary.xml %{buildroot}%{_datadir}/xml/scap/ssg/content/
 cp -a RHEL/7/dist/content/ssg-rhel7-cpe-oval.xml %{buildroot}%{_datadir}/xml/scap/ssg/content/
-cp -a RHEL/7/dist/content/ssg-rhel7-ds.xml %{buildroot}%{_datadir}/xml/scap/ssg/content/
+cp -a RHEL/7/dist/content/ssg-centos7-ds.xml %{buildroot}%{_datadir}/xml/scap/ssg/content/
 cp -a RHEL/7/dist/content/ssg-rhel7-oval.xml %{buildroot}%{_datadir}/xml/scap/ssg/content/
-cp -a RHEL/7/dist/content/ssg-rhel7-xccdf.xml %{buildroot}%{_datadir}/xml/scap/ssg/content/
+cp -a RHEL/7/dist/content/ssg-centos7-xccdf.xml %{buildroot}%{_datadir}/xml/scap/ssg/content/
 
 # Add in RHEL-6 datastream (SCAP)
-cp -a RHEL/6/dist/content/ssg-rhel6-ds.xml %{buildroot}%{_datadir}/xml/scap/ssg/content
+cp -a RHEL/6/dist/content/ssg-centos6-ds.xml %{buildroot}%{_datadir}/xml/scap/ssg/content
 
 # Add in Firefox datastream (SCAP)
 cp -a Firefox/dist/content/ssg-firefox-ds.xml %{buildroot}%{_datadir}/xml/scap/ssg/content
@@ -119,12 +126,15 @@ cp -a docs/scap-security-guide.8 %{buildroot}%{_mandir}/en/man8/scap-security-gu
 
 %files doc
 %defattr(-,root,root,-)
-%doc RHEL/6/output/ssg-rhel6-guide-*.html
-%doc RHEL/7/output/ssg-rhel7-guide-*.html
+%doc RHEL/6/output/ssg-centos6-guide-*.html
+%doc RHEL/7/output/ssg-centos7-guide-*.html
 %doc JRE/output/ssg-jre-guide-*.html
 %doc Firefox/output/ssg-firefox-guide-*.html
 
 %changelog
+* Fri Mar  3 2017 Johnny Hughes <johnny@centos.org> 0.1.30-5
+- Manual CentOS Debranding
+
 * Tue Feb 14 2017 Watson Sato <wsato@redhat.com> 0.1.30-5
 - Fix template remediation function used by SSHD remediation
 - Reduce scope of patch that fixes SSHD remediation (RH BZ#1415152)
