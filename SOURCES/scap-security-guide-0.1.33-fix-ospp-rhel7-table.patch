@@ -1,0 +1,23 @@
+From 17c80ede5d0e9d6253b2fa0c70714dd64e349eca Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Mon, 15 May 2017 17:25:35 +0200
+Subject: [PATCH] Build table for ospp-rhel7, not ospp-rhel7-server
+
+The profile has been renamed from ospp-rhel7-server to ospp-rhel7.
+---
+ RHEL/7/CMakeLists.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/RHEL/7/CMakeLists.txt b/RHEL/7/CMakeLists.txt
+index b49f556e8..5253b3a9f 100644
+--- a/RHEL/7/CMakeLists.txt
++++ b/RHEL/7/CMakeLists.txt
+@@ -10,7 +10,7 @@ ssg_build_html_table_by_ref(${PRODUCT} "cui")
+ ssg_build_html_table_by_ref(${PRODUCT} "pcidss")
+ 
+ ssg_build_html_nistrefs_table(${PRODUCT} "common")
+-ssg_build_html_nistrefs_table(${PRODUCT} "ospp-${PRODUCT}-server")
++ssg_build_html_nistrefs_table(${PRODUCT} "ospp-${PRODUCT}")
+ ssg_build_html_nistrefs_table(${PRODUCT} "C2S")
+ ssg_build_html_nistrefs_table(${PRODUCT} "stig-${PRODUCT}-disa")
+ 

@@ -1,4 +1,8 @@
-%global		redhatssgversion	30
+%global		redhatssgversion	33
+
+# Somehow, _pkgdocdir is already defined and points to unversioned docs dir
+# RHEL 7.X uses versioned docs dir, hence the definition below
+%global _pkgdocdir %{_docdir}/%{name}-%{version}
 
 Name:		scap-security-guide
 Version:	0.1.%{redhatssgversion}
@@ -8,19 +12,17 @@ Summary:	Security guidance and baselines in SCAP formats
 Group:		System Environment/Base
 License:	Public Domain
 URL:		https://github.com/OpenSCAP/scap-security-guide
-Source0:	%{name}-%{version}.tar.gz
-Patch1:		scap-security-guide-0.1.25-update-upstream-manual-page.patch
-Patch2:		scap-security-guide-0.1.30-downstream-rhel7-pci-dss-drop-rpm-verify-permissions-rule.patch
-Patch3:		scap-security-guide-0.1.30-rhbz#1351541.patch
-Patch4:		scap-security-guide-0.1.30-rhbz#1344581.patch
-Patch5:		scap-security-guide-0.1.30-rhbz#1351751.patch
-Patch6:		scap-security-guide-0.1.30-downstream-rhbz#1357019.patch
-Patch7:		scap-security-guide-0.1.30-zstream-rhbz#1415152.patch
-Patch99:        scap-security-guide-0.1.25-centos-menu-branding.patch
-Patch100:       scap-security-guide-0.1.30-centos-menu-branding-2.patch
+Source0:	%{name}-%{version}.tar.bz2
+Patch1:		scap-security-guide-0.1.33-update-upstream-manual-page.patch
+Patch2:		scap-security-guide-0.1.33-fix-guide-role-install-dir.patch
+Patch3:		scap-security-guide-0.1.33-fix-ospp-rhel7-table.patch
+Patch4:		scap-security-guide-0.1.33-fix-anaconda-remediation-template-add-remove-package.patch
+Patch5:		scap-security-guide-0.1.33-fix-anaconda-remediation-template-partition-mountoptions.patch
+Patch6:		scap-security-guide-0.1.33-fix-profile_nist-800-171-cui-malformed-title.patch
+Patch7:		scap-security-guide-0.1.33-fix-anaconda-smart-card-remediation_1461330.patch
 BuildArch:	noarch
 
-BuildRequires:	libxslt, expat, python, openscap-scanner >= 1.2.5, python-lxml
+BuildRequires:	libxslt, expat, python, openscap-scanner >= 1.2.5, python-lxml, cmake >= 2.8
 Requires:	xml-common, openscap-scanner >= 1.2.5
 
 %description
@@ -47,99 +49,92 @@ been generated from XCCDF benchmarks present in %{name} package.
 %setup -q -n %{name}-%{version}
 # Update manual page to drop the part dedicated to Fedora content
 %patch1 -p1 -b .man_page_update
-# Temporarily drop "Verify and Correct File Permissions with RPM"
-# rule from RHEL-7's PCI-DSS profile (RH BZ#1267861)
-%patch2 -p1 -b .rhel7_pcidss_drop_rpm_verify_permissions_rule
-# Fix for RHBZ#1351541
-%patch3 -p1 -b .rhbz#1351541
-# Fix for RHBZ#1344581
-%patch4 -p1 -b .rhbz#1344581
-# Fix for RHBZ#1351751
-%patch5 -p1 -b .rhbz#1351751
-# Downstream fix for RHBZ#1357019 (slightly differs from upstream
-# https://patch-diff.githubusercontent.com/raw/OpenSCAP/scap-security-guide/pull/1388.patch
-# version because 'smartcard-auth.sh' remediation in upstream got moved
-# to different location already). The rest of the change (except the path)
-# is identical with upstream form
-%patch6 -p1 -b .rhbz#1357019
-# Z-stream fix for RHBZ#1415152
-# Patch consists of upstream
-# https://patch-diff.githubusercontent.com/raw/OpenSCAP/scap-security-guide/pull/1555.diff
-# and modified version of upstream
-# https://patch-diff.githubusercontent.com/raw/OpenSCAP/scap-security-guide/pull/1471.diff
-# Patch for PR 1471 was modified to remove unrelated changes, and remediations files got
-# moved to different location. Also, changes in 'sshd_use_approved_macs.sh' are slightly
-# different due to commit c6730b867f6760b94ec193e95484a16054b27f48a).
-%patch7 -p1 -b .rhbz#1415152
-%patch99 -p1
-%patch100 -p1
-
-# Remove the RHEL Certified Cloud Provider profile for debranding purposes
-%{__rm} RHEL/7/input/profiles/rht-ccp.xml
+%patch2 -p1 -b .guide_role_dir_fix
+%patch3 -p1 -b .ospp_rhel7_table_fix
+# Patches 4 and 5 fixes rhbz#1450731
+%patch4 -p1 -b .anaconda_template_add_remove_package_fix
+%patch5 -p1 -b .anaconda_template_partition_mountoptions_fix
+# Fix for rhbz#1449211
+%patch6 -p1 -b .profile_nist_800_171_cui_malformed_title_fix
+%patch7 -p1 -b .anaconda-smart-card-auth
 
 %build
-(cd RHEL/7 && make dist)
-(cd RHEL/6 && make dist)
-(cd Firefox && make dist)
-(cd JRE && make dist)
+%cmake -D CMAKE_INSTALL_DOCDIR=%{_pkgdocdir} \
+-DSSG_PRODUCT_CHROMIUM:BOOL=OFF \
+-DSSG_PRODUCT_DEBIAN8:BOOL=OFF \
+-DSSG_PRODUCT_FEDORA:BOOL=OFF \
+-DSSG_PRODUCT_JBOSS_EAP5:BOOL=OFF \
+-DSSG_PRODUCT_JBOSS_FUSE6:BOOL=OFF \
+-DSSG_PRODUCT_OPENSUSE:BOOL=OFF \
+-DSSG_PRODUCT_OSP7:BOOL=OFF \
+-DSSG_PRODUCT_RHEL5:BOOL=OFF \
+-DSSG_PRODUCT_RHEV3:BOOL=OFF \
+-DSSG_PRODUCT_SUSE11:BOOL=OFF \
+-DSSG_PRODUCT_SUSE12:BOOL=OFF \
+-DSSG_PRODUCT_UBUNTU1404:BOOL=OFF \
+-DSSG_PRODUCT_UBUNTU1604:BOOL=OFF \
+-DSSG_PRODUCT_WRLINUX:BOOL=OFF \
+-DSSG_PRODUCT_WEBMIN:BOOL=OFF \
+-DSSG_CENTOS_DERIVATIVES_ENABLED:BOOL=OFF \
+-DSSG_SCIENTIFIC_LINUX_DERIVATIVES_ENABLED:BOOL=OFF .
+make %{?_smp_mflags}
 
 %install
-
-mkdir -p %{buildroot}%{_datadir}/xml/scap/ssg/content
-mkdir -p %{buildroot}%{_mandir}/en/man8/
-
-# Add in RHEL-7 core content (SCAP)
-cp -a RHEL/7/dist/content/ssg-rhel7-cpe-dictionary.xml %{buildroot}%{_datadir}/xml/scap/ssg/content/
-cp -a RHEL/7/dist/content/ssg-rhel7-cpe-oval.xml %{buildroot}%{_datadir}/xml/scap/ssg/content/
-cp -a RHEL/7/dist/content/ssg-centos7-ds.xml %{buildroot}%{_datadir}/xml/scap/ssg/content/
-cp -a RHEL/7/dist/content/ssg-rhel7-oval.xml %{buildroot}%{_datadir}/xml/scap/ssg/content/
-cp -a RHEL/7/dist/content/ssg-centos7-xccdf.xml %{buildroot}%{_datadir}/xml/scap/ssg/content/
-
-# Add in RHEL-6 datastream (SCAP)
-cp -a RHEL/6/dist/content/ssg-centos6-ds.xml %{buildroot}%{_datadir}/xml/scap/ssg/content
-
-# Add in Firefox datastream (SCAP)
-cp -a Firefox/dist/content/ssg-firefox-ds.xml %{buildroot}%{_datadir}/xml/scap/ssg/content
-
-# Add in Java Runtime Environment (JRE) datastream (SCAP)
-cp -a JRE/dist/content/ssg-jre-ds.xml %{buildroot}%{_datadir}/xml/scap/ssg/content
-
-# Add in currently available kickstart files
-mkdir -p %{buildroot}%{_datadir}/%{name}/kickstart
-cp -a RHEL/6/kickstart/*-ks.cfg %{buildroot}%{_datadir}/%{name}/kickstart
-cp -a RHEL/7/kickstart/*-ks.cfg %{buildroot}%{_datadir}/%{name}/kickstart
-
-# Add in manpage
-cp -a docs/scap-security-guide.8 %{buildroot}%{_mandir}/en/man8/scap-security-guide.8
+%make_install
 
 %files
 %defattr(-,root,root,-)
 %{_datadir}/xml/scap
 %{_datadir}/%{name}
-%lang(en) %{_mandir}/en/man8/scap-security-guide.8.gz
-%doc RHEL/6/dist/tables/*.html
-%doc RHEL/6/dist/tables/*.xhtml
-%doc RHEL/7/dist/tables/*.html
-%doc RHEL/7/dist/tables/*.xhtml
-%doc ./LICENSE
+%lang(en) %{_mandir}/man8/scap-security-guide.8.gz
+%doc LICENSE
+%doc Contributors.md
+%doc README.md
 %doc RHEL/6/input/auxiliary/DISCLAIMER
 
 %files doc
 %defattr(-,root,root,-)
-%doc RHEL/6/output/ssg-centos6-guide-*.html
-%doc RHEL/7/output/ssg-centos7-guide-*.html
-%doc JRE/output/ssg-jre-guide-*.html
-%doc Firefox/output/ssg-firefox-guide-*.html
+%doc roles/ssg-*-role*.yml
+%doc roles/ssg-*-role*.sh
+%doc guides/ssg-*-guide-*.html
 
 %changelog
-* Fri Mar  3 2017 Johnny Hughes <johnny@centos.org> 0.1.30-5
-- Manual CentOS Debranding
+* Wed Jun 14 2017 Watson Sato <wsato@redhat.com> 0.1.33-5
+- Fix Anaconda Smartcard auth remediation (RHBZ#1461330)
+
+* Fri May 19 2017 Watson Sato <wsato@redhat.com> 0.1.33-4
+- Fix specfile to not include tables twice
+
+* Fri May 19 2017 Watson Sato <wsato@redhat.com> 0.1.33-3
+- Fix malformed title of profile nist-800-171-cui
+
+* Fri May 19 2017 Watson Sato <wsato@redhat.com> 0.1.33-2
+- Fix emtpy ospp-rhel7 table
+- Fix Anaconda remediation templates (RHBZ#1450731)
+
+* Mon May 01 2017 Watson Sato <wsato@redhat.com> 0.1.33-1
+- Update to upstream version 0.1.33
+- DISA RHEL7 STIG profile alignment improved
+- Introduction of remediation roles
+- RPM and DEB test packages are built by CMake with CPack
+- Lots of remediation fixes
+
+* Tue Mar 28 2017 Watson Sato <wsato@redhat.com> 0.1.32-1
+- Update to upstream version 0.1.32
+- New CMake build system
+- Improved NIST 800-171 profile
+- Initial RHVH profile
+- New CPE to identify systems like machines (bare-metal and VM) and containers (image and container)
+- Template clean up in lots of remediations
+
+* Fri Mar 10 2017 Watson Sato <wsato@redhat.com> 0.1.30-6
+- Ship separate OCIL definitions for Red Hat Enterprise Linux 7 (RHBZ#1428144)
 
 * Tue Feb 14 2017 Watson Sato <wsato@redhat.com> 0.1.30-5
 - Fix template remediation function used by SSHD remediation
 - Reduce scope of patch that fixes SSHD remediation (RH BZ#1415152)
 
-* Tue Jan 31 2017 Jan Watson Sato <wsato@redhat.com> 0.1.30-4
+* Tue Jan 31 2017 Watson Sato <wsato@redhat.com> 0.1.30-4
 - Correct remediation for SSHD which caused it not to start (RH BZ#1415152)
 
 * Wed Aug 10 2016 Jan iankko Lieskovsky <jlieskov@redhat.com> 0.1.30-3

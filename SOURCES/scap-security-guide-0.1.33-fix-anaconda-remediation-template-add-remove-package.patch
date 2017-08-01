@@ -1,0 +1,31 @@
+From 96e23141350598de62a0265b5a5007f107bb2525 Mon Sep 17 00:00:00 2001
+From: Martin Preisler <mpreisle@redhat.com>
+Date: Thu, 18 May 2017 11:23:35 -0400
+Subject: [PATCH] Use double dash instead of a single dash in ANACONDA
+ remediation templates
+
+---
+ shared/templates/template_ANACONDA_package_installed | 2 +-
+ shared/templates/template_ANACONDA_package_removed   | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/shared/templates/template_ANACONDA_package_installed b/shared/templates/template_ANACONDA_package_installed
+index 0fb9ba08d..9adffa7e6 100644
+--- a/shared/templates/template_ANACONDA_package_installed
++++ b/shared/templates/template_ANACONDA_package_installed
+@@ -4,4 +4,4 @@
+ # complexity = low
+ # disruption = low
+ 
+-package -add=PKGNAME
++package --add=PKGNAME
+diff --git a/shared/templates/template_ANACONDA_package_removed b/shared/templates/template_ANACONDA_package_removed
+index 21d950692..1882c0deb 100644
+--- a/shared/templates/template_ANACONDA_package_removed
++++ b/shared/templates/template_ANACONDA_package_removed
+@@ -4,4 +4,4 @@
+ # complexity = low
+ # disruption = low
+ 
+-package -remove=PKGNAME
++package --remove=PKGNAME

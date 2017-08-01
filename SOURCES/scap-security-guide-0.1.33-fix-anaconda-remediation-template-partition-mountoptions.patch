@@ -1,0 +1,19 @@
+From 1b25ec4ff54215a7668a8cfdcf83ec6c6bb0f4bf Mon Sep 17 00:00:00 2001
+From: Gabe <redhatrises@gmail.com>
+Date: Thu, 18 May 2017 09:31:43 -0600
+Subject: [PATCH] Fix typo in ANACONDA static templates
+
+---
+ shared/templates/static/anaconda/mount_option_tmp_nodev.anaconda | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/shared/templates/static/anaconda/mount_option_tmp_nodev.anaconda b/shared/templates/static/anaconda/mount_option_tmp_nodev.anaconda
+index 992562ebf..b10200ab1 100644
+--- a/shared/templates/static/anaconda/mount_option_tmp_nodev.anaconda
++++ b/shared/templates/static/anaconda/mount_option_tmp_nodev.anaconda
+@@ -4,4 +4,4 @@
+ # complexity = low
+ # disruption = high
+ 
+-part /tmp -mountoptions="nodev"
++part /tmp --mountoptions="nodev"

@@ -1,0 +1,23 @@
+From cca881e45751b0abd4f7044813079dc61d5a53ec Mon Sep 17 00:00:00 2001
+From: Martin Preisler <mpreisle@redhat.com>
+Date: Tue, 9 May 2017 15:51:55 -0400
+Subject: [PATCH] Use @override for NIST 800 171 CUI profile
+
+Otherwise the name of the profile gets concatenated with the name of the
+profile it extends.
+---
+ RHEL/7/input/profiles/nist-800-171-cui.xml | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/RHEL/7/input/profiles/nist-800-171-cui.xml b/RHEL/7/input/profiles/nist-800-171-cui.xml
+index 0a3ea2550..a021035f9 100644
+--- a/RHEL/7/input/profiles/nist-800-171-cui.xml
++++ b/RHEL/7/input/profiles/nist-800-171-cui.xml
+@@ -1,6 +1,5 @@
+ <Profile id="nist-800-171-cui" extends="ospp-rhel7">
+-<title>Unclassified Information in Non-federal Information Systems and
+-Organizations (NIST 800-171)</title>
++<title override="true">Unclassified Information in Non-federal Information Systems and Organizations (NIST 800-171)</title>
+ <description>From NIST 800-171, Section 2.2:
+ Security requirements for protecting the confidentiality of CUI in nonfederal 
+ information systems and organizations have a well-defined structure that 

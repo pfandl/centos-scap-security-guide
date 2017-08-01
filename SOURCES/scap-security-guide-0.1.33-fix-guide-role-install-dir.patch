@@ -1,0 +1,56 @@
+diff --git a/cmake/SSGCommon.cmake b/cmake/SSGCommon.cmake
+index 45a841f..83a3ad0 100644
+--- a/cmake/SSGCommon.cmake
++++ b/cmake/SSGCommon.cmake
+@@ -753,7 +753,7 @@ macro(ssg_build_product PRODUCT)
+     install(
+        CODE "
+            file(GLOB GUIDE_FILES \"${CMAKE_BINARY_DIR}/guides/ssg-${PRODUCT}-guide-*.html\") \n
+-           file(INSTALL DESTINATION \"\${CMAKE_INSTALL_PREFIX}/${SSG_GUIDE_INSTALL_DIR}\"
++           file(INSTALL DESTINATION \"${SSG_GUIDE_INSTALL_DIR}\"
+            TYPE FILE FILES \${GUIDE_FILES}
+        )"
+        COMPONENT doc
+@@ -761,14 +761,14 @@ macro(ssg_build_product PRODUCT)
+     install(
+        CODE "
+        file(GLOB ROLE_FILES \"${CMAKE_BINARY_DIR}/roles/ssg-${PRODUCT}-role-*.yml\") \n
+-           file(INSTALL DESTINATION \"\${CMAKE_INSTALL_PREFIX}/${SSG_ROLE_INSTALL_DIR}\"
++           file(INSTALL DESTINATION \"${SSG_ROLE_INSTALL_DIR}\"
+                TYPE FILE FILES \${ROLE_FILES}
+        )"
+     )
+     install(
+        CODE "
+        file(GLOB ROLE_FILES \"${CMAKE_BINARY_DIR}/roles/ssg-${PRODUCT}-role-*.sh\") \n
+-           file(INSTALL DESTINATION \"\${CMAKE_INSTALL_PREFIX}/${SSG_ROLE_INSTALL_DIR}\"
++           file(INSTALL DESTINATION \"${SSG_ROLE_INSTALL_DIR}\"
+                TYPE FILE FILES \${ROLE_FILES}
+        )"
+     )
+@@ -878,7 +878,7 @@ macro(ssg_build_derivative_product ORIGINAL SHORTNAME DERIVATIVE)
+     install(
+        CODE "
+        file(GLOB GUIDE_FILES \"${CMAKE_BINARY_DIR}/guides/ssg-${DERIVATIVE}-guide-*.html\") \n
+-           file(INSTALL DESTINATION \"\${CMAKE_INSTALL_PREFIX}/${SSG_GUIDE_INSTALL_DIR}\"
++           file(INSTALL DESTINATION \"${SSG_GUIDE_INSTALL_DIR}\"
+            TYPE FILE FILES \${GUIDE_FILES}
+        )"
+        COMPONENT doc
+@@ -886,14 +886,14 @@ macro(ssg_build_derivative_product ORIGINAL SHORTNAME DERIVATIVE)
+     install(
+        CODE "
+        file(GLOB ROLE_FILES \"${CMAKE_BINARY_DIR}/roles/ssg-${DERIVATIVE}-role-*.yml\") \n
+-           file(INSTALL DESTINATION \"\${CMAKE_INSTALL_PREFIX}/${SSG_ROLE_INSTALL_DIR}\"
++           file(INSTALL DESTINATION \"${SSG_ROLE_INSTALL_DIR}\"
+                TYPE FILE FILES \${ROLE_FILES}
+        )"
+     )
+     install(
+        CODE "
+        file(GLOB ROLE_FILES \"${CMAKE_BINARY_DIR}/roles/ssg-${DERIVATIVE}-role-*.sh\") \n
+-           file(INSTALL DESTINATION \"\${CMAKE_INSTALL_PREFIX}/${SSG_ROLE_INSTALL_DIR}\"
++           file(INSTALL DESTINATION \"${SSG_ROLE_INSTALL_DIR}\"
+                TYPE FILE FILES \${ROLE_FILES}
+        )"
+     )
