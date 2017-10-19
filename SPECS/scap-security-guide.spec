@@ -6,7 +6,7 @@
 
 Name:		scap-security-guide
 Version:	0.1.%{redhatssgversion}
-Release:	5%{?dist}
+Release:	6%{?dist}
 Summary:	Security guidance and baselines in SCAP formats
 
 Group:		System Environment/Base
@@ -20,6 +20,7 @@ Patch4:		scap-security-guide-0.1.33-fix-anaconda-remediation-template-add-remove
 Patch5:		scap-security-guide-0.1.33-fix-anaconda-remediation-template-partition-mountoptions.patch
 Patch6:		scap-security-guide-0.1.33-fix-profile_nist-800-171-cui-malformed-title.patch
 Patch7:		scap-security-guide-0.1.33-fix-anaconda-smart-card-remediation_1461330.patch
+Patch8:		scap-security-guide-0.1.33-drop_set_firewalld_default_zone_remediation.patch
 BuildArch:	noarch
 
 BuildRequires:	libxslt, expat, python, openscap-scanner >= 1.2.5, python-lxml, cmake >= 2.8
@@ -57,6 +58,8 @@ been generated from XCCDF benchmarks present in %{name} package.
 # Fix for rhbz#1449211
 %patch6 -p1 -b .profile_nist_800_171_cui_malformed_title_fix
 %patch7 -p1 -b .anaconda-smart-card-auth
+# Fix for rhbz#1478414, patch adapted from https://github.com/OpenSCAP/scap-security-guide/pull/2328
+%patch8 -p1 -b .drop_set_firewalld_default_zone_remediation
 
 %build
 %cmake -D CMAKE_INSTALL_DOCDIR=%{_pkgdocdir} \
@@ -99,6 +102,9 @@ make %{?_smp_mflags}
 %doc guides/ssg-*-guide-*.html
 
 %changelog
+* Tue Sep 19 2017 Watson Sato <wsato@redhat.com> 0.1.33-6
+- Dropped remediation that makes system not accessible by SSH (RHBZ#1478414)
+
 * Wed Jun 14 2017 Watson Sato <wsato@redhat.com> 0.1.33-5
 - Fix Anaconda Smartcard auth remediation (RHBZ#1461330)
 
