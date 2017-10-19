@@ -78,12 +78,14 @@ been generated from XCCDF benchmarks present in %{name} package.
 -DSSG_PRODUCT_UBUNTU1604:BOOL=OFF \
 -DSSG_PRODUCT_WRLINUX:BOOL=OFF \
 -DSSG_PRODUCT_WEBMIN:BOOL=OFF \
--DSSG_CENTOS_DERIVATIVES_ENABLED:BOOL=OFF \
+-DSSG_CENTOS_DERIVATIVES_ENABLED:BOOL=ON \
 -DSSG_SCIENTIFIC_LINUX_DERIVATIVES_ENABLED:BOOL=OFF .
 make %{?_smp_mflags}
 
 %install
 %make_install
+
+sed 's/Red Hat Enterprise Linux/CentOS Linux/g' -i ssg-centos*.xml
 
 %files
 %defattr(-,root,root,-)
@@ -102,6 +104,9 @@ make %{?_smp_mflags}
 %doc guides/ssg-*-guide-*.html
 
 %changelog
+* Thu Oct 19 2017 Johnny Hughes <johnny@centos.org> 0.1.33-6
+- Manual CentOS debranding
+
 * Tue Sep 19 2017 Watson Sato <wsato@redhat.com> 0.1.33-6
 - Dropped remediation that makes system not accessible by SSH (RHBZ#1478414)
 
