@@ -1,0 +1,822 @@
+From 939d1cfd84b980e3a96dd1d82dfddcabf4b2a34a Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Fri, 8 Dec 2017 15:14:26 +0100
+Subject: [PATCH 1/6] Drop check of package in sshd_required definitions
+
+This is not the best place to check if openssh-server is installed.
+
+We can check for openssh-server package when sshd is required and not
+required.
+But when sshd_required is not set, we don't check if openssh-server is
+installed or not, because both are valid states.
+
+This gives the impression that when extending sshd_required_or_unset
+and sshd_not_required_or_unset there is no need to check for
+openssh-server package, which is not true.
+
+The only purpose of these definitions should be to check for state of
+sshd_required value.
+---
+ shared/checks/oval/sshd_not_required_or_unset.xml | 6 +-----
+ shared/checks/oval/sshd_required_or_unset.xml     | 6 +-----
+ 2 files changed, 2 insertions(+), 10 deletions(-)
+
+diff --git a/shared/checks/oval/sshd_not_required_or_unset.xml b/shared/checks/oval/sshd_not_required_or_unset.xml
+index 76bf1b9b4..206b1b474 100644
+--- a/shared/checks/oval/sshd_not_required_or_unset.xml
++++ b/shared/checks/oval/sshd_not_required_or_unset.xml
+@@ -9,11 +9,7 @@
+       <description>If SSHD is not required, we check it is not installed. If SSH requirement is unset, we are good.</description>
+     </metadata>
+     <criteria comment="SSH not required or not set" operator="OR">
+-      <criteria comment="SSH is not required and not installed" operator="AND">
+-        <criterion test_ref="test_sshd_not_required" />
+-        <extend_definition comment="rpm package openssh-server removed"
+-        definition_ref="package_openssh-server_removed" />
+-      </criteria>
++      <criterion test_ref="test_sshd_not_required" />
+       <extend_definition comment="SSH requirement is unset"
+       definition_ref="sshd_requirement_unset" />
+     </criteria>
+diff --git a/shared/checks/oval/sshd_required_or_unset.xml b/shared/checks/oval/sshd_required_or_unset.xml
+index 04d6a687b..4518b181f 100644
+--- a/shared/checks/oval/sshd_required_or_unset.xml
++++ b/shared/checks/oval/sshd_required_or_unset.xml
+@@ -9,11 +9,7 @@
+       <description>If SSHD is required, we check it is installed. If SSH requirement is unset, we are good.</description>
+     </metadata>
+     <criteria comment="SSH required or not set" operator="OR">
+-      <criteria comment="SSH is required and installed" operator="AND">
+-        <criterion test_ref="test_sshd_required" />
+-        <extend_definition comment="rpm package openssh-server installed"
+-        definition_ref="package_openssh-server_installed" />
+-      </criteria>
++      <criterion test_ref="test_sshd_required" />
+       <extend_definition comment="SSH requirement is unset"
+       definition_ref="sshd_requirement_unset" />
+     </criteria>
+
+From 0b02493e535e9b529af9eb71bf97f5b02d04c89e Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Wed, 13 Dec 2017 18:09:47 +0100
+Subject: [PATCH 2/6] Also check state openssh-server package when
+ sshd_required is unset
+
+Explicitly check state of openssh-server package.
+When openssh-server is installed, system should be configured, when not
+installed, system is ok.
+When sshd_required is set, either to required or not required, they act
+as selector of openssh-server package state. If sshd_required is unset,
+the state of openssh-server package selects whether system should be
+configured or not.
+---
+ rhel7/checks/oval/sshd_disable_compression.xml       | 14 ++++++++++----
+ rhel7/checks/oval/sshd_disable_gssapi_auth.xml       | 14 ++++++++++----
+ rhel7/checks/oval/sshd_disable_kerb_auth.xml         | 14 ++++++++++----
+ rhel7/checks/oval/sshd_enable_strictmodes.xml        | 14 ++++++++++----
+ rhel7/checks/oval/sshd_use_approved_macs.xml         | 14 ++++++++++----
+ rhel7/checks/oval/sshd_use_priv_separation.xml       | 14 ++++++++++----
+ shared/checks/oval/disable_host_auth.xml             | 15 +++++++++++----
+ shared/checks/oval/sshd_allow_only_protocol2.xml     | 15 +++++++++++----
+ shared/checks/oval/sshd_disable_empty_passwords.xml  | 14 ++++++++++----
+ shared/checks/oval/sshd_disable_rhosts.xml           | 14 ++++++++++----
+ shared/checks/oval/sshd_disable_rhosts_rsa.xml       | 14 ++++++++++----
+ shared/checks/oval/sshd_disable_root_login.xml       | 14 ++++++++++----
+ shared/checks/oval/sshd_disable_user_known_hosts.xml | 15 +++++++++++----
+ shared/checks/oval/sshd_do_not_permit_user_env.xml   | 14 ++++++++++----
+ shared/checks/oval/sshd_enable_warning_banner.xml    | 14 ++++++++++----
+ shared/checks/oval/sshd_enable_x11_forwarding.xml    | 14 ++++++++++----
+ shared/checks/oval/sshd_print_last_log.xml           | 14 ++++++++++----
+ shared/checks/oval/sshd_set_idle_timeout.xml         | 18 ++++++++++++------
+ shared/checks/oval/sshd_set_keepalive.xml            | 14 ++++++++++----
+ shared/checks/oval/sshd_use_approved_ciphers.xml     | 18 ++++++++++++------
+ shared/checks/oval/sshd_use_approved_macs.xml        | 14 ++++++++++----
+ 21 files changed, 217 insertions(+), 88 deletions(-)
+
+diff --git a/rhel7/checks/oval/sshd_disable_compression.xml b/rhel7/checks/oval/sshd_disable_compression.xml
+index 8a4334f06..014741fe1 100644
+--- a/rhel7/checks/oval/sshd_disable_compression.xml
++++ b/rhel7/checks/oval/sshd_disable_compression.xml
+@@ -7,13 +7,19 @@
+       </affected>
+       <description>SSH should either have compression disabled or set to delayed.</description>
+     </metadata>
+-    <criteria comment="SSH is not installed or conditions are met"
++    <criteria comment="SSH is configured correctly or is not installed"
+     operator="OR">
+-      <extend_definition comment="sshd is not required and not installed, or requirement is unset"
+-      definition_ref="sshd_not_required_or_unset" />
++      <criteria comment="sshd is not installed" operator="AND">
++        <extend_definition comment="sshd is not required or requirement is unset"
++        definition_ref="sshd_not_required_or_unset" />
++        <extend_definition comment="rpm package openssh-server removed"
++        definition_ref="package_openssh-server_removed" />
++      </criteria>
+       <criteria comment="sshd is installed and configured" operator="AND">
+-        <extend_definition comment="sshd is required and installed, or requirement is unset"
++        <extend_definition comment="sshd is required or requirement is unset"
+         definition_ref="sshd_required_or_unset" />
++        <extend_definition comment="rpm package openssh-server installed"
++        definition_ref="package_openssh-server_installed" />
+         <criterion comment="Check Compression in /etc/ssh/sshd_config"
+         test_ref="test_sshd_disable_compression" />
+       </criteria>
+diff --git a/rhel7/checks/oval/sshd_disable_gssapi_auth.xml b/rhel7/checks/oval/sshd_disable_gssapi_auth.xml
+index ee184b8e8..5f32edc1e 100644
+--- a/rhel7/checks/oval/sshd_disable_gssapi_auth.xml
++++ b/rhel7/checks/oval/sshd_disable_gssapi_auth.xml
+@@ -8,13 +8,19 @@
+       <description>Unless needed, disable the GSSAPI authentication option for
+ the SSH Server.</description>
+     </metadata>
+-    <criteria comment="SSH is not installed or conditions are met"
++    <criteria comment="SSH is configured correctly or is not installed"
+     operator="OR">
+-      <extend_definition comment="sshd is not required and not installed, or requirement is unset"
+-      definition_ref="sshd_not_required_or_unset" />
++      <criteria comment="sshd is not installed" operator="AND">
++        <extend_definition comment="sshd is not required or requirement is unset"
++        definition_ref="sshd_not_required_or_unset" />
++        <extend_definition comment="rpm package openssh-server removed"
++        definition_ref="package_openssh-server_removed" />
++      </criteria>
+       <criteria comment="sshd is installed and configured" operator="AND">
+-        <extend_definition comment="sshd is required and installed, or requirement is unset"
++        <extend_definition comment="sshd is required or requirement is unset"
+         definition_ref="sshd_required_or_unset" />
++        <extend_definition comment="rpm package openssh-server installed"
++        definition_ref="package_openssh-server_installed" />
+         <criterion comment="Check GSSAPIAuthentication in /etc/ssh/sshd_config"
+         test_ref="test_sshd_disable_gssapi_auth" />
+       </criteria>
+diff --git a/rhel7/checks/oval/sshd_disable_kerb_auth.xml b/rhel7/checks/oval/sshd_disable_kerb_auth.xml
+index c63cef03e..6f0e0babe 100644
+--- a/rhel7/checks/oval/sshd_disable_kerb_auth.xml
++++ b/rhel7/checks/oval/sshd_disable_kerb_auth.xml
+@@ -8,13 +8,19 @@
+       <description>Unless needed, disable the Kerberos authentication option for
+ the SSH Server.</description>
+     </metadata>
+-    <criteria comment="SSH is not installed or conditions are met"
++    <criteria comment="SSH is configured correctly or is not installed"
+     operator="OR">
+-      <extend_definition comment="sshd is not required and not installed, or requirement is unset"
+-      definition_ref="sshd_not_required_or_unset" />
++      <criteria comment="sshd is not installed" operator="AND">
++        <extend_definition comment="sshd is not required or requirement is unset"
++        definition_ref="sshd_not_required_or_unset" />
++        <extend_definition comment="rpm package openssh-server removed"
++        definition_ref="package_openssh-server_removed" />
++      </criteria>
+       <criteria comment="sshd is installed and configured" operator="AND">
+-        <extend_definition comment="sshd is required and installed, or requirement is unset"
++        <extend_definition comment="sshd is required or requirement is unset"
+         definition_ref="sshd_required_or_unset" />
++        <extend_definition comment="rpm package openssh-server installed"
++        definition_ref="package_openssh-server_installed" />
+         <criterion comment="Check KerberosAuthentication in /etc/ssh/sshd_config"
+         test_ref="test_sshd_disable_kerb_auth" />
+       </criteria>
+diff --git a/rhel7/checks/oval/sshd_enable_strictmodes.xml b/rhel7/checks/oval/sshd_enable_strictmodes.xml
+index 1346191d5..7728f6ae6 100644
+--- a/rhel7/checks/oval/sshd_enable_strictmodes.xml
++++ b/rhel7/checks/oval/sshd_enable_strictmodes.xml
+@@ -8,13 +8,19 @@
+       <description>Enable StrictMode to check users home directory permissions
+ and configurations.</description>
+     </metadata>
+-    <criteria comment="SSH is not installed or conditions are met"
++    <criteria comment="SSH is configured correctly or is not installed"
+     operator="OR">
+-      <extend_definition comment="sshd is not required and not installed, or requirement is unset"
+-      definition_ref="sshd_not_required_or_unset" />
++      <criteria comment="sshd is not installed" operator="AND">
++        <extend_definition comment="sshd is not required or requirement is unset"
++        definition_ref="sshd_not_required_or_unset" />
++        <extend_definition comment="rpm package openssh-server removed"
++        definition_ref="package_openssh-server_removed" />
++      </criteria>
+       <criteria comment="sshd is installed and configured" operator="AND">
+-        <extend_definition comment="sshd is required and installed, or requirement is unset"
++        <extend_definition comment="sshd is required or requirement is unset"
+         definition_ref="sshd_required_or_unset" />
++        <extend_definition comment="rpm package openssh-server installed"
++        definition_ref="package_openssh-server_installed" />
+         <criterion comment="Check StrictModes in /etc/ssh/sshd_config"
+         test_ref="test_sshd_enable_strictmodes" />
+       </criteria>
+diff --git a/rhel7/checks/oval/sshd_use_approved_macs.xml b/rhel7/checks/oval/sshd_use_approved_macs.xml
+index bd05a5152..20b57041b 100644
+--- a/rhel7/checks/oval/sshd_use_approved_macs.xml
++++ b/rhel7/checks/oval/sshd_use_approved_macs.xml
+@@ -9,13 +9,19 @@
+     </metadata>
+     <criteria operator="AND">
+       <extend_definition comment="Installed OS is certified" definition_ref="installed_OS_is_certified" />
+-      <criteria comment="SSH is not installed or conditions are met"
++      <criteria comment="SSH is configured correctly or is not installed"
+       operator="OR">
+-        <extend_definition comment="sshd is not required and not installed, or requirement is unset"
+-        definition_ref="sshd_not_required_or_unset" />
++        <criteria comment="sshd is not installed" operator="AND">
++          <extend_definition comment="sshd is not required or requirement is unset"
++          definition_ref="sshd_not_required_or_unset" />
++          <extend_definition comment="rpm package openssh-server removed"
++          definition_ref="package_openssh-server_removed" />
++        </criteria>
+         <criteria comment="sshd is installed and configured" operator="AND">
+-          <extend_definition comment="sshd is required and installed, or requirement is unset"
++          <extend_definition comment="sshd is required or requirement is unset"
+           definition_ref="sshd_required_or_unset" />
++          <extend_definition comment="rpm package openssh-server installed"
++          definition_ref="package_openssh-server_installed" />
+           <criterion comment="Check MACs in /etc/ssh/sshd_config"
+           test_ref="test_sshd_use_approved_macs" />
+         </criteria>
+diff --git a/rhel7/checks/oval/sshd_use_priv_separation.xml b/rhel7/checks/oval/sshd_use_priv_separation.xml
+index c5ae32c27..2ec883fea 100644
+--- a/rhel7/checks/oval/sshd_use_priv_separation.xml
++++ b/rhel7/checks/oval/sshd_use_priv_separation.xml
+@@ -8,13 +8,19 @@
+       <description>Use priviledge separation to cause the SSH process to drop
+ root privileges when not needed.</description>
+     </metadata>
+-    <criteria comment="SSH is not installed or conditions are met"
++    <criteria comment="SSH is configured correctly or is not installed"
+     operator="OR">
+-      <extend_definition comment="sshd is not required and not installed, or requirement is unset"
+-      definition_ref="sshd_not_required_or_unset" />
++      <criteria comment="sshd is not installed" operator="AND">
++        <extend_definition comment="sshd is not required or requirement is unset"
++        definition_ref="sshd_not_required_or_unset" />
++        <extend_definition comment="rpm package openssh-server removed"
++        definition_ref="package_openssh-server_removed" />
++      </criteria>
+       <criteria comment="sshd is installed and configured" operator="AND">
+-        <extend_definition comment="sshd is required and installed, or requirement is unset"
++        <extend_definition comment="sshd is required or requirement is unset"
+         definition_ref="sshd_required_or_unset" />
++        <extend_definition comment="rpm package openssh-server installed"
++        definition_ref="package_openssh-server_installed" />
+         <criterion comment="Check UsePrivilegeSeparation in /etc/ssh/sshd_config"
+         test_ref="test_sshd_use_priv_separation" />
+       </criteria>
+diff --git a/shared/checks/oval/disable_host_auth.xml b/shared/checks/oval/disable_host_auth.xml
+index 3e4cc5aea..3a00964ab 100644
+--- a/shared/checks/oval/disable_host_auth.xml
++++ b/shared/checks/oval/disable_host_auth.xml
+@@ -7,12 +7,19 @@
+       </affected>
+       <description>SSH host-based authentication should be disabled.</description>
+     </metadata>
+-    <criteria comment="SSH is not installed or conditions are met" operator="OR">
+-      <extend_definition comment="sshd is not required and not installed, or requirement is unset"
+-      definition_ref="sshd_not_required_or_unset" />
++    <criteria comment="SSH is configured correctly or is not installed"
++    operator="OR">
++      <criteria comment="sshd is not installed" operator="AND">
++        <extend_definition comment="sshd is not required or requirement is unset"
++        definition_ref="sshd_not_required_or_unset" />
++        <extend_definition comment="rpm package openssh-server removed"
++        definition_ref="package_openssh-server_removed" />
++      </criteria>
+       <criteria comment="sshd is installed and configured" operator="AND">
+-        <extend_definition comment="sshd is required and installed, or requirement is unset"
++        <extend_definition comment="sshd is required or requirement is unset"
+         definition_ref="sshd_required_or_unset" />
++        <extend_definition comment="rpm package openssh-server installed"
++        definition_ref="package_openssh-server_installed" />
+         <criterion comment="Check HostbasedAuthentication in /etc/ssh/sshd_config"
+         test_ref="test_sshd_hostbasedauthentication" />
+       </criteria>
+diff --git a/shared/checks/oval/sshd_allow_only_protocol2.xml b/shared/checks/oval/sshd_allow_only_protocol2.xml
+index 0a7ace128..224010263 100644
+--- a/shared/checks/oval/sshd_allow_only_protocol2.xml
++++ b/shared/checks/oval/sshd_allow_only_protocol2.xml
+@@ -9,12 +9,19 @@
+       </affected>
+       <description>The OpenSSH daemon should be running protocol 2.</description>
+     </metadata>
+-    <criteria comment="SSH is not installed or conditions are met" operator="OR">
+-      <extend_definition comment="sshd is not required and not installed, or requirement is unset"
+-      definition_ref="sshd_not_required_or_unset" />
++    <criteria comment="SSH is configured correctly or is not installed"
++    operator="OR">
++      <criteria comment="sshd is not installed" operator="AND">
++        <extend_definition comment="sshd is not required or requirement is unset"
++        definition_ref="sshd_not_required_or_unset" />
++        <extend_definition comment="rpm package openssh-server removed"
++        definition_ref="package_openssh-server_removed" />
++      </criteria>
+       <criteria comment="sshd is installed and configured" operator="AND">
+-        <extend_definition comment="sshd is required and installed, or requirement is unset"
++        <extend_definition comment="sshd is required or requirement is unset"
+         definition_ref="sshd_required_or_unset" />
++        <extend_definition comment="rpm package openssh-server installed"
++        definition_ref="package_openssh-server_installed" />
+         <criteria comment="SSH version is equal or higher than 7.4 or it is configured with protocol 2" operator="OR">
+           <extend_definition comment="OpenSSH version 7.4 or higher supports only protocol 2" definition_ref="sshd_version_equal_or_higher_than_74" />
+           <criterion comment="Check Protocol in /etc/ssh/sshd_config"
+diff --git a/shared/checks/oval/sshd_disable_empty_passwords.xml b/shared/checks/oval/sshd_disable_empty_passwords.xml
+index e923d64fd..9570ee5c7 100644
+--- a/shared/checks/oval/sshd_disable_empty_passwords.xml
++++ b/shared/checks/oval/sshd_disable_empty_passwords.xml
+@@ -8,13 +8,19 @@
+       <description>Remote connections from accounts with empty passwords should
+       be disabled (and dependencies are met)</description>
+     </metadata>
+-    <criteria comment="SSH is not installed or conditions are met"
++    <criteria comment="SSH is configured correctly or is not installed"
+     operator="OR">
+-      <extend_definition comment="sshd is not required and not installed, or requirement is unset"
+-      definition_ref="sshd_not_required_or_unset" />
++      <criteria comment="sshd is not installed" operator="AND">
++        <extend_definition comment="sshd is not required or requirement is unset"
++        definition_ref="sshd_not_required_or_unset" />
++        <extend_definition comment="rpm package openssh-server removed"
++        definition_ref="package_openssh-server_removed" />
++      </criteria>
+       <criteria comment="sshd is installed and configured" operator="AND">
+-        <extend_definition comment="sshd is required and installed, or requirement is unset"
++        <extend_definition comment="sshd is required or requirement is unset"
+         definition_ref="sshd_required_or_unset" />
++        <extend_definition comment="rpm package openssh-server installed"
++        definition_ref="package_openssh-server_installed" />
+         <criterion comment="Check PermitEmptyPasswords in /etc/ssh/sshd_config"
+         negate="true" test_ref="test_sshd_permitemptypasswords_no" />
+       </criteria>
+diff --git a/shared/checks/oval/sshd_disable_rhosts.xml b/shared/checks/oval/sshd_disable_rhosts.xml
+index 86eb94a22..163ccfca5 100644
+--- a/shared/checks/oval/sshd_disable_rhosts.xml
++++ b/shared/checks/oval/sshd_disable_rhosts.xml
+@@ -8,13 +8,19 @@
+       <description>Emulation of the rsh command through the ssh server should
+       be disabled (and dependencies are met)</description>
+     </metadata>
+-    <criteria comment="SSH is not installed or conditions are met"
++    <criteria comment="SSH is configured correctly or is not installed"
+     operator="OR">
+-      <extend_definition comment="sshd is not required and not installed, or requirement is unset"
+-      definition_ref="sshd_not_required_or_unset" />
++      <criteria comment="sshd is not installed" operator="AND">
++        <extend_definition comment="sshd is not required or requirement is unset"
++        definition_ref="sshd_not_required_or_unset" />
++        <extend_definition comment="rpm package openssh-server removed"
++        definition_ref="package_openssh-server_removed" />
++      </criteria>
+       <criteria comment="sshd is installed and configured" operator="AND">
+-        <extend_definition comment="sshd is required and installed, or requirement is unset"
++        <extend_definition comment="sshd is required or requirement is unset"
+         definition_ref="sshd_required_or_unset" />
++        <extend_definition comment="rpm package openssh-server installed"
++        definition_ref="package_openssh-server_installed" />
+         <criterion comment="Check IgnoreRhosts in /etc/ssh/sshd_config"
+         test_ref="test_sshd_rsh_emulation_disabled" />
+       </criteria>
+diff --git a/shared/checks/oval/sshd_disable_rhosts_rsa.xml b/shared/checks/oval/sshd_disable_rhosts_rsa.xml
+index 2abf88c70..e949fb031 100644
+--- a/shared/checks/oval/sshd_disable_rhosts_rsa.xml
++++ b/shared/checks/oval/sshd_disable_rhosts_rsa.xml
+@@ -8,13 +8,19 @@
+       <description>SSH can allow authentication through the obsolete rsh command
+       through the use of the authenticating user's SSH keys. This should be disabled.</description>
+     </metadata>
+-    <criteria comment="SSH is not installed or conditions are met"
++    <criteria comment="SSH is configured correctly or is not installed"
+     operator="OR">
+-      <extend_definition comment="sshd is not required and not installed, or requirement is unset"
+-      definition_ref="sshd_not_required_or_unset" />
++      <criteria comment="sshd is not installed" operator="AND">
++        <extend_definition comment="sshd is not required or requirement is unset"
++        definition_ref="sshd_not_required_or_unset" />
++        <extend_definition comment="rpm package openssh-server removed"
++        definition_ref="package_openssh-server_removed" />
++      </criteria>
+       <criteria comment="sshd is installed and configured" operator="AND">
+-        <extend_definition comment="sshd is required and installed, or requirement is unset"
++        <extend_definition comment="sshd is required or requirement is unset"
+         definition_ref="sshd_required_or_unset" />
++        <extend_definition comment="rpm package openssh-server installed"
++        definition_ref="package_openssh-server_installed" />
+         <criteria comment="SSH version is equal or higher than 7.4 has deprecated RhostsRSAAuthentication" operator="OR">
+           <extend_definition comment="OpenSSH version 7.4 or higher has deprecated RhostsRSAAuthentication" definition_ref="sshd_version_equal_or_higher_than_74" />
+           <criterion comment="Check RhostsRSAAuthentication in /etc/ssh/sshd_config"
+diff --git a/shared/checks/oval/sshd_disable_root_login.xml b/shared/checks/oval/sshd_disable_root_login.xml
+index 7bfd54d4e..10e7afb18 100644
+--- a/shared/checks/oval/sshd_disable_root_login.xml
++++ b/shared/checks/oval/sshd_disable_root_login.xml
+@@ -8,13 +8,19 @@
+       <description>Root login via SSH should be disabled (and dependencies are
+       met)</description>
+     </metadata>
+-    <criteria comment="SSH is not installed or conditions are met"
++    <criteria comment="SSH is configured correctly or is not installed"
+     operator="OR">
+-      <extend_definition comment="sshd is not required and not installed, or requirement is unset"
+-      definition_ref="sshd_not_required_or_unset" />
++      <criteria comment="sshd is not installed" operator="AND">
++        <extend_definition comment="sshd is not required or requirement is unset"
++        definition_ref="sshd_not_required_or_unset" />
++        <extend_definition comment="rpm package openssh-server removed"
++        definition_ref="package_openssh-server_removed" />
++      </criteria>
+       <criteria comment="sshd is installed and configured" operator="AND">
+-        <extend_definition comment="sshd is required and installed, or requirement is unset"
++        <extend_definition comment="sshd is required or requirement is unset"
+         definition_ref="sshd_required_or_unset" />
++        <extend_definition comment="rpm package openssh-server installed"
++        definition_ref="package_openssh-server_installed" />
+         <criterion comment="Check PermitRootLogin in /etc/ssh/sshd_config"
+         negate="true" test_ref="test_sshd_permitrootlogin_no" />
+       </criteria>
+diff --git a/shared/checks/oval/sshd_disable_user_known_hosts.xml b/shared/checks/oval/sshd_disable_user_known_hosts.xml
+index cc01ec6ca..0e121d496 100644
+--- a/shared/checks/oval/sshd_disable_user_known_hosts.xml
++++ b/shared/checks/oval/sshd_disable_user_known_hosts.xml
+@@ -9,12 +9,19 @@
+ to connect to systems if a cache of the remote systems public keys are available.
+ This should be disabled.</description>
+     </metadata>
+-    <criteria comment="SSH is not installed or conditions are met" operator="OR">
+-      <extend_definition comment="sshd is not required and not installed, or requirement is unset"
+-      definition_ref="sshd_not_required_or_unset" />
++    <criteria comment="SSH is configured correctly or is not installed"
++    operator="OR">
++      <criteria comment="sshd is not installed" operator="AND">
++        <extend_definition comment="sshd is not required or requirement is unset"
++        definition_ref="sshd_not_required_or_unset" />
++        <extend_definition comment="rpm package openssh-server removed"
++        definition_ref="package_openssh-server_removed" />
++      </criteria>
+       <criteria comment="sshd is installed and configured" operator="AND">
+-        <extend_definition comment="sshd is required and installed, or requirement is unset"
++        <extend_definition comment="sshd is required or requirement is unset"
+         definition_ref="sshd_required_or_unset" />
++        <extend_definition comment="rpm package openssh-server installed"
++        definition_ref="package_openssh-server_installed" />
+         <criterion comment="Check IgnoreUserKnownHosts in /etc/ssh/sshd_config"
+         test_ref="test_sshd_disable_user_known_hosts" />
+       </criteria>
+diff --git a/shared/checks/oval/sshd_do_not_permit_user_env.xml b/shared/checks/oval/sshd_do_not_permit_user_env.xml
+index ad8ecdf68..afb799e20 100644
+--- a/shared/checks/oval/sshd_do_not_permit_user_env.xml
++++ b/shared/checks/oval/sshd_do_not_permit_user_env.xml
+@@ -7,13 +7,19 @@
+       </affected>
+       <description>PermitUserEnvironment should be disabled</description>
+     </metadata>
+-    <criteria comment="SSH is not installed or conditions are met"
++    <criteria comment="SSH is configured correctly or is not installed"
+     operator="OR">
+-      <extend_definition comment="sshd is not required and not installed, or requirement is unset"
+-      definition_ref="sshd_not_required_or_unset" />
++      <criteria comment="sshd is not installed" operator="AND">
++        <extend_definition comment="sshd is not required or requirement is unset"
++        definition_ref="sshd_not_required_or_unset" />
++        <extend_definition comment="rpm package openssh-server removed"
++        definition_ref="package_openssh-server_removed" />
++      </criteria>
+       <criteria comment="sshd is installed and configured" operator="AND">
+-        <extend_definition comment="sshd is required and installed, or requirement is unset"
++        <extend_definition comment="sshd is required or requirement is unset"
+         definition_ref="sshd_required_or_unset" />
++        <extend_definition comment="rpm package openssh-server installed"
++        definition_ref="package_openssh-server_installed" />
+         <criterion comment="Check PermitUserEnvironment in /etc/ssh/sshd_config"
+         negate="true" test_ref="test_sshd_no_user_envset" />
+       </criteria>
+diff --git a/shared/checks/oval/sshd_enable_warning_banner.xml b/shared/checks/oval/sshd_enable_warning_banner.xml
+index 933822eb6..cd14ec9e9 100644
+--- a/shared/checks/oval/sshd_enable_warning_banner.xml
++++ b/shared/checks/oval/sshd_enable_warning_banner.xml
+@@ -8,13 +8,19 @@
+       <description>SSH warning banner should be enabled (and dependencies are
+       met)</description>
+     </metadata>
+-    <criteria comment="SSH is not installed or conditions are met"
++    <criteria comment="SSH is configured correctly or is not installed"
+     operator="OR">
+-      <extend_definition comment="sshd is not required and not installed, or requirement is unset"
+-      definition_ref="sshd_not_required_or_unset" />
++      <criteria comment="sshd is not installed" operator="AND">
++        <extend_definition comment="sshd is not required or requirement is unset"
++        definition_ref="sshd_not_required_or_unset" />
++        <extend_definition comment="rpm package openssh-server removed"
++        definition_ref="package_openssh-server_removed" />
++      </criteria>
+       <criteria comment="sshd is installed and configured" operator="AND">
+-        <extend_definition comment="sshd is required and installed, or requirement is unset"
++        <extend_definition comment="sshd is required or requirement is unset"
+         definition_ref="sshd_required_or_unset" />
++        <extend_definition comment="rpm package openssh-server installed"
++        definition_ref="package_openssh-server_installed" />
+         <criterion comment="Check Banner in /etc/ssh/sshd_config"
+         test_ref="test_sshd_banner_set" />
+       </criteria>
+diff --git a/shared/checks/oval/sshd_enable_x11_forwarding.xml b/shared/checks/oval/sshd_enable_x11_forwarding.xml
+index 3aa45e51b..0a0e1bafd 100644
+--- a/shared/checks/oval/sshd_enable_x11_forwarding.xml
++++ b/shared/checks/oval/sshd_enable_x11_forwarding.xml
+@@ -7,13 +7,19 @@
+       </affected>
+       <description>Enable X11Forwarding to encrypt X11 remote connections over SSH.</description>
+     </metadata>
+-    <criteria comment="SSH is not installed or conditions are met"
++    <criteria comment="SSH is configured correctly or is not installed"
+     operator="OR">
+-      <extend_definition comment="sshd is not required and not installed, or requirement is unset"
+-      definition_ref="sshd_not_required_or_unset" />
++      <criteria comment="sshd is not installed" operator="AND">
++        <extend_definition comment="sshd is not required or requirement is unset"
++        definition_ref="sshd_not_required_or_unset" />
++        <extend_definition comment="rpm package openssh-server removed"
++        definition_ref="package_openssh-server_removed" />
++      </criteria>
+       <criteria comment="sshd is installed and configured" operator="AND">
+-        <extend_definition comment="sshd is required and installed, or requirement is unset"
++        <extend_definition comment="sshd is required or requirement is unset"
+         definition_ref="sshd_required_or_unset" />
++        <extend_definition comment="rpm package openssh-server installed"
++        definition_ref="package_openssh-server_installed" />
+         <criterion comment="Check X11Forwarding in /etc/ssh/sshd_config"
+         test_ref="test_sshd_enable_x11_forwarding" />
+       </criteria>
+diff --git a/shared/checks/oval/sshd_print_last_log.xml b/shared/checks/oval/sshd_print_last_log.xml
+index 29367969d..83bc0df79 100644
+--- a/shared/checks/oval/sshd_print_last_log.xml
++++ b/shared/checks/oval/sshd_print_last_log.xml
+@@ -8,13 +8,19 @@
+       <description>Enable PrintLastLog to display user's last login time 
+ and date.</description>
+     </metadata>
+-    <criteria comment="SSH is not installed or conditions are met"
++    <criteria comment="SSH is configured correctly or is not installed"
+     operator="OR">
+-      <extend_definition comment="sshd is not required and not installed, or requirement is unset"
+-      definition_ref="sshd_not_required_or_unset" />
++      <criteria comment="sshd is not installed" operator="AND">
++        <extend_definition comment="sshd is not required or requirement is unset"
++        definition_ref="sshd_not_required_or_unset" />
++        <extend_definition comment="rpm package openssh-server removed"
++        definition_ref="package_openssh-server_removed" />
++      </criteria>
+       <criteria comment="sshd is installed and configured" operator="AND">
+-        <extend_definition comment="sshd is required and installed, or requirement is unset"
++        <extend_definition comment="sshd is required or requirement is unset"
+         definition_ref="sshd_required_or_unset" />
++        <extend_definition comment="rpm package openssh-server installed"
++        definition_ref="package_openssh-server_installed" />
+         <criterion comment="Check PrintLastLog in /etc/ssh/sshd_config"
+         test_ref="test_sshd_enable_printlastlog" />
+       </criteria>
+diff --git a/shared/checks/oval/sshd_set_idle_timeout.xml b/shared/checks/oval/sshd_set_idle_timeout.xml
+index a414790a0..180e87d83 100644
+--- a/shared/checks/oval/sshd_set_idle_timeout.xml
++++ b/shared/checks/oval/sshd_set_idle_timeout.xml
+@@ -8,14 +8,20 @@
+       <description>The SSH idle timeout interval should be set to an
+       appropriate value.</description>
+     </metadata>
+-    <criteria comment="SSH is not installed or conditions are met"
++    <criteria comment="SSH is configured correctly or is not installed"
+     operator="OR">
+-        <extend_definition comment="sshd is not required and not installed, or requirement is unset"
++      <criteria comment="sshd is not installed" operator="AND">
++        <extend_definition comment="sshd is not required or requirement is unset"
+         definition_ref="sshd_not_required_or_unset" />
+-        <criteria comment="sshd is installed and configured" operator="AND">
+-          <extend_definition comment="sshd is required and installed, or requirement is unset"
+-          definition_ref="sshd_required_or_unset" />
+-          <criterion comment="Check ClientAliveInterval in /etc/ssh/sshd_config"
++        <extend_definition comment="rpm package openssh-server removed"
++        definition_ref="package_openssh-server_removed" />
++      </criteria>
++      <criteria comment="sshd is installed and configured" operator="AND">
++        <extend_definition comment="sshd is required or requirement is unset"
++        definition_ref="sshd_required_or_unset" />
++        <extend_definition comment="rpm package openssh-server installed"
++        definition_ref="package_openssh-server_installed" />
++        <criterion comment="Check ClientAliveInterval in /etc/ssh/sshd_config"
+         test_ref="test_sshd_idle_timeout" />
+       </criteria>
+     </criteria>
+diff --git a/shared/checks/oval/sshd_set_keepalive.xml b/shared/checks/oval/sshd_set_keepalive.xml
+index 5640638ae..8774e1d25 100644
+--- a/shared/checks/oval/sshd_set_keepalive.xml
++++ b/shared/checks/oval/sshd_set_keepalive.xml
+@@ -8,13 +8,19 @@
+       <description>The SSH ClientAliveCountMax should be set to an appropriate
+       value (and dependencies are met)</description>
+     </metadata>
+-    <criteria comment="SSH is not installed or conditions are met"
++    <criteria comment="SSH is configured correctly or is not installed"
+     operator="OR">
+-      <extend_definition comment="sshd is not required and not installed, or requirement is unset"
+-      definition_ref="sshd_not_required_or_unset" />
++      <criteria comment="sshd is not installed" operator="AND">
++        <extend_definition comment="sshd is not required or requirement is unset"
++        definition_ref="sshd_not_required_or_unset" />
++        <extend_definition comment="rpm package openssh-server removed"
++        definition_ref="package_openssh-server_removed" />
++      </criteria>
+       <criteria comment="sshd is installed and configured" operator="AND">
+-        <extend_definition comment="sshd is required and installed, or requirement is unset"
++        <extend_definition comment="sshd is required or requirement is unset"
+         definition_ref="sshd_required_or_unset" />
++        <extend_definition comment="rpm package openssh-server installed"
++        definition_ref="package_openssh-server_installed" />
+         <criterion comment="Check ClientAliveCountMax in /etc/ssh/sshd_config"
+         test_ref="test_sshd_clientalivecountmax" />
+       </criteria>
+diff --git a/shared/checks/oval/sshd_use_approved_ciphers.xml b/shared/checks/oval/sshd_use_approved_ciphers.xml
+index 84088aa5c..5a4e3a1f9 100644
+--- a/shared/checks/oval/sshd_use_approved_ciphers.xml
++++ b/shared/checks/oval/sshd_use_approved_ciphers.xml
+@@ -9,13 +9,19 @@
+     </metadata>
+     <criteria operator="AND">
+       <extend_definition comment="Installed OS is certified" definition_ref="installed_OS_is_certified" />
+-      <criteria comment="SSH is not installed or conditions are met"
++      <criteria comment="SSH is configured correctly or is not installed"
+       operator="OR">
+-      <extend_definition comment="sshd is not required and not installed, or requirement is unset"
+-      definition_ref="sshd_not_required_or_unset" />
+-      <criteria comment="sshd is installed and configured" operator="AND">
+-        <extend_definition comment="sshd is required and installed, or requirement is unset"
+-        definition_ref="sshd_required_or_unset" />
++        <criteria comment="sshd is not installed" operator="AND">
++          <extend_definition comment="sshd is not required or requirement is unset"
++          definition_ref="sshd_not_required_or_unset" />
++          <extend_definition comment="rpm package openssh-server removed"
++          definition_ref="package_openssh-server_removed" />
++        </criteria>
++        <criteria comment="sshd is installed and configured" operator="AND">
++          <extend_definition comment="sshd is required or requirement is unset"
++          definition_ref="sshd_required_or_unset" />
++          <extend_definition comment="rpm package openssh-server installed"
++          definition_ref="package_openssh-server_installed" />
+           <criterion comment="Check the Cipers list in /etc/ssh/sshd_config"
+           test_ref="test_sshd_use_approved_ciphers" />
+         </criteria>
+diff --git a/shared/checks/oval/sshd_use_approved_macs.xml b/shared/checks/oval/sshd_use_approved_macs.xml
+index d2f622af1..b403d0449 100644
+--- a/shared/checks/oval/sshd_use_approved_macs.xml
++++ b/shared/checks/oval/sshd_use_approved_macs.xml
+@@ -9,13 +9,19 @@
+     </metadata>
+     <criteria operator="AND">
+       <extend_definition comment="Installed OS is certified" definition_ref="installed_OS_is_certified" />
+-      <criteria comment="SSH is not installed or conditions are met"
++      <criteria comment="SSH is configured correctly or is not installed"
+       operator="OR">
+-        <extend_definition comment="sshd is not required and not installed, or requirement is unset"
+-        definition_ref="sshd_not_required_or_unset" />
++        <criteria comment="sshd is not installed" operator="AND">
++          <extend_definition comment="sshd is not required or requirement is unset"
++          definition_ref="sshd_not_required_or_unset" />
++          <extend_definition comment="rpm package openssh-server removed"
++          definition_ref="package_openssh-server_removed" />
++        </criteria>
+         <criteria comment="sshd is installed and configured" operator="AND">
+-          <extend_definition comment="sshd is required and installed, or requirement is unset"
++          <extend_definition comment="sshd is required or requirement is unset"
+           definition_ref="sshd_required_or_unset" />
++          <extend_definition comment="rpm package openssh-server installed"
++          definition_ref="package_openssh-server_installed" />
+           <criterion comment="Check MACs in /etc/ssh/sshd_config"
+           test_ref="test_sshd_use_approved_macs" />
+         </criteria>
+
+From 441881052627a5b14be015d74d36d271f9268908 Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Wed, 13 Dec 2017 18:22:29 +0100
+Subject: [PATCH 3/6] Remove backslashes from echo command
+
+Echo command output is literal, there is no need for backslashes
+---
+ .../rule_sshd_use_approved_ciphers/correct_scrambled.pass.sh            | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tests/data/group_services/group_ssh/group_ssh_server/rule_sshd_use_approved_ciphers/correct_scrambled.pass.sh b/tests/data/group_services/group_ssh/group_ssh_server/rule_sshd_use_approved_ciphers/correct_scrambled.pass.sh
+index 227611543..7172539c7 100644
+--- a/tests/data/group_services/group_ssh/group_ssh_server/rule_sshd_use_approved_ciphers/correct_scrambled.pass.sh
++++ b/tests/data/group_services/group_ssh/group_ssh_server/rule_sshd_use_approved_ciphers/correct_scrambled.pass.sh
+@@ -5,5 +5,5 @@
+ if grep -q "^Ciphers" /etc/ssh/sshd_config; then
+ 	sed -i "s/^Ciphers.*/Ciphers aes128-ctr,aes192-ctr,aes192-cbc,aes256-cbc,aes256-ctr,aes128-cbc,3des-cbc,rijndael-cbc@lysator\.liu\.se/" /etc/ssh/sshd_config
+ else
+-	echo "Ciphers aes128-ctr,aes192-ctr,aes192-cbc,aes256-cbc,aes256-ctr,aes128-cbc,3des-cbc,rijndael-cbc@lysator\.liu\.se" >> /etc/ssh/sshd_config
++	echo "Ciphers aes128-ctr,aes192-ctr,aes192-cbc,aes256-cbc,aes256-ctr,aes128-cbc,3des-cbc,rijndael-cbc@lysator.liu.se" >> /etc/ssh/sshd_config
+ fi
+
+From 995a5e64eb841c73849571395cc985f94607c4cb Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Mon, 18 Dec 2017 11:12:13 +0100
+Subject: [PATCH 4/6] Fix test scenarios for sshd_use_priv_separation
+
+As of PR #2162 the Rule checks for "sandbox"
+---
+ .../rule_sshd_use_priv_separation/correct_value.pass.sh               | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/tests/data/group_services/group_ssh/group_ssh_server/rule_sshd_use_priv_separation/correct_value.pass.sh b/tests/data/group_services/group_ssh/group_ssh_server/rule_sshd_use_priv_separation/correct_value.pass.sh
+index d63caa85b..36e8c1bba 100644
+--- a/tests/data/group_services/group_ssh/group_ssh_server/rule_sshd_use_priv_separation/correct_value.pass.sh
++++ b/tests/data/group_services/group_ssh/group_ssh_server/rule_sshd_use_priv_separation/correct_value.pass.sh
+@@ -3,7 +3,7 @@
+ # profiles = xccdf_org.ssgproject.content_profile_ospp-rhel7
+ 
+ if grep -q "^UsePrivilegeSeparation" /etc/ssh/sshd_config; then
+-	sed -i "s/^UsePrivilegeSeparation.*/UsePrivilegeSeparation yes/" /etc/ssh/sshd_config
++	sed -i "s/^UsePrivilegeSeparation.*/UsePrivilegeSeparation sandbox/" /etc/ssh/sshd_config
+ else
+-	echo "UsePrivilegeSeparation yes" >> /etc/ssh/sshd_config
++	echo "UsePrivilegeSeparation sandbox" >> /etc/ssh/sshd_config
+ fi
+
+From 877f3620d7462e2af6727a9feff16d6a7f08a239 Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Mon, 18 Dec 2017 11:40:07 +0100
+Subject: [PATCH 5/6] Fix test scenarios for sshd_disable_kerb_auth
+
+As of Pr #2463, the definition checks for ausence of
+"KerberosAuthentication yes", as default setting is not enabled.
+---
+ .../group_ssh_server/rule_sshd_disable_kerb_auth/comment.fail.sh | 9 ---------
+ .../group_ssh_server/rule_sshd_disable_kerb_auth/comment.pass.sh | 9 +++++++++
+ .../{line_not_there.fail.sh => line_not_there.pass.sh}           | 0
+ 3 files changed, 9 insertions(+), 9 deletions(-)
+ delete mode 100644 tests/data/group_services/group_ssh/group_ssh_server/rule_sshd_disable_kerb_auth/comment.fail.sh
+ create mode 100644 tests/data/group_services/group_ssh/group_ssh_server/rule_sshd_disable_kerb_auth/comment.pass.sh
+ rename tests/data/group_services/group_ssh/group_ssh_server/rule_sshd_disable_kerb_auth/{line_not_there.fail.sh => line_not_there.pass.sh} (100%)
+
+diff --git a/tests/data/group_services/group_ssh/group_ssh_server/rule_sshd_disable_kerb_auth/comment.fail.sh b/tests/data/group_services/group_ssh/group_ssh_server/rule_sshd_disable_kerb_auth/comment.fail.sh
+deleted file mode 100644
+index 3ae082173..000000000
+--- a/tests/data/group_services/group_ssh/group_ssh_server/rule_sshd_disable_kerb_auth/comment.fail.sh
++++ /dev/null
+@@ -1,9 +0,0 @@
+-#!/bin/bash
+-#
+-# profiles = xccdf_org.ssgproject.content_profile_ospp-rhel7
+-
+-if grep -q "^KerberosAuthentication" /etc/ssh/sshd_config; then
+-	sed -i "s/^KerberosAuthentication.*/# KerberosAuthentication no/" /etc/ssh/sshd_config
+-else
+-	echo "# KerberosAuthentication no" >> /etc/ssh/sshd_config
+-fi
+diff --git a/tests/data/group_services/group_ssh/group_ssh_server/rule_sshd_disable_kerb_auth/comment.pass.sh b/tests/data/group_services/group_ssh/group_ssh_server/rule_sshd_disable_kerb_auth/comment.pass.sh
+new file mode 100644
+index 000000000..c7d58fbc6
+--- /dev/null
++++ b/tests/data/group_services/group_ssh/group_ssh_server/rule_sshd_disable_kerb_auth/comment.pass.sh
+@@ -0,0 +1,9 @@
++#!/bin/bash
++#
++# profiles = xccdf_org.ssgproject.content_profile_ospp-rhel7
++
++if grep -q "^KerberosAuthentication" /etc/ssh/sshd_config; then
++	sed -i "s/^KerberosAuthentication.*/# KerberosAuthentication yes/" /etc/ssh/sshd_config
++else
++	echo "# KerberosAuthentication yes" >> /etc/ssh/sshd_config
++fi
+diff --git a/tests/data/group_services/group_ssh/group_ssh_server/rule_sshd_disable_kerb_auth/line_not_there.fail.sh b/tests/data/group_services/group_ssh/group_ssh_server/rule_sshd_disable_kerb_auth/line_not_there.pass.sh
+similarity index 100%
+rename from tests/data/group_services/group_ssh/group_ssh_server/rule_sshd_disable_kerb_auth/line_not_there.fail.sh
+rename to tests/data/group_services/group_ssh/group_ssh_server/rule_sshd_disable_kerb_auth/line_not_there.pass.sh
+
+From 4ebe165ede448c8998251257998cc94ea5cf3786 Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Mon, 18 Dec 2017 11:52:39 +0100
+Subject: [PATCH 6/6] Fix test scenarios for sshd_enable_strictmodes
+
+As of Pr #2463, the definition checks fo ausence of "StrictModes no", as
+default value is enabled already.
+---
+ .../rule_sshd_enable_strictmodes/{comment.fail.sh => comment.pass.sh} | 4 ++--
+ .../{line_not_there.fail.sh => line_not_there.pass.sh}                | 0
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+ rename tests/data/group_services/group_ssh/group_ssh_server/rule_sshd_enable_strictmodes/{comment.fail.sh => comment.pass.sh} (53%)
+ rename tests/data/group_services/group_ssh/group_ssh_server/rule_sshd_enable_strictmodes/{line_not_there.fail.sh => line_not_there.pass.sh} (100%)
+
+diff --git a/tests/data/group_services/group_ssh/group_ssh_server/rule_sshd_enable_strictmodes/comment.fail.sh b/tests/data/group_services/group_ssh/group_ssh_server/rule_sshd_enable_strictmodes/comment.pass.sh
+similarity index 53%
+rename from tests/data/group_services/group_ssh/group_ssh_server/rule_sshd_enable_strictmodes/comment.fail.sh
+rename to tests/data/group_services/group_ssh/group_ssh_server/rule_sshd_enable_strictmodes/comment.pass.sh
+index 3d3b90875..bac02cb4f 100644
+--- a/tests/data/group_services/group_ssh/group_ssh_server/rule_sshd_enable_strictmodes/comment.fail.sh
++++ b/tests/data/group_services/group_ssh/group_ssh_server/rule_sshd_enable_strictmodes/comment.pass.sh
+@@ -3,7 +3,7 @@
+ # profiles = xccdf_org.ssgproject.content_profile_ospp-rhel7
+ 
+ if grep -q "^StrictModes" /etc/ssh/sshd_config; then
+-	sed -i "s/^StrictModes.*/# StrictModes yes/" /etc/ssh/sshd_config
++	sed -i "s/^StrictModes.*/# StrictModes no/" /etc/ssh/sshd_config
+ else
+-	echo "# StrictModes yes" >> /etc/ssh/sshd_config
++	echo "# StrictModes no" >> /etc/ssh/sshd_config
+ fi
+diff --git a/tests/data/group_services/group_ssh/group_ssh_server/rule_sshd_enable_strictmodes/line_not_there.fail.sh b/tests/data/group_services/group_ssh/group_ssh_server/rule_sshd_enable_strictmodes/line_not_there.pass.sh
+similarity index 100%
+rename from tests/data/group_services/group_ssh/group_ssh_server/rule_sshd_enable_strictmodes/line_not_there.fail.sh
+rename to tests/data/group_services/group_ssh/group_ssh_server/rule_sshd_enable_strictmodes/line_not_there.pass.sh

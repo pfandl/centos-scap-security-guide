@@ -1,0 +1,39 @@
+From 810c6774166d8b591300322e269acd6a1d3554ef Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Jan=20=C4=8Cern=C3=BD?= <jcerny@redhat.com>
+Date: Tue, 5 Dec 2017 16:15:46 +0100
+Subject: [PATCH] RHBZ #1520493: Fix umask_for_daemons
+
+OpenSCAP evaluated this rule as "error" because it tried to evauluate
+the variable 'var_umask_for_daemons_umask_as_number', which was defined
+as external, but in fact is created in other definition. OpenSCAP
+could not find its value. The fix is very similar to PR #1945.
+---
+ shared/checks/oval/umask_for_daemons.xml | 8 ++------
+ 1 file changed, 2 insertions(+), 6 deletions(-)
+
+diff --git a/shared/checks/oval/umask_for_daemons.xml b/shared/checks/oval/umask_for_daemons.xml
+index 7f54e4957..a8ce76275 100644
+--- a/shared/checks/oval/umask_for_daemons.xml
++++ b/shared/checks/oval/umask_for_daemons.xml
+@@ -61,12 +61,6 @@
+     </arithmetic>
+   </local_variable>
+ 
+-  <!-- The 'var_umask_for_daemons_umask_as_number' variable is created by evaluation of
+-       the referenced 'var_umask_for_daemons_as_number' OVAL definition -->
+-  <external_variable id="var_umask_for_daemons_umask_as_number"
+-  comment="Required umask converted from string to octal number"
+-  datatype="int" version="1"/>
+-
+   <ind:variable_test id="tst_umask_for_daemons" version="1" check="all"
+   comment="Test the retrieved /etc/init.d/functions umask value(s) match the var_umask_for_daemons requirement">
+     <ind:object object_ref="obj_umask_for_daemons" />
+@@ -77,6 +71,8 @@
+     <ind:var_ref>var_etc_init_d_functions_umask_as_number</ind:var_ref>
+   </ind:variable_object>
+ 
++  <!-- The 'var_umask_for_daemons_umask_as_number' variable is created by evaluation of
++       the referenced 'var_umask_for_daemons_as_number' OVAL definition -->
+   <ind:variable_state id="ste_umask_for_daemons" version="1">
+     <ind:value datatype="int" operation="bitwise and" var_ref="var_umask_for_daemons_umask_as_number" />
+   </ind:variable_state>
