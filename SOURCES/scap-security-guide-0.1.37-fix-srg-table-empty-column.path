@@ -1,0 +1,51 @@
+From 8b43d43533cf4a00de60da71a8aaa6e87776766f Mon Sep 17 00:00:00 2001
+From: Gabe <redhatrises@gmail.com>
+Date: Fri, 3 Nov 2017 10:36:57 -0600
+Subject: [PATCH] Remove CCI formatting from shared table-srgmap XSLT
+
+- CCI formatting is now done in earlier XSLT transformations.
+- Fixes #2447
+---
+ shared/transforms/shared_table-srgmap.xslt | 14 ++++++--------
+ 1 file changed, 6 insertions(+), 8 deletions(-)
+
+diff --git a/shared/transforms/shared_table-srgmap.xslt b/shared/transforms/shared_table-srgmap.xslt
+index 4a50dea33..7179f560e 100644
+--- a/shared/transforms/shared_table-srgmap.xslt
++++ b/shared/transforms/shared_table-srgmap.xslt
+@@ -46,7 +46,7 @@
+ 				</xsl:choose>
+ 			</thead>
+ 			<xsl:for-each select=".//cdf:Rule">
+-				<xsl:variable name="curr_cci" select="string(number(substring-after(cdf:ident,'CCI-')))"/> 
++				<xsl:variable name="curr_cci" select="cdf:ident"/>
+ 				<xsl:choose>
+ 					<!-- output multiple rows if we're in flat mode and at least one ref exists -->
+ 					<xsl:when test="$flat and $items/cdf:reference[@href=$disa-cciuri and text()=$curr_cci]">
+@@ -77,10 +77,9 @@
+ 		<xsl:for-each select="$items">
+ 			<xsl:variable name="item" select="."/>
+ 			<xsl:for-each select="cdf:reference[@href=$disa-cciuri]"> 
+-			    <xsl:variable name="cci_formatted" select='format-number(self::node()[text()], "000000")' />
+-			    <xsl:variable name="cci_expanded" select="concat('CCI-', $cci_formatted)"  />
+-			    <xsl:variable name="srg_cci" select="$rule/cdf:ident"  />
+-				<xsl:if test="$cci_expanded=$srg_cci" >
++				<xsl:variable name="ssg_cci" select='self::node()[text()]' />
++				<xsl:variable name="srg_cci" select="$rule/cdf:ident"  />
++				<xsl:if test="$ssg_cci=$srg_cci" >
+ 					<table>
+ 					<tr>
+ 					<td> <xsl:value-of select="$item/cdf:title"/> </td>
+@@ -100,10 +99,9 @@
+ 		<xsl:for-each select="$items">
+ 			<xsl:variable name="item" select="."/>
+ 			<xsl:for-each select="cdf:reference[@href=$disa-cciuri]">
+-			    <xsl:variable name="cci_formatted" select='format-number(self::node()[text()], "000000")' />
+-			    <xsl:variable name="cci_expanded" select="concat('CCI-', $cci_formatted)"  />
++			    <xsl:variable name="ssg_cci" select='self::node()[text()]' />
+ 			    <xsl:variable name="srg_cci" select="$rule/cdf:ident"  />
+-				<xsl:if test="$cci_expanded=$srg_cci" >
++				<xsl:if test="$ssg_cci=$srg_cci" >
+ 					<tr>
+ 					<td> <xsl:value-of select="$rule/cdf:version"/> </td>
+ 					<td> <xsl:value-of select="$rule/cdf:ident"/> </td>

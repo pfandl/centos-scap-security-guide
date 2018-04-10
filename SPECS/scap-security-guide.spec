@@ -1,4 +1,4 @@
-%global		redhatssgversion	33
+%global		redhatssgversion	36
 
 # Somehow, _pkgdocdir is already defined and points to unversioned docs dir
 # RHEL 7.X uses versioned docs dir, hence the definition below
@@ -6,7 +6,7 @@
 
 Name:		scap-security-guide
 Version:	0.1.%{redhatssgversion}
-Release:	6%{?dist}
+Release:	7%{?dist}
 Summary:	Security guidance and baselines in SCAP formats
 
 Group:		System Environment/Base
@@ -14,13 +14,15 @@ License:	Public Domain
 URL:		https://github.com/OpenSCAP/scap-security-guide
 Source0:	%{name}-%{version}.tar.bz2
 Patch1:		scap-security-guide-0.1.33-update-upstream-manual-page.patch
-Patch2:		scap-security-guide-0.1.33-fix-guide-role-install-dir.patch
-Patch3:		scap-security-guide-0.1.33-fix-ospp-rhel7-table.patch
-Patch4:		scap-security-guide-0.1.33-fix-anaconda-remediation-template-add-remove-package.patch
-Patch5:		scap-security-guide-0.1.33-fix-anaconda-remediation-template-partition-mountoptions.patch
-Patch6:		scap-security-guide-0.1.33-fix-profile_nist-800-171-cui-malformed-title.patch
-Patch7:		scap-security-guide-0.1.33-fix-anaconda-smart-card-remediation_1461330.patch
-Patch8:		scap-security-guide-0.1.33-drop_set_firewalld_default_zone_remediation.patch
+Patch2:		scap-security-guide-0.1.37-add-disa-stig-rule-id.patch
+Patch3:     scap-security-guide-0.1.37-disable-check-libexec_ownership.patch
+Patch4:     scap-security-guide-0.1.37-fix-title.patch
+Patch5:     scap-security-guide-0.1.37-Deprecate-RhostsRSAAuthentication.patch
+Patch6:     scap-security-guide-0.1.37-fix-umask_for_daemons.patch
+Patch7:     scap-security-guide-0.1.37-fix-sshd_required-unset.patch
+Patch8:     scap-security-guide-0.1.37-fix-missing-bash-remediation-include.patch
+Patch9:     scap-security-guide-0.1.37-fix-srg-table-empty-column.path
+Patch10:    scap-security-guide-0.1.38-fix-reference-to-pam-config-manual.patch
 BuildArch:	noarch
 
 BuildRequires:	libxslt, expat, python, openscap-scanner >= 1.2.5, python-lxml, cmake >= 2.8
@@ -50,42 +52,52 @@ been generated from XCCDF benchmarks present in %{name} package.
 %setup -q -n %{name}-%{version}
 # Update manual page to drop the part dedicated to Fedora content
 %patch1 -p1 -b .man_page_update
-%patch2 -p1 -b .guide_role_dir_fix
-%patch3 -p1 -b .ospp_rhel7_table_fix
-# Patches 4 and 5 fixes rhbz#1450731
-%patch4 -p1 -b .anaconda_template_add_remove_package_fix
-%patch5 -p1 -b .anaconda_template_partition_mountoptions_fix
-# Fix for rhbz#1449211
-%patch6 -p1 -b .profile_nist_800_171_cui_malformed_title_fix
-%patch7 -p1 -b .anaconda-smart-card-auth
-# Fix for rhbz#1478414, patch adapted from https://github.com/OpenSCAP/scap-security-guide/pull/2328
-%patch8 -p1 -b .drop_set_firewalld_default_zone_remediation
+%patch2 -p1 -b .add_disa_stig_rule_id
+# patch2 introduces a script that build system needs to execute
+chmod u+x shared/utils/add_stig_references.py
+mkdir build
+# Fixes https://bugzilla.redhat.com/show_bug.cgi?id=1523809
+# Taken from https://github.com/OpenSCAP/scap-security-guide/pull/2479
+%patch3 -p1 -b .libexec_ownership
+# Fixes https://bugzilla.redhat.com/show_bug.cgi?id=1521081
+# Taken from https://github.com/OpenSCAP/scap-security-guide/pull/2481
+%patch4 -p1 -b .title
+# Fixes https://bugzilla.redhat.com/show_bug.cgi?id=1523827
+# Taken from https://github.com/OpenSCAP/scap-security-guide/pull/2480
+%patch5 -p1 -b .RhostsRSAAuthentication
+# Fixes https://bugzilla.redhat.com/show_bug.cgi?id=1520493
+# Taken from https://github.com/OpenSCAP/scap-security-guide/pull/2476
+%patch6 -p1 -b .umask_for_daemons
+%patch7 -p1 -b .sshd_required_unset
+%patch8 -p1 -b .bash_remediation_include
+%patch9 -p1 -b .srg_table_column_empty
+%patch10 -p1 -b .reference_pam_config
 
 %build
+cd build
 %cmake -D CMAKE_INSTALL_DOCDIR=%{_pkgdocdir} \
 -DSSG_PRODUCT_CHROMIUM:BOOL=OFF \
 -DSSG_PRODUCT_DEBIAN8:BOOL=OFF \
 -DSSG_PRODUCT_FEDORA:BOOL=OFF \
--DSSG_PRODUCT_JBOSS_EAP5:BOOL=OFF \
+-DSSG_PRODUCT_JBOSS_EAP6:BOOL=OFF \
 -DSSG_PRODUCT_JBOSS_FUSE6:BOOL=OFF \
+-DSSG_PRODUCT_OCP3:BOOL=OFF \
 -DSSG_PRODUCT_OPENSUSE:BOOL=OFF \
 -DSSG_PRODUCT_OSP7:BOOL=OFF \
--DSSG_PRODUCT_RHEL5:BOOL=OFF \
 -DSSG_PRODUCT_RHEV3:BOOL=OFF \
 -DSSG_PRODUCT_SUSE11:BOOL=OFF \
 -DSSG_PRODUCT_SUSE12:BOOL=OFF \
--DSSG_PRODUCT_UBUNTU1404:BOOL=OFF \
--DSSG_PRODUCT_UBUNTU1604:BOOL=OFF \
+-DSSG_PRODUCT_UBUNTU14:BOOL=OFF \
+-DSSG_PRODUCT_UBUNTU16:BOOL=OFF \
 -DSSG_PRODUCT_WRLINUX:BOOL=OFF \
 -DSSG_PRODUCT_WEBMIN:BOOL=OFF \
--DSSG_CENTOS_DERIVATIVES_ENABLED:BOOL=ON \
--DSSG_SCIENTIFIC_LINUX_DERIVATIVES_ENABLED:BOOL=OFF .
+-DSSG_CENTOS_DERIVATIVES_ENABLED:BOOL=OFF \
+-DSSG_SCIENTIFIC_LINUX_DERIVATIVES_ENABLED:BOOL=OFF ../
 make %{?_smp_mflags}
 
 %install
+cd build
 %make_install
-
-sed 's/Red Hat Enterprise Linux/CentOS Linux/g' -i ssg-centos*.xml
 
 %files
 %defattr(-,root,root,-)
@@ -95,17 +107,62 @@ sed 's/Red Hat Enterprise Linux/CentOS Linux/g' -i ssg-centos*.xml
 %doc LICENSE
 %doc Contributors.md
 %doc README.md
-%doc RHEL/6/input/auxiliary/DISCLAIMER
+%doc DISCLAIMER
+# All files installed by cmake are automatically include in main package
+# We exclude the guides to here add them in doc package
+%exclude %{_pkgdocdir}/guides/
 
 %files doc
 %defattr(-,root,root,-)
-%doc roles/ssg-*-role*.yml
-%doc roles/ssg-*-role*.sh
-%doc guides/ssg-*-guide-*.html
+%doc build/guides/ssg-*-guide-*.html
 
 %changelog
-* Thu Oct 19 2017 Johnny Hughes <johnny@centos.org> 0.1.33-6
-- Manual CentOS debranding
+* Mon Jan 08 2018 Watson Yuuma Sato <wsato@redhat.com> - 0.1.36-7
+- Fix sshd_required unset (RHBZ#1522956)
+- Fix missing bash remediation functions include (RHBZ#1524738)
+- Fix empty columns in SRG HTML Table (RHBZ#1531105)
+- Fix reference to oudated PAM config manual (RHBZ#1447760)
+
+* Tue Dec 12 2017 Watson Yuuma Sato <wsato@redhat.com> - 0.1.36-6
+- Rebuild with OpenSCAP 1.2.16
+
+* Mon Dec 11 2017 Matěj Týč <matyc@redhat.com> - 0.1.36-5
+- Patched not to check library ownership in libexec.
+- Patched to fix title of DISA STIG profile.
+- Patched to deprecate RhostsRSAAuthentication.
+- Patched to fix umask_for_daemons.
+
+* Thu Nov 16 2017 Watson Yuuma Sato <wsato@redhat.com> - 0.1.36-4
+- Rebuild with OpenSCAP 1.2.16
+
+* Tue Nov 14 2017 Watson Yuuma Sato <wsato@redhat.com> - 0.1.36-3
+- Add DISA STIG Rule IDs to XCCDF Rules with STIGID
+
+* Fri Nov 03 2017 Watson Yuuma Sato <wsato@redhat.com> - 0.1.36-2
+- Fix configuration to not build new products introduced in upstream
+
+* Fri Nov 03 2017 Watson Yuuma Sato <wsato@redhat.com> - 0.1.36-1
+- Update to upstream release 0.1.36
+- Introduction of SCAP Security Guide Test Suite
+- Better alignment of RHEL6 and RHEL7 with DISA STIG
+- Remove JBoss EAP5 content due to being End-of-Life
+- New STIG Profile for JBOSS EAP 6
+- Updates in C2S Profile for RHEL 7
+- Variables can be directly tailored in Ansible roles
+- Content presents less false positives in containers
+- Changes in directory layout
+
+* Wed Sep 20 2017 Watson Yuuma Sato <wsato@redhat.com> - 0.1.35-2
+- Do not build content for JBOSS EAP6
+
+* Wed Sep 20 2017 Watson Yuuma Sato <wsato@redhat.com> - 0.1.35-1
+- Update to upstream release 0.1.35
+- Remove Red Hat Enterprise Linux 5 content due to being End-of-Life March 31, 2017
+- Added several templates for OVAL checks
+- Many optimizations in build process
+- Different title for PCI-DSS Benchmark variants
+- Remediation roles moved to /usr/share/scap-security
+- Fix duplicated roles and guides (RHBZ#1465691)
 
 * Tue Sep 19 2017 Watson Sato <wsato@redhat.com> 0.1.33-6
 - Dropped remediation that makes system not accessible by SSH (RHBZ#1478414)
