@@ -91,13 +91,15 @@ cd build
 -DSSG_PRODUCT_UBUNTU16:BOOL=OFF \
 -DSSG_PRODUCT_WRLINUX:BOOL=OFF \
 -DSSG_PRODUCT_WEBMIN:BOOL=OFF \
--DSSG_CENTOS_DERIVATIVES_ENABLED:BOOL=OFF \
+-DSSG_CENTOS_DERIVATIVES_ENABLED:BOOL=ON \
 -DSSG_SCIENTIFIC_LINUX_DERIVATIVES_ENABLED:BOOL=OFF ../
 make %{?_smp_mflags}
 
 %install
 cd build
 %make_install
+
+sed 's/Red Hat Enterprise Linux/CentOS Linux/g' -i ssg-centos*.xml
 
 %files
 %defattr(-,root,root,-)
@@ -117,6 +119,9 @@ cd build
 %doc build/guides/ssg-*-guide-*.html
 
 %changelog
+* Thu Apr 12 2018 Johnny Hughes <johnny@centos.org> - 0.1.36-7
+- Manual CentOS Debranding
+
 * Mon Jan 08 2018 Watson Yuuma Sato <wsato@redhat.com> - 0.1.36-7
 - Fix sshd_required unset (RHBZ#1522956)
 - Fix missing bash remediation functions include (RHBZ#1524738)
