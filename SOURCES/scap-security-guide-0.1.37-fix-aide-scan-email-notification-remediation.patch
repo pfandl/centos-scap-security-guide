@@ -1,0 +1,46 @@
+From 082b98eca6f4200cf32744582c5ff1b385ea88db Mon Sep 17 00:00:00 2001
+From: Nathan Peters <petna01@ca.com>
+Date: Wed, 20 Dec 2017 14:36:19 -0800
+Subject: [PATCH 1/2] Updated aide_scan_notification remediation to run cron
+ job as root
+
+---
+ shared/fixes/bash/aide_scan_notification.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/shared/fixes/bash/aide_scan_notification.sh b/shared/fixes/bash/aide_scan_notification.sh
+index ac63227836..3862b21825 100644
+--- a/shared/fixes/bash/aide_scan_notification.sh
++++ b/shared/fixes/bash/aide_scan_notification.sh
+@@ -11,6 +11,6 @@ if [ -f /var/spool/cron/root ]; then
+ fi
+ 
+ if ! grep -qR '^.*\/usr\/sbin\/aide\s*\-\-check.*\|.*\/bin\/mail\s*-s\s*".*"\s*root@.*$' $CRONTAB $VARSPOOL $CRONDIRS; then
+-	echo '0 5 * * * /usr/sbin/aide  --check | /bin/mail -s "$(hostname) - AIDE Integrity Check" root@localhost' >> $CRONTAB
++	echo '0 5 * * * root /usr/sbin/aide  --check | /bin/mail -s "$(hostname) - AIDE Integrity Check" root@localhost' >> $CRONTAB
+ fi
+ 
+
+From 6443aac41c6b28198c762d136805aaab090be45d Mon Sep 17 00:00:00 2001
+From: Nathan Peters <petna01@ca.com>
+Date: Wed, 20 Dec 2017 14:50:36 -0800
+Subject: [PATCH 2/2] Fixed remediation script aide_scan_notification for
+ regular grep syntax
+
+---
+ shared/fixes/bash/aide_scan_notification.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/shared/fixes/bash/aide_scan_notification.sh b/shared/fixes/bash/aide_scan_notification.sh
+index 3862b21825..f6908bda64 100644
+--- a/shared/fixes/bash/aide_scan_notification.sh
++++ b/shared/fixes/bash/aide_scan_notification.sh
+@@ -10,7 +10,7 @@ if [ -f /var/spool/cron/root ]; then
+ 	VARSPOOL=/var/spool/cron/root
+ fi
+ 
+-if ! grep -qR '^.*\/usr\/sbin\/aide\s*\-\-check.*\|.*\/bin\/mail\s*-s\s*".*"\s*root@.*$' $CRONTAB $VARSPOOL $CRONDIRS; then
++if ! grep -qR '^.*\/usr\/sbin\/aide\s*\-\-check.*|.*\/bin\/mail\s*-s\s*".*"\s*root@.*$' $CRONTAB $VARSPOOL $CRONDIRS; then
+ 	echo '0 5 * * * root /usr/sbin/aide  --check | /bin/mail -s "$(hostname) - AIDE Integrity Check" root@localhost' >> $CRONTAB
+ fi
+ 

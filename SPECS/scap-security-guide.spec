@@ -6,7 +6,7 @@
 
 Name:		scap-security-guide
 Version:	0.1.%{redhatssgversion}
-Release:	7%{?dist}
+Release:	9%{?dist}
 Summary:	Security guidance and baselines in SCAP formats
 
 Group:		System Environment/Base
@@ -23,6 +23,10 @@ Patch7:     scap-security-guide-0.1.37-fix-sshd_required-unset.patch
 Patch8:     scap-security-guide-0.1.37-fix-missing-bash-remediation-include.patch
 Patch9:     scap-security-guide-0.1.37-fix-srg-table-empty-column.path
 Patch10:    scap-security-guide-0.1.38-fix-reference-to-pam-config-manual.patch
+Patch11:    scap-security-guide-0.1.38-aide-scan-email-notification.patch
+Patch12:    scap-security-guide-0.1.39-fix-failing-rules-for-PCI-DSS-DISA-UGSCB.patch
+Patch13:    scap-security-guide-0.1.38-audit-kernel-module-loading.patch
+Patch14:    scap-security-guide-0.1.37-fix-aide-scan-email-notification-remediation.patch
 BuildArch:	noarch
 
 BuildRequires:	libxslt, expat, python, openscap-scanner >= 1.2.5, python-lxml, cmake >= 2.8
@@ -72,6 +76,11 @@ mkdir build
 %patch8 -p1 -b .bash_remediation_include
 %patch9 -p1 -b .srg_table_column_empty
 %patch10 -p1 -b .reference_pam_config
+# Fix from https://github.com/OpenSCAP/scap-security-guide/pull/2599
+%patch11 -p1 -b .aide_email_notification
+%patch12 -p1 -b .fix_failing_rules
+%patch13 -p1 -b .audit_kernel_module
+%patch14 -p1 -b .aide_notification_remediation
 
 %build
 cd build
@@ -91,15 +100,13 @@ cd build
 -DSSG_PRODUCT_UBUNTU16:BOOL=OFF \
 -DSSG_PRODUCT_WRLINUX:BOOL=OFF \
 -DSSG_PRODUCT_WEBMIN:BOOL=OFF \
--DSSG_CENTOS_DERIVATIVES_ENABLED:BOOL=ON \
+-DSSG_CENTOS_DERIVATIVES_ENABLED:BOOL=OFF \
 -DSSG_SCIENTIFIC_LINUX_DERIVATIVES_ENABLED:BOOL=OFF ../
 make %{?_smp_mflags}
 
 %install
 cd build
 %make_install
-
-sed 's/Red Hat Enterprise Linux/CentOS Linux/g' -i ssg-centos*.xml
 
 %files
 %defattr(-,root,root,-)
@@ -119,8 +126,13 @@ sed 's/Red Hat Enterprise Linux/CentOS Linux/g' -i ssg-centos*.xml
 %doc build/guides/ssg-*-guide-*.html
 
 %changelog
-* Thu Apr 12 2018 Johnny Hughes <johnny@centos.org> - 0.1.36-7
-- Manual CentOS Debranding
+* Fri Apr 27 2018 Watson Yuuma Sato <wsato@redhat.com> - 0.1.36-9
+- Fix remediation of AIDE notification (RHBZ#1571315)
+
+* Wed Apr 25 2018 Watson Yuuma Sato <wsato@redhat.com> - 0.1.36-8
+- Allow AIDE to notify other emails than only root (RHBZ#1571315)
+- Fix some failing rules from profiles PCI-DSS, DISA STIG and USGCB (RHBZ#1571312)
+- Fix kernel module loading rules (RHBZ#1571319)
 
 * Mon Jan 08 2018 Watson Yuuma Sato <wsato@redhat.com> - 0.1.36-7
 - Fix sshd_required unset (RHBZ#1522956)
