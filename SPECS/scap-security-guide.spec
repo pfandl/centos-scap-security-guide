@@ -100,13 +100,15 @@ cd build
 -DSSG_PRODUCT_UBUNTU16:BOOL=OFF \
 -DSSG_PRODUCT_WRLINUX:BOOL=OFF \
 -DSSG_PRODUCT_WEBMIN:BOOL=OFF \
--DSSG_CENTOS_DERIVATIVES_ENABLED:BOOL=OFF \
+-DSSG_CENTOS_DERIVATIVES_ENABLED:BOOL=ON \
 -DSSG_SCIENTIFIC_LINUX_DERIVATIVES_ENABLED:BOOL=OFF ../
 make %{?_smp_mflags}
 
 %install
 cd build
 %make_install
+
+sed 's/Red Hat Enterprise Linux/CentOS Linux/g' -i ssg-centos*.xml
 
 %files
 %defattr(-,root,root,-)
@@ -126,6 +128,9 @@ cd build
 %doc build/guides/ssg-*-guide-*.html
 
 %changelog
+* Mon May 14 2018 Johnny Hughes <johnny@centos.org> - 0.1.36-9
+- Manual CentOS Debranding
+
 * Fri Apr 27 2018 Watson Yuuma Sato <wsato@redhat.com> - 0.1.36-9
 - Fix remediation of AIDE notification (RHBZ#1571315)
 
