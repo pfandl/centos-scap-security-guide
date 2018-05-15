@@ -106,9 +106,8 @@ make %{?_smp_mflags}
 
 %install
 cd build
-%make_install
-
 sed 's/Red Hat Enterprise Linux/CentOS Linux/g' -i ssg-centos*.xml
+%make_install
 
 %files
 %defattr(-,root,root,-)
