@@ -1,0 +1,51 @@
+From b0eb3b7f7baa1a57dac3e373209d20bd55b3f215 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Mat=C4=9Bj=20T=C3=BD=C4=8D?= <matyc@redhat.com>
+Date: Tue, 26 Jun 2018 11:42:49 +0200
+Subject: [PATCH 1/2] Added implicit double quoting of substituted vars.
+
+Variables in Ansible may be wrongly interpreted if they are not quoted
+(i.e. yes, 077 will be converted to bool and octal respectively).
+Unlike single quotes, double quotes may be escaped.
+
+Fixes: #2989
+---
+ ssg/build_remediations.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/shared/utils/combine-remediations.py b/shared/utils/combine-remediations.py
+index ca6ce96b79..ece3765d56 100644
+--- a/shared/utils/combine-remediations.py
++++ b/shared/utils/combine-remediations.py
+@@ -194,7 +194,7 @@ def expand_xccdf_subs(fix, remediation_type, remediation_functions):
+             r"- \(xccdf-var\s+(\S+)\)",
+             r"- name: XCCDF Value \1 # promote to variable\n"
+             r"  set_fact:\n"
+-            r"    \1: (ansible-populate \1)\n"
++            r'    \1: "(ansible-populate \1)"\n'
+             r"  tags:\n"
+             r"    - always",
+             fix_text
+
+From a1693c2015a5513a871366f48ce1c3d83ecd9bde Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Mat=C4=9Bj=20T=C3=BD=C4=8D?= <matyc@redhat.com>
+Date: Tue, 26 Jun 2018 14:04:55 +0200
+Subject: [PATCH 2/2] Made the UMASK check in login.defs case-insensitive.
+
+The guide says it should be UMASK, not umask, and man login.defs says the same.
+---
+ shared/checks/oval/accounts_umask_etc_login_defs.xml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/shared/checks/oval/accounts_umask_etc_login_defs.xml b/shared/checks/oval/accounts_umask_etc_login_defs.xml
+index 22b67cf0dd..513632b56a 100644
+--- a/shared/checks/oval/accounts_umask_etc_login_defs.xml
++++ b/shared/checks/oval/accounts_umask_etc_login_defs.xml
+@@ -18,7 +18,7 @@
+   <ind:textfilecontent54_object id="obj_umask_from_etc_login_defs"
+   comment="Umask value from /etc/login.defs" version="1">
+     <ind:filepath>/etc/login.defs</ind:filepath>
+-    <ind:pattern operation="pattern match">^[\s]*(?i)UMASK(?-i)[\s]+([^#\s]*)</ind:pattern>
++    <ind:pattern operation="pattern match">^[\s]*UMASK[\s]+([^#\s]*)</ind:pattern>
+     <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
+   </ind:textfilecontent54_object>
+ 

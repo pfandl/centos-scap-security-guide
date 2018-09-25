@@ -1,0 +1,106 @@
+From dca8feafaa0b9044a0cec24c245eecaf8b7658ab Mon Sep 17 00:00:00 2001
+From: Chuck Atkins <chuck.atkins@kitware.com>
+Date: Tue, 12 Dec 2017 14:32:20 -0500
+Subject: [PATCH] Fix typos "local/d" -> "local.d"
+
+---
+ shared/fixes/ansible/dconf_gnome_banner_enabled.yml                     | 2 +-
+ .../fixes/ansible/dconf_gnome_screensaver_idle_activation_enabled.yml   | 2 +-
+ shared/fixes/ansible/dconf_gnome_screensaver_idle_delay.yml             | 2 +-
+ shared/fixes/ansible/dconf_gnome_screensaver_lock_delay.yml             | 2 +-
+ shared/fixes/ansible/dconf_gnome_screensaver_lock_enabled.yml           | 2 +-
+ shared/fixes/ansible/dconf_gnome_screensaver_mode_blank.yml             | 2 +-
+ shared/fixes/ansible/dconf_gnome_screensaver_user_info.yml              | 2 +-
+ 7 files changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/shared/fixes/ansible/dconf_gnome_banner_enabled.yml b/shared/fixes/ansible/dconf_gnome_banner_enabled.yml
+index abd8a8002b..38cd4d4e99 100644
+--- a/shared/fixes/ansible/dconf_gnome_banner_enabled.yml
++++ b/shared/fixes/ansible/dconf_gnome_banner_enabled.yml
+@@ -5,7 +5,7 @@
+ # disruption = medium
+ - name: "Enable GNOME3 Login Warning Banner"
+   ini_file:
+-    dest: "/etc/dconf/db/local/d/00-security-settings"
++    dest: "/etc/dconf/db/local.d/00-security-settings"
+     section: "org/gnome/login-screen"
+     option: banner-message-enabled
+     value: true
+diff --git a/shared/fixes/ansible/dconf_gnome_screensaver_idle_activation_enabled.yml b/shared/fixes/ansible/dconf_gnome_screensaver_idle_activation_enabled.yml
+index 20d2013c52..3ed9b78b5a 100644
+--- a/shared/fixes/ansible/dconf_gnome_screensaver_idle_activation_enabled.yml
++++ b/shared/fixes/ansible/dconf_gnome_screensaver_idle_activation_enabled.yml
+@@ -5,7 +5,7 @@
+ # disruption = medium
+ - name: "Enable GNOME3 Screensaver Idle Activation"
+   ini_file:
+-    dest: "/etc/dconf/db/local/d/00-security-settings"
++    dest: "/etc/dconf/db/local.d/00-security-settings"
+     section: "org/gnome/desktop/screensaver"
+     option: idle_activation_enabled
+     value: true
+diff --git a/shared/fixes/ansible/dconf_gnome_screensaver_idle_delay.yml b/shared/fixes/ansible/dconf_gnome_screensaver_idle_delay.yml
+index a69c86225d..8d4e9d2adc 100644
+--- a/shared/fixes/ansible/dconf_gnome_screensaver_idle_delay.yml
++++ b/shared/fixes/ansible/dconf_gnome_screensaver_idle_delay.yml
+@@ -7,7 +7,7 @@
+ 
+ - name: "Set GNOME3 Screensaver Inactivity Timeout"
+   ini_file:
+-    dest: "/etc/dconf/db/local/d/00-security-settings"
++    dest: "/etc/dconf/db/local.d/00-security-settings"
+     section: "org/gnome/desktop/screensaver"
+     option: idle-delay
+     value: "{{ inactivity_timeout_value }}"
+diff --git a/shared/fixes/ansible/dconf_gnome_screensaver_lock_delay.yml b/shared/fixes/ansible/dconf_gnome_screensaver_lock_delay.yml
+index f11b909b65..01dec5ea9b 100644
+--- a/shared/fixes/ansible/dconf_gnome_screensaver_lock_delay.yml
++++ b/shared/fixes/ansible/dconf_gnome_screensaver_lock_delay.yml
+@@ -5,7 +5,7 @@
+ # disruption = medium
+ - name: "Set GNOME3 Screensaver Lock Delay After Activation Period"
+   ini_file:
+-    dest: "/etc/dconf/db/local/d/00-security-settings"
++    dest: "/etc/dconf/db/local.d/00-security-settings"
+     section: "org/gnome/desktop/screensaver"
+     option: lock-delay
+     value: uint32 5
+diff --git a/shared/fixes/ansible/dconf_gnome_screensaver_lock_enabled.yml b/shared/fixes/ansible/dconf_gnome_screensaver_lock_enabled.yml
+index be5ffc10eb..5ac6fe6b3f 100644
+--- a/shared/fixes/ansible/dconf_gnome_screensaver_lock_enabled.yml
++++ b/shared/fixes/ansible/dconf_gnome_screensaver_lock_enabled.yml
+@@ -5,7 +5,7 @@
+ # disruption = medium
+ - name: "Enable GNOME3 Screensaver Lock After Idle Period"
+   ini_file:
+-    dest: "/etc/dconf/db/local/d/00-security-settings"
++    dest: "/etc/dconf/db/local.d/00-security-settings"
+     section: "org/gnome/desktop/screensaver"
+     option: lock-enabled
+     value: true
+diff --git a/shared/fixes/ansible/dconf_gnome_screensaver_mode_blank.yml b/shared/fixes/ansible/dconf_gnome_screensaver_mode_blank.yml
+index d2be193fe1..64f6ba5b7e 100644
+--- a/shared/fixes/ansible/dconf_gnome_screensaver_mode_blank.yml
++++ b/shared/fixes/ansible/dconf_gnome_screensaver_mode_blank.yml
+@@ -5,7 +5,7 @@
+ # disruption = medium
+ - name: "Implement Blank Screensaver"
+   ini_file:
+-    dest: "/etc/dconf/db/local/d/00-security-settings"
++    dest: "/etc/dconf/db/local.d/00-security-settings"
+     section: "org/gnome/desktop/screensaver"
+     option: picture-uri
+     value: string ''
+diff --git a/shared/fixes/ansible/dconf_gnome_screensaver_user_info.yml b/shared/fixes/ansible/dconf_gnome_screensaver_user_info.yml
+index ee407ad5b1..93873a997a 100644
+--- a/shared/fixes/ansible/dconf_gnome_screensaver_user_info.yml
++++ b/shared/fixes/ansible/dconf_gnome_screensaver_user_info.yml
+@@ -5,7 +5,7 @@
+ # disruption = medium
+ - name: "Disable Full Username on Splash Screen"
+   ini_file:
+-    dest: "/etc/dconf/db/local/d/00-security-settings"
++    dest: "/etc/dconf/db/local.d/00-security-settings"
+     section: "org/gnome/desktop/screensaver"
+     option: show-full-name-in-top-bar
+     value: false

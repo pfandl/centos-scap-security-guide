@@ -6,7 +6,7 @@
 
 Name:		scap-security-guide
 Version:	0.1.%{redhatssgversion}
-Release:	9%{?dist}
+Release:	10%{?dist}
 Summary:	Security guidance and baselines in SCAP formats
 
 Group:		System Environment/Base
@@ -27,6 +27,10 @@ Patch11:    scap-security-guide-0.1.38-aide-scan-email-notification.patch
 Patch12:    scap-security-guide-0.1.39-fix-failing-rules-for-PCI-DSS-DISA-UGSCB.patch
 Patch13:    scap-security-guide-0.1.38-audit-kernel-module-loading.patch
 Patch14:    scap-security-guide-0.1.37-fix-aide-scan-email-notification-remediation.patch
+Patch15:    scap-security-guide-0.1.37-fix-local_d_typos.patch
+Patch16:    scap-security-guide-0.1.37-fix-rhel7-ansible-role.patch
+Patch17:    scap-security-guide-0.1.40-fix-login_d_umask.patch
+Patch18:    scap-security-guide-0.1.40-fix-login_d_umask-2.patch
 BuildArch:	noarch
 
 BuildRequires:	libxslt, expat, python, openscap-scanner >= 1.2.5, python-lxml, cmake >= 2.8
@@ -81,8 +85,18 @@ mkdir build
 %patch12 -p1 -b .fix_failing_rules
 %patch13 -p1 -b .audit_kernel_module
 %patch14 -p1 -b .aide_notification_remediation
+# Fixes https://bugzilla.redhat.com/show_bug.cgi?id=1592887
+%patch15 -p1 -b .ansible_local_d_typos
+# Fixes https://bugzilla.redhat.com/show_bug.cgi?id=1592970
+%patch16 -p1 -b .ansible_roles_patch
+# Fixes https://bugzilla.redhat.com/show_bug.cgi?id=1592957
+%patch17 -p1 -b .ansible_login_defs_umask_patch
+%patch18 -p1 -b .ansible_login_defs_umask_patch-2
 
 %build
+
+# chmod is because of patches 17, 18 that strip the executable permission of this file.
+chmod a+x shared/utils/combine-remediations.py
 cd build
 %cmake -D CMAKE_INSTALL_DOCDIR=%{_pkgdocdir} \
 -DSSG_PRODUCT_CHROMIUM:BOOL=OFF \
@@ -100,13 +114,12 @@ cd build
 -DSSG_PRODUCT_UBUNTU16:BOOL=OFF \
 -DSSG_PRODUCT_WRLINUX:BOOL=OFF \
 -DSSG_PRODUCT_WEBMIN:BOOL=OFF \
--DSSG_CENTOS_DERIVATIVES_ENABLED:BOOL=ON \
+-DSSG_CENTOS_DERIVATIVES_ENABLED:BOOL=OFF \
 -DSSG_SCIENTIFIC_LINUX_DERIVATIVES_ENABLED:BOOL=OFF ../
 make %{?_smp_mflags}
 
 %install
 cd build
-sed 's/Red Hat Enterprise Linux/CentOS Linux/g' -i ssg-centos*.xml
 %make_install
 
 %files
@@ -127,8 +140,10 @@ sed 's/Red Hat Enterprise Linux/CentOS Linux/g' -i ssg-centos*.xml
 %doc build/guides/ssg-*-guide-*.html
 
 %changelog
-* Mon May 14 2018 Johnny Hughes <johnny@centos.org> - 0.1.36-9
-- Manual CentOS Debranding
+* Wed Jun 27 2018 Matěj Týč <matyc@redhat.com> - 0.1.36-10
+- Fix local/d typos in Ansible remediation (RHBZ#1592887)
+- Fix Ansible remediation of SELinux policies (RHBZ#1592970)
+- Fix Ansible remediation of login.defs umask (RHBZ#1592957)
 
 * Fri Apr 27 2018 Watson Yuuma Sato <wsato@redhat.com> - 0.1.36-9
 - Fix remediation of AIDE notification (RHBZ#1571315)

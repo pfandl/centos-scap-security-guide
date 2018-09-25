@@ -1,0 +1,33 @@
+From 95e9d5130f7b20677af0fd8b23b8fb2ad0900d5b Mon Sep 17 00:00:00 2001
+From: Martin Preisler <mpreisle@redhat.com>
+Date: Tue, 26 Jun 2018 13:28:20 -0400
+Subject: [PATCH] To be on the safe side, force ansible XCCDFs to be
+ interpreted as strings
+
+Avoid quotes though because that enables all sorts of escaping rules
+that we would have to work around.
+---
+ ssg/build_remediations.py | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/shared/utils/combine-remediations.py
+index ece3765d56..5f61982750 100644
+--- a/shared/utils/combine-remediations.py
++++ b/shared/utils/combine-remediations.py
+@@ -190,11 +190,15 @@ def expand_xccdf_subs(fix, remediation_type, remediation_functions):
+                 "substituting directly."
+             )
+ 
++        # we use the horrid "!!str |-" syntax to force strings without using
++        # quotes. quotes enable yaml escaping rules so we'd have to escape all
++        # the backslashes and at this point we don't know if there are any.
+         fix_text = re.sub(
+             r"- \(xccdf-var\s+(\S+)\)",
+             r"- name: XCCDF Value \1 # promote to variable\n"
+             r"  set_fact:\n"
+-            r'    \1: "(ansible-populate \1)"\n'
++            r"    \1: !!str |-\n"
++            r"        (ansible-populate \1)\n"
+             r"  tags:\n"
+             r"    - always",
+             fix_text
