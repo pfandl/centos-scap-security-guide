@@ -114,12 +114,13 @@ cd build
 -DSSG_PRODUCT_UBUNTU16:BOOL=OFF \
 -DSSG_PRODUCT_WRLINUX:BOOL=OFF \
 -DSSG_PRODUCT_WEBMIN:BOOL=OFF \
--DSSG_CENTOS_DERIVATIVES_ENABLED:BOOL=OFF \
+-DSSG_CENTOS_DERIVATIVES_ENABLED:BOOL=ON \
 -DSSG_SCIENTIFIC_LINUX_DERIVATIVES_ENABLED:BOOL=OFF ../
 make %{?_smp_mflags}
 
 %install
 cd build
+sed 's/Red Hat Enterprise Linux/CentOS Linux/g' -i ssg-centos*.xml
 %make_install
 
 %files
@@ -140,6 +141,9 @@ cd build
 %doc build/guides/ssg-*-guide-*.html
 
 %changelog
+* Wed Sep 26 2018 Johnny Hughes <johnny@centos.org> - 0.1.36-10
+- Manual CentOS Debranding 
+
 * Wed Jun 27 2018 Matěj Týč <matyc@redhat.com> - 0.1.36-10
 - Fix local/d typos in Ansible remediation (RHBZ#1592887)
 - Fix Ansible remediation of SELinux policies (RHBZ#1592970)
