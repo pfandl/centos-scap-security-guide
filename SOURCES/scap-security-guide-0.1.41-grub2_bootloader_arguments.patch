@@ -1,0 +1,506 @@
+diff --git a/shared/fixes/bash/grub2_audit_argument.sh
+deleted file mode 100644
+index 913ebd6788..0000000000
+--- a/shared/fixes/bash/grub2_audit_argument.sh
++++ /dev/null
+@@ -1,13 +0,0 @@
+-# platform = Red Hat Enterprise Linux 7, multi_platform_fedora
+-
+-# Correct the form of default kernel command line in GRUB
+-if grep -q '^GRUB_CMDLINE_LINUX=.*audit=.*"'  '/etc/default/grub' ; then
+-	# modify the GRUB command-line if an audit= arg already exists
+-	sed -i 's/\(^GRUB_CMDLINE_LINUX=".*\)audit=[^[:space:]]*\(.*"\)/\1 audit=1 \2/'  '/etc/default/grub'
+-else
+-	# no audit=arg is present, append it
+-	sed -i 's/\(^GRUB_CMDLINE_LINUX=".*\)"/\1 audit=1"/'  '/etc/default/grub'
+-fi
+-
+-# Correct the form of kernel command line for each installed kernel in the bootloader
+-grubby --update-kernel=ALL --args="audit=1"
+diff --git a/shared/checks/oval/grub2_audit_argument.xml
+deleted file mode 100644
+index 0a943fd97a..0000000000
+--- a/shared/checks/oval/grub2_audit_argument.xml
++++ /dev/null
+@@ -1,55 +0,0 @@
+-<def-group>
+-  <definition class="compliance" id="grub2_audit_argument" version="2">
+-    <metadata>
+-      <title>Enable Auditing for Processes Which Start Prior to the Audit Daemon</title>
+-      <affected family="unix">
+-        <platform>Red Hat Enterprise Linux 7</platform>
+-        <platform>multi_platform_fedora</platform>
+-      </affected>
+-      <description>Look for argument audit=1 in the kernel line in /etc/default/grub.</description>
+-    </metadata>
+-    <criteria operator="OR">
+-      <criterion test_ref="test_grub2_audit_argument"
+-      comment="check for audit=1 in /etc/default/grub via GRUB_CMDLINE_LINUX" />
+-      <criteria operator="AND">
+-        <criterion test_ref="test_grub2_audit_argument_default"
+-        comment="check for audit=1 in /etc/default/grub via GRUB_CMDLINE_LINUX_DEFAULT" />
+-        <extend_definition definition_ref="bootloader_disable_recovery_set_to_true"
+-        comment="Check GRUB_DISABLE_RECOVERY=true in /etc/default/grub" />
+-      </criteria>
+-    </criteria>
+-  </definition>
+-
+-  <ind:textfilecontent54_test id="test_grub2_audit_argument"
+-  comment="check for audit=1 in /etc/default/grub via GRUB_CMDLINE_LINUX"
+-  check="all" check_existence="all_exist" version="1">
+-    <ind:object object_ref="object_grub2_audit_argument" />
+-    <ind:state state_ref="state_grub2_audit_argument" />
+-  </ind:textfilecontent54_test>
+-
+-  <ind:textfilecontent54_object id="object_grub2_audit_argument" version="1">
+-    <ind:filepath>/etc/default/grub</ind:filepath>
+-    <ind:pattern operation="pattern match">^\s*GRUB_CMDLINE_LINUX="(.*)"$</ind:pattern>
+-    <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
+-  </ind:textfilecontent54_object>
+-
+-  <ind:textfilecontent54_test id="test_grub2_audit_argument_default"
+-  comment="check for audit=1 in /etc/default/grub via GRUB_CMDLINE_LINUX_DEFAULT"
+-  check="all" check_existence="all_exist" version="1">
+-    <ind:object object_ref="object_grub2_audit_argument_default" />
+-    <ind:state state_ref="state_grub2_audit_argument" />
+-  </ind:textfilecontent54_test>
+-
+-  <ind:textfilecontent54_object id="object_grub2_audit_argument_default"
+-  version="1">
+-    <ind:filepath>/etc/default/grub</ind:filepath>
+-    <ind:pattern operation="pattern match">^\s*GRUB_CMDLINE_LINUX_DEFAULT="(.*)"$</ind:pattern>
+-    <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
+-  </ind:textfilecontent54_object>
+-
+-  <ind:textfilecontent54_state id="state_grub2_audit_argument"
+-  version="1">
+-    <ind:subexpression datatype="string" operation="pattern match">^.*audit=1.*$</ind:subexpression>
+-  </ind:textfilecontent54_state>
+-
+-</def-group>
+diff --git a/linux_os/guide/system/auditing/grub2_audit_backlog_limit_argument.rule b/linux_os/guide/system/auditing/grub2_audit_backlog_limit_argument.rule
+new file mode 100644
+index 0000000000..361a6b9853
+--- /dev/null
++++ b/linux_os/guide/system/auditing/grub2_audit_backlog_limit_argument.rule
+@@ -0,0 +1,51 @@
++documentation_complete: true
++
++prodtype: rhel7,fedora
++
++title: 'Extend Audit Backlog Limit for the Audit Daemon'
++
++description: |-
++    To improve the kernel capacity to queue all log events, even those which occurred
++    prior to the audit daemon, add the argument <tt>audit_backlog_limit=8192</tt> to the default
++    GRUB 2 command line for the Linux operating system in
++    <tt>/etc/default/grub</tt>, in the manner below:
++    <pre>GRUB_CMDLINE_LINUX="crashkernel=auto rd.lvm.lv=VolGroup/LogVol06 rd.lvm.lv=VolGroup/lv_swap rhgb quiet rd.shell=0 audit=1 audit_backlog_limit=8192"</pre>
++
++rationale: |-
++    audit_backlog_limit sets the queue length for audit events awaiting transfer
++    to the audit daemon. Until the audit daemon is up and running, all log messages
++    are stored in this queue.  If the queue is overrun during boot process, the action
++    defined by audit failure flag is taken.
++
++severity: unknown
++
++ocil_clause: 'audit backlog limit is not configured'
++
++ocil: |-
++    Inspect the form of default GRUB 2 command line for the Linux operating system
++    in <tt>/etc/default/grub</tt>. If they include <tt>audit_backlog_limit=1</tt>, then auditing
++    is enabled at boot time.
++    <br /><br />
++    To ensure <tt>audit_backlog_limit=1</tt> is configured on all installed kernels, the
++    following command may be used:
++    <br />
++    <pre>$ sudo /sbin/grubby --update-kernel=ALL --args="audit_backlog_limit=1"</pre>
++    <br />
++
++warnings:
++    - management: |-
++        The GRUB 2 configuration file, <tt>grub.cfg</tt>,
++        is automatically updated each time a new kernel is installed. Note that any
++        changes to <tt>/etc/default/grub</tt> require rebuilding the <tt>grub.cfg</tt>
++        file. To update the GRUB 2 configuration file manually, use the
++        <pre>grub2-mkconfig -o</pre> command as follows:
++        <ul>
++        <li>On BIOS-based machines, issue the following command as <tt>root</tt>:
++        <pre>~]# grub2-mkconfig -o /boot/grub2/grub.cfg</pre></li>
++        <li>On UEFI-based machines, issue the following command as <tt>root</tt>:
++{{% if product == "rhel7" %}}
++        <pre>~]# grub2-mkconfig -o /boot/efi/EFI/redhat/grub.cfg</pre></li>
++{{% else %}}
++        <pre>~]# grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg</pre></li>
++{{% endif %}}
++        </ul>
+diff --git a/linux_os/guide/system/permissions/restrictions/grub2_vsyscall_argument.rule b/linux_os/guide/system/permissions/restrictions/grub2_vsyscall_argument.rule
+new file mode 100644
+index 0000000000..8773f2407f
+--- /dev/null
++++ b/linux_os/guide/system/permissions/restrictions/grub2_vsyscall_argument.rule
+@@ -0,0 +1,49 @@
++documentation_complete: true
++
++prodtype: rhel7,fedora
++
++title: 'Disable vsyscalls'
++
++description: |-
++    To disable use of virtual syscalls,
++    add the argument <tt>vsyscall=none</tt> to the default
++    GRUB 2 command line for the Linux operating system in
++    <tt>/etc/default/grub</tt>, in the manner below:
++    <pre>GRUB_CMDLINE_LINUX="vsyscall=none"</pre>
++
++rationale: |-
++    Virtual Syscalls provide an opportunity of attack for a user who has control
++    of the return instruction pointer.
++
++severity: unknown
++
++ocil_clause: 'vsyscalls are enabled'
++
++ocil: |-
++    Inspect the form of default GRUB 2 command line for the Linux operating system
++    in <tt>/etc/default/grub</tt>. If they include <tt>vsyscall=none</tt>,
++    then virtyal syscalls are not enabled at boot time.
++    <br /><br />
++    To ensure <tt>vsyscall=none</tt> is configured on all installed kernels, the
++    following command may be used:
++    <br />
++    <pre>$ sudo /sbin/grubby --update-kernel=ALL --args="vsyscall=none</pre>
++    <br />
++
++warnings:
++    - management: |-
++        The GRUB 2 configuration file, <tt>grub.cfg</tt>,
++        is automatically updated each time a new kernel is installed. Note that any
++        changes to <tt>/etc/default/grub</tt> require rebuilding the <tt>grub.cfg</tt>
++        file. To update the GRUB 2 configuration file manually, use the
++        <pre>grub2-mkconfig -o</pre> command as follows:
++        <ul>
++        <li>On BIOS-based machines, issue the following command as <tt>root</tt>:
++        <pre>~]# grub2-mkconfig -o /boot/grub2/grub.cfg</pre></li>
++        <li>On UEFI-based machines, issue the following command as <tt>root</tt>:
++{{% if product == "rhel7" %}}
++        <pre>~]# grub2-mkconfig -o /boot/efi/EFI/redhat/grub.cfg</pre></li>
++{{% else %}}
++        <pre>~]# grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg</pre></li>
++{{% endif %}}
++        </ul>
+diff --git a/linux_os/guide/system/permissions/restrictions/poisoning/group.yml b/linux_os/guide/system/permissions/restrictions/poisoning/group.yml
+new file mode 100644
+index 0000000000..6a7a370f2b
+--- /dev/null
++++ b/linux_os/guide/system/permissions/restrictions/poisoning/group.yml
+@@ -0,0 +1,8 @@
++documentation_complete: true
++
++title: 'Memory Poisoning'
++
++description: |-
++    Memory Poisoning consists of writing a special value to uninitialized or freed memory.
++    Poisoning can be used as a mechanism to prevent leak of information and detection of
++    corrupted memory.
+diff --git a/linux_os/guide/system/permissions/restrictions/poisoning/grub2_page_poison_argument.rule b/linux_os/guide/system/permissions/restrictions/poisoning/grub2_page_poison_argument.rule
+new file mode 100644
+index 0000000000..9056613b0d
+--- /dev/null
++++ b/linux_os/guide/system/permissions/restrictions/poisoning/grub2_page_poison_argument.rule
+@@ -0,0 +1,52 @@
++documentation_complete: true
++
++prodtype: rhel7,fedora
++
++title: 'Enable page allocator poisoning'
++
++description: |-
++    To enable poisoning of free pages,
++    add the argument <tt>page_poison=1</tt> to the default
++    GRUB 2 command line for the Linux operating system in
++    <tt>/etc/default/grub</tt>, in the manner below:
++    <pre>GRUB_CMDLINE_LINUX="page_poison=1"</pre>
++
++rationale: |-
++    Poisoning writes an arbitrary value to freed pages, so any modification or
++    reference to that page after being freed or before being initialized will be
++    detected and prevented.
++    This prevents many types of use-after-free vulnerabilities at little performance cost.
++    Also prevents leak of data and detection of corrupted memory.
++
++severity: unknown
++
++ocil_clause: 'page allocator poisoning is not enabled'
++
++ocil: |-
++    Inspect the form of default GRUB 2 command line for the Linux operating system
++    in <tt>/etc/default/grub</tt>. If they include <tt>page_poison=1</tt>,
++    then page poisoning is enabled at boot time.
++    <br /><br />
++    To ensure <tt>page_poison=1</tt> is configured on all installed kernels, the
++    following command may be used:
++    <br />
++    <pre>$ sudo /sbin/grubby --update-kernel=ALL --args="page_poison=1</pre>
++    <br />
++
++warnings:
++    - management: |-
++        The GRUB 2 configuration file, <tt>grub.cfg</tt>,
++        is automatically updated each time a new kernel is installed. Note that any
++        changes to <tt>/etc/default/grub</tt> require rebuilding the <tt>grub.cfg</tt>
++        file. To update the GRUB 2 configuration file manually, use the
++        <pre>grub2-mkconfig -o</pre> command as follows:
++        <ul>
++        <li>On BIOS-based machines, issue the following command as <tt>root</tt>:
++        <pre>~]# grub2-mkconfig -o /boot/grub2/grub.cfg</pre></li>
++        <li>On UEFI-based machines, issue the following command as <tt>root</tt>:
++{{% if product == "rhel7" %}}
++        <pre>~]# grub2-mkconfig -o /boot/efi/EFI/redhat/grub.cfg</pre></li>
++{{% else %}}
++        <pre>~]# grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg</pre></li>
++{{% endif %}}
++        </ul>
+diff --git a/linux_os/guide/system/permissions/restrictions/poisoning/grub2_slub_debug_argument.rule b/linux_os/guide/system/permissions/restrictions/poisoning/grub2_slub_debug_argument.rule
+new file mode 100644
+index 0000000000..ea982ee216
+--- /dev/null
++++ b/linux_os/guide/system/permissions/restrictions/poisoning/grub2_slub_debug_argument.rule
+@@ -0,0 +1,52 @@
++documentation_complete: true
++
++prodtype: rhel7,fedora
++
++title: 'Enable SLUB/SLAB allocator poisoning'
++
++description: |-
++    To enable poisoning of SLUB/SLAB objects,
++    add the argument <tt>slub_debug=P</tt> to the default
++    GRUB 2 command line for the Linux operating system in
++    <tt>/etc/default/grub</tt>, in the manner below:
++    <pre>GRUB_CMDLINE_LINUX="slub_debug=P"</pre>
++
++rationale: |-
++    Poisoning writes an arbitrary value to freed objects, so any modification or
++    reference to that object after being freed or before being initialized will be
++    detected and prevented.
++    This prevents many types of use-after-free vulnerabilities at little performance cost.
++    Also prevents leak of data and detection of corrupted memory.
++
++severity: unknown
++
++ocil_clause: 'SLUB/SLAB poisoning is not enabled'
++
++ocil: |-
++    Inspect the form of default GRUB 2 command line for the Linux operating system
++    in <tt>/etc/default/grub</tt>. If they include <tt>slub_debug=P</tt>,
++    then SLUB/SLAB poisoning is enabled at boot time.
++    <br /><br />
++    To ensure <tt>slub_debug=P</tt> is configured on all installed kernels, the
++    following command may be used:
++    <br />
++    <pre>$ sudo /sbin/grubby --update-kernel=ALL --args="slub_debug=P</pre>
++    <br />
++
++warnings:
++    - management: |-
++        The GRUB 2 configuration file, <tt>grub.cfg</tt>,
++        is automatically updated each time a new kernel is installed. Note that any
++        changes to <tt>/etc/default/grub</tt> require rebuilding the <tt>grub.cfg</tt>
++        file. To update the GRUB 2 configuration file manually, use the
++        <pre>grub2-mkconfig -o</pre> command as follows:
++        <ul>
++        <li>On BIOS-based machines, issue the following command as <tt>root</tt>:
++        <pre>~]# grub2-mkconfig -o /boot/grub2/grub.cfg</pre></li>
++        <li>On UEFI-based machines, issue the following command as <tt>root</tt>:
++{{% if product == "rhel7" %}}
++        <pre>~]# grub2-mkconfig -o /boot/efi/EFI/redhat/grub.cfg</pre></li>
++{{% else %}}
++        <pre>~]# grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg</pre></li>
++{{% endif %}}
++        </ul>
+diff --git a/rhel7/profiles/ospp42.profile b/rhel7/profiles/ospp42.profile
+index bfdc68de8b..dd157a6e5b 100644
+--- a/rhel7/profiles/ospp42.profile
++++ b/rhel7/profiles/ospp42.profile
+@@ -15,6 +15,7 @@ description: |-
+ selections:
+     - installed_OS_is_certified
+     - grub2_audit_argument
++    - grub2_audit_backlog_limit_argument
+     - service_auditd_enabled
+     - grub2_enable_fips_mode
+     - rpm_verify_hashes
+@@ -53,6 +54,9 @@ selections:
+     - grub2_password
+     - grub2_uefi_password
+     - grub2_disable_interactive_boot
++    - grub2_slub_debug_argument
++    - grub2_page_poison_argument
++    - grub2_vsyscall_argument
+     - no_empty_passwords
+     - require_singleuser_auth
+     - service_debug-shell_disabled
+diff --git a/shared/templates/create_grub2_bootloader_argument.py b/shared/templates/create_grub2_bootloader_argument.py
+new file mode 100644
+index 0000000000..bbd6e46a82
+--- /dev/null
++++ b/shared/templates/create_grub2_bootloader_argument.py
+@@ -0,0 +1,40 @@
++#!/usr/bin/python2
++
++#
++# create_grub2_bootloader_argument.py
++#        generate template-based checks for unsuccessful file modifications detailed
++
++
++from template_common import FilesGenerator, UnknownTargetError
++
++import re
++
++class GRUB2BootloaderArgumentGenerator(FilesGenerator):
++    def generate(self, target, args):
++        arg_name, arg_value = args[0:2]
++        arg_name_value = arg_name + '=' + arg_value
++
++        if target == "bash":
++            self.file_from_template(
++                "./template_BASH_grub2_bootloader_argument",
++                {
++                    "ARG_NAME": arg_name,
++                    "ARG_NAME_VALUE": arg_name_value
++                },
++                "./bash/grub2_{0}_argument.sh", arg_name
++            )
++        elif target == "oval":
++            self.file_from_template(
++                "./template_OVAL_grub2_bootloader_argument",
++                {
++                    "ARG_NAME": arg_name,
++                    "ARG_NAME_VALUE": arg_name_value
++                },
++                "./oval/grub2_{0}_argument.xml", arg_name
++            )
++        else:
++            raise UnknownTargetError(target)
++
++    def csv_format(self):
++        return("CSV should contains lines of the format: " +
++               "SYSCALL")
+diff --git a/shared/templates/csv/grub2_bootloader_argument.csv b/shared/templates/csv/grub2_bootloader_argument.csv
+new file mode 100644
+index 0000000000..8610111715
+--- /dev/null
++++ b/shared/templates/csv/grub2_bootloader_argument.csv
+@@ -0,0 +1,10 @@
++# format:
++# <argument_name>,<value>
++# - argument_name is the name of argument for the bootloader
++# - value is the value for the argument
++
++audit,1
++audit_backlog_limit,8192
++slub_debug,P
++page_poison,1
++vsyscall,none
+diff --git a/shared/templates/template_BASH_grub2_bootloader_argument b/shared/templates/template_BASH_grub2_bootloader_argument
+new file mode 100644
+index 0000000000..9f48517415
+--- /dev/null
++++ b/shared/templates/template_BASH_grub2_bootloader_argument
+@@ -0,0 +1,13 @@
++# platform = Red Hat Enterprise Linux 7, multi_platform_fedora
++
++# Correct the form of default kernel command line in GRUB
++if grep -q '^GRUB_CMDLINE_LINUX=.*{{{ ARG_NAME }}}=.*"'  '/etc/default/grub' ; then
++	# modify the GRUB command-line if an {{{ ARG_NAME }}}= arg already exists
++	sed -i 's/\(^GRUB_CMDLINE_LINUX=".*\){{{ ARG_NAME }}}=[^[:space:]]*\(.*"\)/\1 {{{ ARG_NAME_VALUE }}} \2/'  '/etc/default/grub'
++else
++	# no {{{ ARG_NAME }}}=arg is present, append it
++	sed -i 's/\(^GRUB_CMDLINE_LINUX=".*\)"/\1 {{{ ARG_NAME_VALUE }}}"/'  '/etc/default/grub'
++fi
++
++# Correct the form of kernel command line for each installed kernel in the bootloader
++grubby --update-kernel=ALL --args="{{{ ARG_NAME_VALUE }}}"
+diff --git a/shared/templates/template_OVAL_grub2_bootloader_argument b/shared/templates/template_OVAL_grub2_bootloader_argument
+new file mode 100644
+index 0000000000..b6f4b1397a
+--- /dev/null
++++ b/shared/templates/template_OVAL_grub2_bootloader_argument
+@@ -0,0 +1,55 @@
++<def-group>
++  <definition class="compliance" id="grub2_{{{ ARG_NAME }}}_argument" version="2">
++    <metadata>
++      <title>Ensure GRUB 2 is configured to run Linux operating system with argument {{{ ARG_NAME_VALUE }}}</title>
++      <affected family="unix">
++        <platform>Red Hat Enterprise Linux 7</platform>
++        <platform>multi_platform_fedora</platform>
++      </affected>
++      <description>Look for argument {{{ ARG_NAME_VALUE }}} in the kernel line in /etc/default/grub.</description>
++    </metadata>
++    <criteria operator="OR">
++      <criterion test_ref="test_grub2_{{{ ARG_NAME }}}_argument"
++      comment="check for {{{ ARG_NAME_VALUE }}} in /etc/default/grub via GRUB_CMDLINE_LINUX" />
++      <criteria operator="AND">
++        <criterion test_ref="test_grub2_{{{ ARG_NAME }}}_argument_default"
++        comment="check for {{{ ARG_NAME_VALUE }}} in /etc/default/grub via GRUB_CMDLINE_LINUX_DEFAULT" />
++        <extend_definition definition_ref="bootloader_disable_recovery_set_to_true"
++        comment="Check GRUB_DISABLE_RECOVERY=true in /etc/default/grub" />
++      </criteria>
++    </criteria>
++  </definition>
++
++  <ind:textfilecontent54_test id="test_grub2_{{{ ARG_NAME }}}_argument"
++  comment="check for {{{ ARG_NAME_VALUE }}} in /etc/default/grub via GRUB_CMDLINE_LINUX"
++  check="all" check_existence="all_exist" version="1">
++    <ind:object object_ref="object_grub2_{{{ ARG_NAME }}}_argument" />
++    <ind:state state_ref="state_grub2_{{{ ARG_NAME }}}_argument" />
++  </ind:textfilecontent54_test>
++
++  <ind:textfilecontent54_object id="object_grub2_{{{ ARG_NAME }}}_argument" version="1">
++    <ind:filepath>/etc/default/grub</ind:filepath>
++    <ind:pattern operation="pattern match">^\s*GRUB_CMDLINE_LINUX="(.*)"$</ind:pattern>
++    <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
++  </ind:textfilecontent54_object>
++
++  <ind:textfilecontent54_test id="test_grub2_{{{ ARG_NAME }}}_argument_default"
++  comment="check for {{{ ARG_NAME_VALUE }}} in /etc/default/grub via GRUB_CMDLINE_LINUX_DEFAULT"
++  check="all" check_existence="all_exist" version="1">
++    <ind:object object_ref="object_grub2_{{{ ARG_NAME }}}_argument_default" />
++    <ind:state state_ref="state_grub2_{{{ ARG_NAME }}}_argument" />
++  </ind:textfilecontent54_test>
++
++  <ind:textfilecontent54_object id="object_grub2_{{{ ARG_NAME }}}_argument_default"
++  version="1">
++    <ind:filepath>/etc/default/grub</ind:filepath>
++    <ind:pattern operation="pattern match">^\s*GRUB_CMDLINE_LINUX_DEFAULT="(.*)"$</ind:pattern>
++    <ind:instance datatype="int" operation="greater than or equal">1</ind:instance>
++  </ind:textfilecontent54_object>
++
++  <ind:textfilecontent54_state id="state_grub2_{{{ ARG_NAME }}}_argument"
++  version="1">
++    <ind:subexpression datatype="string" operation="pattern match">^.*{{{ ARG_NAME_VALUE }}}.*$</ind:subexpression>
++  </ind:textfilecontent54_state>
++
++</def-group>
+diff --git a/ssg/build_templates.py b/ssg/build_templates.py
+index f4373553b2..c36bbbacc4 100644
+--- a/ssg/build_templates.py
++++ b/ssg/build_templates.py
+@@ -28,6 +28,7 @@
+ from create_audit_rules_usergroup_modification import AuditRulesUserGroupModificationGenerator
+ from create_audit_rules_execution import AuditRulesExecutionGenerator
+ from create_audit_rules_path_syscall import AuditRulesPathSyscallGenerator
++from create_grub2_bootloader_argument import GRUB2BootloaderArgumentGenerator
+ 
+ 
+ class Builder(object):
+@@ -74,6 +75,7 @@ def __init__(self, env_yaml):
+             "audit_rules_usergroup_modification.csv":  AuditRulesUserGroupModificationGenerator(),
+             "audit_rules_execution.csv":        AuditRulesExecutionGenerator(),
+             "audit_rules_path_syscall.csv":        AuditRulesPathSyscallGenerator(),
++            "grub2_bootloader_argument.csv":        GRUB2BootloaderArgumentGenerator(),
+         }
+         self.langs = TEMPLATED_LANGUAGES
+         utils_dir = os.path.dirname(os.path.realpath(__file__))

@@ -1,0 +1,289 @@
+diff --git a/shared/templates/template_OVAL_audit_rules_path_syscall b/shared/templates/template_OVAL_audit_rules_path_syscall
+index dcc1d7b0a2..2544099b8d 100644
+--- a/shared/templates/template_OVAL_audit_rules_path_syscall
++++ b/shared/templates/template_OVAL_audit_rules_path_syscall
+@@ -40,13 +40,14 @@
+     </criteria>
+   </definition>
+ 
++
+   <!-- Access to /var/log/audit rule regex-->
+   <constant_variable id="var_audit_rule_32bit_{{{ SYSCALL }}}_write_{{{ PATHID }}}_regex" version="1" datatype="string" comment="audit rule arch and syscal">
+-      <value>^[\s]*-a[\s]+always,exit[\s]+(?:-F[\s]+arch=b32[\s]+)(?:-S(?:[\s]+{{{ SYSCALL }}}[\s]+|(?:[\s]+|[,]){{{ SYSCALL }}}(?:[\s]+|[,])))[\S]*[\s]*(?:-F[\s]+a2&amp;03)[\s]+(?:-F[\s]+path={{{ PATH }}})[\s]+(?:-F\s+auid>={{{ auid }}}[\s]+)(?:-F\s+auid!=(unset|4294967295)[\s]+)(?:-k[\s]+|-F[\s]+key=)[\S]+[\s]*$</value>
++      <value>^[\s]*-a[\s]+always,exit[\s]+(?:-F[\s]+arch=b32[\s]+)(?:-S[\s]+(?:|(?:[\S]+,)+)({{{ SYSCALL }}})(?:|(?:,[\S]+)+))[\s]+(?:-F[\s]+a2&amp;03)[\s]+(?:-F[\s]+path={{{ PATH }}})[\s]+(?:-F\s+auid>={{{ auid }}}[\s]+)(?:-F\s+auid!=(unset|4294967295)[\s]+)(?:-k[\s]+|-F[\s]+key=)[\S]+[\s]*$</value>
+   </constant_variable>
+ 
+   <constant_variable id="var_audit_rule_64bit_{{{ SYSCALL }}}_write_{{{ PATHID }}}_regex" version="1" datatype="string" comment="audit rule arch and syscal">
+-      <value>^[\s]*-a[\s]+always,exit[\s]+(?:-F[\s]+arch=b64[\s]+)(?:-S(?:[\s]+{{{ SYSCALL }}}[\s]+|(?:[\s]+|[,]){{{ SYSCALL }}}(?:[\s]+|[,])))[\S]*[\s]*(?:-F[\s]+a2&amp;03)[\s]+(?:-F[\s]+path={{{ PATH }}})[\s]+(?:-F\s+auid>={{{ auid }}}[\s]+)(?:-F\s+auid!=(unset|4294967295)[\s]+)(?:-k[\s]+|-F[\s]+key=)[\S]+[\s]*$</value>
++      <value>^[\s]*-a[\s]+always,exit[\s]+(?:-F[\s]+arch=b64[\s]+)(?:-S[\s]+(?:|(?:[\S]+,)+)({{{ SYSCALL }}})(?:|(?:,[\S]+)+))[\s]+(?:-F[\s]+a2&amp;03)[\s]+(?:-F[\s]+path={{{ PATH }}})[\s]+(?:-F\s+auid>={{{ auid }}}[\s]+)(?:-F\s+auid!=(unset|4294967295)[\s]+)(?:-k[\s]+|-F[\s]+key=)[\S]+[\s]*$</value>
+   </constant_variable>
+ 
+   <!-- directory access {{{ PATH }}} augenrule -->
+diff --git a/shared/templates/template_OVAL_audit_rules_unsuccessful_file_modification b/shared/templates/template_OVAL_audit_rules_unsuccessful_file_modification
+index 804c0d50b8..cbed460f00 100644
+--- a/shared/templates/template_OVAL_audit_rules_unsuccessful_file_modification
++++ b/shared/templates/template_OVAL_audit_rules_unsuccessful_file_modification
+@@ -46,12 +46,60 @@
+     </criteria>
+   </definition>
+ 
++  <!-- General rule boiler plate -->
++  <constant_variable id="var_32bit_arufm_{{{ NAME }}}_head" version="1" datatype="string" comment="audit rule arch and syscal">
++      <value>^[\s]*-a[\s]+always,exit[\s]+(?:-F[\s]+arch=b32[\s]+)(?:-S[\s]+(?:|(?:[\S]+,)+)({{{ NAME }}})(?:|(?:,[\S]+)+))[\s]+</value>
++  </constant_variable>
++  <constant_variable id="var_64bit_arufm_{{{ NAME }}}_head" version="1" datatype="string" comment="audit rule arch and syscal">
++      <value>^[\s]*-a[\s]+always,exit[\s]+(?:-F[\s]+arch=b64[\s]+)(?:-S[\s]+(?:|(?:[\S]+,)+)({{{ NAME }}})(?:|(?:,[\S]+)+))[\s]+</value>
++  </constant_variable>
++  <constant_variable id="var_arufm_{{{ NAME }}}_tail" version="1" datatype="string" comment="audit rule auid and key">
++    <value>[\s]+(?:-F\s+auid>={{{ auid }}}[\s]+)(?:-F\s+auid!=(unset|4294967295)[\s]+)(?:-k[\s]+|-F[\s]+key=)[\S]+[\s]*$</value>
++  </constant_variable>
++
++  <!-- 32bit EACCES rules -->
++  <local_variable id="var_32bit_arufm_eacces_{{{ NAME }}}_regex" version="1" datatype="string" comment="Expression to match 32bit {{{ NAME }}} EACCES syscall">
++    <concat>
++      <variable_component var_ref="var_32bit_arufm_{{{ NAME }}}_head" />
++      <literal_component>(?:-F\s+exit=-EACCES)</literal_component>
++      <variable_component var_ref="var_arufm_{{{ NAME }}}_tail" />
++    </concat>
++  </local_variable>
++
++  <!-- 32bit EPERM rules -->
++  <local_variable id="var_32bit_arufm_eperm_{{{ NAME }}}_regex" version="1" datatype="string" comment="Expression to match 32bit {{{ NAME }}} EPERM EACCES syscall">
++    <concat>
++      <variable_component var_ref="var_32bit_arufm_{{{ NAME }}}_head" />
++      <literal_component>(?:-F\s+exit=-EPERM)</literal_component>
++      <variable_component var_ref="var_arufm_{{{ NAME }}}_tail" />
++    </concat>
++  </local_variable>
++
++  <!-- 64bit EACCES rules -->
++  <local_variable id="var_64bit_arufm_eacces_{{{ NAME }}}_regex" version="1" datatype="string" comment="Expression to match 64bit {{{ NAME }}} EACCES syscall">
++    <concat>
++      <variable_component var_ref="var_64bit_arufm_{{{ NAME }}}_head" />
++      <literal_component>(?:-F\s+exit=-EACCES)</literal_component>
++      <variable_component var_ref="var_arufm_{{{ NAME }}}_tail" />
++    </concat>
++  </local_variable>
++
++  <!-- 64bit EPERM rules -->
++  <local_variable id="var_64bit_arufm_eperm_{{{ NAME }}}_regex" version="1" datatype="string" comment="Expression to match 64bit {{{ NAME }}} EPERM syscall">
++    <concat>
++      <variable_component var_ref="var_64bit_arufm_{{{ NAME }}}_head" />
++      <literal_component>(?:-F\s+exit=-EPERM)</literal_component>
++      <variable_component var_ref="var_arufm_{{{ NAME }}}_tail" />
++    </concat>
++  </local_variable>
++
++
+   <ind:textfilecontent54_test check="all" comment="audit augenrules 32-bit file eacces" id="test_32bit_arufm_eacces_{{{ NAME }}}_augenrules" version="1">
+     <ind:object object_ref="object_32bit_arufm_eacces_{{{ NAME }}}_augenrules" />
+   </ind:textfilecontent54_test>
+   <ind:textfilecontent54_object id="object_32bit_arufm_eacces_{{{ NAME }}}_augenrules" version="1">
+     <ind:filepath operation="pattern match">/etc/audit/rules\.d/.*\.rules</ind:filepath>
+-    <ind:pattern operation="pattern match">^[\s]*-a[\s]+always,exit[\s]+(?:.*-F[\s]+arch=b32[\s]+)(?:.*(-S[\s]+{{{ NAME }}}[\s]+|([\s]+|[,]){{{ NAME }}}([\s]+|[,])))(?!.*-F\s+a2&amp;)(?:.*-F\s+exit=\-EACCES[\s]+)(?:.*-F\s+auid>={{{ auid }}}[\s]+)(?:.*-F\s+auid!=(?:4294967295|unset)[\s]+).*(-k[\s]+|-F[\s]+key=)[\S]+[\s]*$</ind:pattern>
++    <ind:pattern operation="pattern match" var_ref="var_32bit_arufm_eacces_{{{ NAME }}}_regex" />
+     <ind:instance datatype="int">1</ind:instance>
+   </ind:textfilecontent54_object>
+ 
+@@ -60,7 +108,7 @@
+   </ind:textfilecontent54_test>
+   <ind:textfilecontent54_object id="object_32bit_arufm_eperm_{{{ NAME }}}_augenrules" version="1">
+     <ind:filepath operation="pattern match">/etc/audit/rules\.d/.*\.rules</ind:filepath>
+-    <ind:pattern operation="pattern match">^[\s]*-a[\s]+always,exit[\s]+(?:.*-F[\s]+arch=b32[\s]+)(?:.*(-S[\s]+{{{ NAME }}}[\s]+|([\s]+|[,]){{{ NAME }}}([\s]+|[,])))(?!.*-F\s+a2&amp;)(?:.*-F\s+exit=\-EPERM[\s]+)(?:.*-F\s+auid>={{{ auid }}}[\s]+)(?:.*-F\s+auid!=(?:4294967295|unset)[\s]+).*(-k[\s]+|-F[\s]+key=)[\S]+[\s]*$</ind:pattern>
++    <ind:pattern operation="pattern match" var_ref="var_32bit_arufm_eperm_{{{ NAME }}}_regex" />
+     <ind:instance datatype="int">1</ind:instance>
+   </ind:textfilecontent54_object>
+ 
+@@ -69,7 +117,7 @@
+   </ind:textfilecontent54_test>
+   <ind:textfilecontent54_object id="object_64bit_arufm_eacces_{{{ NAME }}}_augenrules" version="1">
+     <ind:filepath operation="pattern match">/etc/audit/rules\.d/.*\.rules</ind:filepath>
+-    <ind:pattern operation="pattern match">^[\s]*-a[\s]+always,exit[\s]+(?:.*-F[\s]+arch=b64[\s]+)(?:.*(-S[\s]+{{{ NAME }}}[\s]+|([\s]+|[,]){{{ NAME }}}([\s]+|[,])))(?!.*-F\s+a2&amp;)(?:.*-F\s+exit=\-EACCES[\s]+)(?:.*-F\s+auid>={{{ auid }}}[\s]+)(?:.*-F\s+auid!=(?:4294967295|unset)[\s]+).*(-k[\s]+|-F[\s]+key=)[\S]+[\s]*$</ind:pattern>
++    <ind:pattern operation="pattern match" var_ref="var_64bit_arufm_eacces_{{{ NAME }}}_regex" />
+     <ind:instance datatype="int">1</ind:instance>
+   </ind:textfilecontent54_object>
+ 
+@@ -78,7 +126,7 @@
+   </ind:textfilecontent54_test>
+   <ind:textfilecontent54_object id="object_64bit_arufm_eperm_{{{ NAME }}}_augenrules" version="1">
+     <ind:filepath operation="pattern match">/etc/audit/rules\.d/.*\.rules</ind:filepath>
+-    <ind:pattern operation="pattern match">^[\s]*-a[\s]+always,exit[\s]+(?:.*-F[\s]+arch=b64[\s]+)(?:.*(-S[\s]+{{{ NAME }}}[\s]+|([\s]+|[,]){{{ NAME }}}([\s]+|[,])))(?!.*-F\s+a2&amp;)(?:.*-F\s+exit=\-EPERM[\s]+)(?:.*-F\s+auid>={{{ auid }}}[\s]+)(?:.*-F\s+auid!=(?:4294967295|unset)[\s]+).*(-k[\s]+|-F[\s]+key=)[\S]+[\s]*$</ind:pattern>
++    <ind:pattern operation="pattern match" var_ref="var_64bit_arufm_eperm_{{{ NAME }}}_regex" />
+     <ind:instance datatype="int">1</ind:instance>
+   </ind:textfilecontent54_object>
+ 
+@@ -87,7 +135,7 @@
+   </ind:textfilecontent54_test>
+   <ind:textfilecontent54_object id="object_32bit_arufm_eacces_{{{ NAME }}}_auditctl" version="1">
+     <ind:filepath>/etc/audit/audit.rules</ind:filepath>
+-    <ind:pattern operation="pattern match">^[\s]*-a[\s]+always,exit[\s]+(?:.*-F[\s]+arch=b32[\s]+)(?:.*(-S[\s]+{{{ NAME }}}[\s]+|([\s]+|[,]){{{ NAME }}}([\s]+|[,])))(?!.*-F\s+a2&amp;)(?:.*-F\s+exit=\-EACCES[\s]+)(?:.*-F\s+auid>={{{ auid }}}[\s]+)(?:.*-F\s+auid!=(?:4294967295|unset)[\s]+).*(-k[\s]+|-F[\s]+key=)[\S]+[\s]*$</ind:pattern>
++    <ind:pattern operation="pattern match" var_ref="var_32bit_arufm_eacces_{{{ NAME }}}_regex" />
+     <ind:instance datatype="int">1</ind:instance>
+   </ind:textfilecontent54_object>
+ 
+@@ -96,7 +144,7 @@
+   </ind:textfilecontent54_test>
+   <ind:textfilecontent54_object id="object_32bit_arufm_eperm_{{{ NAME }}}_auditctl" version="1">
+     <ind:filepath>/etc/audit/audit.rules</ind:filepath>
+-    <ind:pattern operation="pattern match">^[\s]*-a[\s]+always,exit[\s]+(?:.*-F[\s]+arch=b32[\s]+)(?:.*(-S[\s]+{{{ NAME }}}[\s]+|([\s]+|[,]){{{ NAME }}}([\s]+|[,])))(?!.*-F\s+a2&amp;)(?:.*-F\s+exit=\-EPERM[\s]+)(?:.*-F\s+auid>={{{ auid }}}[\s]+)(?:.*-F\s+auid!=(?:4294967295|unset)[\s]+).*(-k[\s]+|-F[\s]+key=)[\S]+[\s]*$</ind:pattern>
++    <ind:pattern operation="pattern match" var_ref="var_32bit_arufm_eperm_{{{ NAME }}}_regex" />
+     <ind:instance datatype="int">1</ind:instance>
+   </ind:textfilecontent54_object>
+ 
+@@ -105,7 +153,7 @@
+   </ind:textfilecontent54_test>
+   <ind:textfilecontent54_object id="object_64bit_arufm_eacces_{{{ NAME }}}_auditctl" version="1">
+     <ind:filepath>/etc/audit/audit.rules</ind:filepath>
+-    <ind:pattern operation="pattern match">^[\s]*-a[\s]+always,exit[\s]+(?:.*-F[\s]+arch=b64[\s]+)(?:.*(-S[\s]+{{{ NAME }}}[\s]+|([\s]+|[,]){{{ NAME }}}([\s]+|[,])))(?!.*-F\s+a2&amp;)(?:.*-F\s+exit=\-EACCES[\s]+)(?:.*-F\s+auid>={{{ auid }}}[\s]+)(?:.*-F\s+auid!=(?:4294967295|unset)[\s]+).*(-k[\s]+|-F[\s]+key=)[\S]+[\s]*$</ind:pattern>
++    <ind:pattern operation="pattern match" var_ref="var_64bit_arufm_eacces_{{{ NAME }}}_regex" />
+     <ind:instance datatype="int">1</ind:instance>
+   </ind:textfilecontent54_object>
+ 
+@@ -114,7 +162,7 @@
+   </ind:textfilecontent54_test>
+   <ind:textfilecontent54_object id="object_64bit_arufm_eperm_{{{ NAME }}}_auditctl" version="1">
+     <ind:filepath>/etc/audit/audit.rules</ind:filepath>
+-    <ind:pattern operation="pattern match">^[\s]*-a[\s]+always,exit[\s]+(?:.*-F[\s]+arch=b64[\s]+)(?:.*(-S[\s]+{{{ NAME }}}[\s]+|([\s]+|[,]){{{ NAME }}}([\s]+|[,])))(?!.*-F\s+a2&amp;)(?:.*-F\s+exit=\-EPERM[\s]+)(?:.*-F\s+auid>={{{ auid }}}[\s]+)(?:.*-F\s+auid!=(?:4294967295|unset)[\s]+).*(-k[\s]+|-F[\s]+key=)[\S]+[\s]*$</ind:pattern>
++    <ind:pattern operation="pattern match" var_ref="var_64bit_arufm_eperm_{{{ NAME }}}_regex" />
+     <ind:instance datatype="int">1</ind:instance>
+   </ind:textfilecontent54_object>
+ 
+diff --git a/shared/templates/template_OVAL_audit_rules_unsuccessful_file_modification_o_creat b/shared/templates/template_OVAL_audit_rules_unsuccessful_file_modification_o_creat
+index 7f1bf6f68f..01e155f016 100644
+--- a/shared/templates/template_OVAL_audit_rules_unsuccessful_file_modification_o_creat
++++ b/shared/templates/template_OVAL_audit_rules_unsuccessful_file_modification_o_creat
+@@ -51,10 +51,10 @@
+ 
+   <!-- General rule boiler plate -->
+   <constant_variable id="var_audit_rule_{{{ SYSCALL }}}_o_creat_32bit_head" version="1" datatype="string" comment="audit rule arch and syscal">
+-      <value>^[\s]*-a[\s]+always,exit[\s]+(?:-F[\s]+arch=b32[\s]+)(?:-S(?:[\s]+{{{ SYSCALL }}}[\s]+|(?:[\s]+|[,]){{{ SYSCALL }}}(?:[\s]+|[,])))[\S]*[\s]*</value>
++      <value>^[\s]*-a[\s]+always,exit[\s]+(?:-F[\s]+arch=b32[\s]+)(?:-S[\s]+(?:|(?:[\S]+,)+)({{{ SYSCALL }}})(?:|(?:,[\S]+)+))[\s]+</value>
+   </constant_variable>
+   <constant_variable id="var_audit_rule_{{{ SYSCALL }}}_o_creat_64bit_head" version="1" datatype="string" comment="audit rule arch and syscal">
+-      <value>^[\s]*-a[\s]+always,exit[\s]+(?:-F[\s]+arch=b64[\s]+)(?:-S(?:[\s]+{{{ SYSCALL }}}[\s]+|(?:[\s]+|[,]){{{ SYSCALL }}}(?:[\s]+|[,])))[\S]*[\s]*</value>
++      <value>^[\s]*-a[\s]+always,exit[\s]+(?:-F[\s]+arch=b64[\s]+)(?:-S[\s]+(?:|(?:[\S]+,)+)({{{ SYSCALL }}})(?:|(?:,[\S]+)+))[\s]+</value>
+   </constant_variable>
+   <constant_variable id="var_audit_rule_{{{ SYSCALL }}}_o_creat_tail" version="1" datatype="string" comment="audit rule auid and key">
+     <value>[\s]+(?:-F\s+auid>={{{ auid }}}[\s]+)(?:-F\s+auid!=(unset|4294967295)[\s]+)(?:-k[\s]+|-F[\s]+key=)[\S]+[\s]*$</value>
+diff --git a/shared/templates/template_OVAL_audit_rules_unsuccessful_file_modification_o_trunc_write b/shared/templates/template_OVAL_audit_rules_unsuccessful_file_modification_o_trunc_write
+index ce7d3c44c7..64f7277a60 100644
+--- a/shared/templates/template_OVAL_audit_rules_unsuccessful_file_modification_o_trunc_write
++++ b/shared/templates/template_OVAL_audit_rules_unsuccessful_file_modification_o_trunc_write
+@@ -51,10 +51,10 @@
+ 
+   <!-- General rule boiler plate -->
+   <constant_variable id="var_audit_rule_{{{ SYSCALL }}}_o_trunc_32bit_head" version="1" datatype="string" comment="audit rule arch and syscal">
+-      <value>^[\s]*-a[\s]+always,exit[\s]+(?:-F[\s]+arch=b32[\s]+)(?:-S(?:[\s]+{{{ SYSCALL }}}[\s]+|(?:[\s]+|[,]){{{ SYSCALL }}}(?:[\s]+|[,])))[\S]*[\s]*</value>
++      <value>^[\s]*-a[\s]+always,exit[\s]+(?:-F[\s]+arch=b32[\s]+)(?:-S[\s]+(?:|(?:[\S]+,)+)({{{ SYSCALL }}})(?:|(?:,[\S]+)+))[\s]+</value>
+   </constant_variable>
+   <constant_variable id="var_audit_rule_{{{ SYSCALL }}}_o_trunc_64bit_head" version="1" datatype="string" comment="audit rule arch and syscal">
+-      <value>^[\s]*-a[\s]+always,exit[\s]+(?:-F[\s]+arch=b64[\s]+)(?:-S(?:[\s]+{{{ SYSCALL }}}[\s]+|(?:[\s]+|[,]){{{ SYSCALL }}}(?:[\s]+|[,])))[\S]*[\s]*</value>
++      <value>^[\s]*-a[\s]+always,exit[\s]+(?:-F[\s]+arch=b64[\s]+)(?:-S[\s]+(?:|(?:[\S]+,)+)({{{ SYSCALL }}})(?:|(?:,[\S]+)+))[\s]+</value>
+   </constant_variable>
+   <constant_variable id="var_audit_rule_{{{ SYSCALL }}}_o_trunc_tail" version="1" datatype="string" comment="audit rule auid and key">
+     <value>[\s]+(?:-F\s+auid>={{{ auid }}}[\s]+)(?:-F\s+auid!=(unset|4294967295)[\s]+)(?:-k[\s]+|-F[\s]+key=)[\S]+[\s]*$</value>
+diff --git a/shared/templates/template_OVAL_audit_rules_unsuccessful_file_modification_rule_order b/shared/templates/template_OVAL_audit_rules_unsuccessful_file_modification_rule_order
+index 66a8ecf249..12da792d51 100644
+--- a/shared/templates/template_OVAL_audit_rules_unsuccessful_file_modification_rule_order
++++ b/shared/templates/template_OVAL_audit_rules_unsuccessful_file_modification_rule_order
+@@ -52,10 +52,10 @@
+ 
+   <!-- General rule boiler plate -->
+   <constant_variable id="var_audit_rule_{{{ SYSCALL }}}_order_32bit_head" version="1" datatype="string" comment="audit rule arch and syscal">
+-      <value>^[\s]*-a[\s]+always,exit[\s]+(?:-F[\s]+arch=b32[\s]+)(?:-S(?:[\s]+{{{ SYSCALL }}}[\s]+|(?:[\s]+|[,]){{{ SYSCALL }}}(?:[\s]+|[,])))[\S]*[\s]*</value>
++      <value>^[\s]*-a[\s]+always,exit[\s]+(?:-F[\s]+arch=b32[\s]+)(?:-S[\s]+(?:|(?:[\S]+,)+)({{{ SYSCALL }}})(?:|(?:,[\S]+)+))[\s]+</value>
+   </constant_variable>
+   <constant_variable id="var_audit_rule_{{{ SYSCALL }}}_order_64bit_head" version="1" datatype="string" comment="audit rule arch and syscal">
+-      <value>^[\s]*-a[\s]+always,exit[\s]+(?:-F[\s]+arch=b64[\s]+)(?:-S(?:[\s]+{{{ SYSCALL }}}[\s]+|(?:[\s]+|[,]){{{ SYSCALL }}}(?:[\s]+|[,])))[\S]*[\s]*</value>
++      <value>^[\s]*-a[\s]+always,exit[\s]+(?:-F[\s]+arch=b64[\s]+)(?:-S[\s]+(?:|(?:[\S]+,)+)({{{ SYSCALL }}})(?:|(?:,[\S]+)+))[\s]+</value>
+   </constant_variable>
+   <constant_variable id="var_audit_rule_{{{ SYSCALL }}}_order_tail" version="1" datatype="string" comment="audit rule auid and key">
+     <value>[\s]+(?:-F\s+auid>={{{ auid }}}[\s]+)(?:-F\s+auid!=(?:unset|4294967295)[\s]+)(?:-k[\s]+|-F[\s]+key=)[\S]+[\s]*$</value>
+@@ -84,7 +84,7 @@
+   <local_variable id="var_audit_rule_{{{ SYSCALL }}}_order_32bit_eacces_regex" version="1" datatype="string" comment="arches to audit">
+     <concat>
+       <variable_component var_ref="var_audit_rule_{{{ SYSCALL }}}_order_32bit_head" />
+-      <literal_component>(?!.*-F\s+a2&amp;)[\s]+(?:-F\s+exit=-EACCES)</literal_component>
++      <literal_component>(?:-F\s+exit=-EACCES)</literal_component>
+       <variable_component var_ref="var_audit_rule_{{{ SYSCALL }}}_order_tail" />
+     </concat>
+   </local_variable>
+@@ -107,7 +107,7 @@
+   <local_variable id="var_audit_rule_{{{ SYSCALL }}}_order_32bit_eperm_regex" version="1" datatype="string" comment="arches to audit">
+     <concat>
+       <variable_component var_ref="var_audit_rule_{{{ SYSCALL }}}_order_32bit_head" />
+-      <literal_component>(?!.*-F\s+a2&amp;)[\s]+(?:-F\s+exit=-EPERM)</literal_component>
++      <literal_component>(?:-F\s+exit=-EPERM)</literal_component>
+       <variable_component var_ref="var_audit_rule_{{{ SYSCALL }}}_order_tail" />
+     </concat>
+   </local_variable>
+@@ -130,7 +130,7 @@
+   <local_variable id="var_audit_rule_{{{ SYSCALL }}}_order_64bit_eacces_regex" version="1" datatype="string" comment="arches to audit">
+     <concat>
+       <variable_component var_ref="var_audit_rule_{{{ SYSCALL }}}_order_64bit_head" />
+-      <literal_component>(?!.*-F\s+a2&amp;)[\s]+(?:-F\s+exit=-EACCES)</literal_component>
++      <literal_component>(?:-F\s+exit=-EACCES)</literal_component>
+       <variable_component var_ref="var_audit_rule_{{{ SYSCALL }}}_order_tail" />
+     </concat>
+   </local_variable>
+@@ -153,7 +153,7 @@
+   <local_variable id="var_audit_rule_{{{ SYSCALL }}}_order_64bit_eperm_regex" version="1" datatype="string" comment="arches to audit">
+     <concat>
+       <variable_component var_ref="var_audit_rule_{{{ SYSCALL }}}_order_64bit_head" />
+-      <literal_component>(?!.*-F\s+a2&amp;)[\s]+(?:-F\s+exit=-EPERM)</literal_component>
++      <literal_component>(?:-F\s+exit=-EPERM)</literal_component>
+       <variable_component var_ref="var_audit_rule_{{{ SYSCALL }}}_order_tail" />
+     </concat>
+   </local_variable>
+diff --git a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_open/open_before_last.pass.sh b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_open/open_before_last.pass.sh
+new file mode 100644
+index 0000000000..1f30447324
+--- /dev/null
++++ b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_open/open_before_last.pass.sh
+@@ -0,0 +1,7 @@
++#!/bin/bash
++
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++# remediation = none
++
++sed 's/openat,open_by_handle_at/open,open_by_handle_at/' ../audit_open.rules > /etc/audit/rules.d/open_o_creat.rules
++sed -i 's/ open,/ openat,/' /etc/audit/rules.d/open_o_creat.rules
+diff --git a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_open/open_last.pass.sh b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_open/open_last.pass.sh
+new file mode 100644
+index 0000000000..d3fdcf71a5
+--- /dev/null
++++ b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_open/open_last.pass.sh
+@@ -0,0 +1,7 @@
++#!/bin/bash
++
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++# remediation = none
++
++sed 's/_by_handle_at//' ../audit_open.rules > /etc/audit/rules.d/open_o_creat.rules
++sed -i 's/open,/open_by_handle_at,/' /etc/audit/rules.d/open_o_creat.rules
+diff --git a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_open_o_creat/o_creat_before_last.pass.sh b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_open_o_creat/o_creat_before_last.pass.sh
+new file mode 100644
+index 0000000000..acdec877ef
+--- /dev/null
++++ b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_open_o_creat/o_creat_before_last.pass.sh
+@@ -0,0 +1,7 @@
++#!/bin/bash
++
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++# remediation = none
++
++sed 's/openat,open_by_handle_at/open,open_by_handle_at/' ../audit_open_o_creat.rules > /etc/audit/rules.d/open_o_creat.rules
++sed -i 's/ open,/ openat,/' /etc/audit/rules.d/open_o_creat.rules
+diff --git a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_open_o_creat/o_creat_last.pass.sh b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_open_o_creat/o_creat_last.pass.sh
+new file mode 100644
+index 0000000000..33a3ad88bf
+--- /dev/null
++++ b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_open_o_creat/o_creat_last.pass.sh
+@@ -0,0 +1,7 @@
++#!/bin/bash
++
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++# remediation = none
++
++sed 's/_by_handle_at//' ../audit_open_o_creat.rules > /etc/audit/rules.d/open_o_creat.rules
++sed -i 's/open,/open_by_handle_at,/' /etc/audit/rules.d/open_o_creat.rules

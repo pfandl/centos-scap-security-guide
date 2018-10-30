@@ -1,0 +1,52 @@
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_rename.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_rename.rule
+index 3fdcb3e89d..33b8371e91 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_rename.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_rename.rule
+@@ -42,5 +42,6 @@ warnings:
+     - general: |-
+         Note that these rules can be configured in a
+         number of ways while still achieving the desired effect. Here the system calls
+-        have been placed independent of other system calls. Grouping these system
+-        calls with others as identifying earlier in this guide is more efficient.
++        have been placed independent of other system calls. Grouping system calls related
++        to the same event is more efficient. See the following example:
++        <pre>-a always,exit -F arch=b32 -S unlink,unlinkat,rename,renameat -F exit=-EACCES -F auid>=1000 -F auid!=unset -F key=unsuccesful-delete</pre>
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_renameat.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_renameat.rule
+index 848ea3256e..7f9093fcd2 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_renameat.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_renameat.rule
+@@ -42,5 +42,6 @@ warnings:
+     - general: |-
+         Note that these rules can be configured in a
+         number of ways while still achieving the desired effect. Here the system calls
+-        have been placed independent of other system calls. Grouping these system
+-        calls with others as identifying earlier in this guide is more efficient.
++        have been placed independent of other system calls. Grouping system calls related
++        to the same event is more efficient. See the following example:
++        <pre>-a always,exit -F arch=b32 -S unlink,unlinkat,rename,renameat -F exit=-EACCES -F auid>=1000 -F auid!=unset -F key=unsuccesful-delete</pre>
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_unlink.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_unlink.rule
+index 8a64a965ea..f898cc5686 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_unlink.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_unlink.rule
+@@ -42,5 +42,6 @@ warnings:
+     - general: |-
+         Note that these rules can be configured in a
+         number of ways while still achieving the desired effect. Here the system calls
+-        have been placed independent of other system calls. Grouping these system
+-        calls with others as identifying earlier in this guide is more efficient.
++        have been placed independent of other system calls. Grouping system calls related
++        to the same event is more efficient. See the following example:
++        <pre>-a always,exit -F arch=b32 -S unlink,unlinkat,rename,renameat -F exit=-EACCES -F auid>=1000 -F auid!=unset -F key=unsuccesful-delete</pre>
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_unlinkat.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_unlinkat.rule
+index c89d7d880b..7c5403361c 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_unlinkat.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_unlinkat.rule
+@@ -42,5 +42,6 @@ warnings:
+     - general: |-
+         Note that these rules can be configured in a
+         number of ways while still achieving the desired effect. Here the system calls
+-        have been placed independent of other system calls. Grouping these system
+-        calls with others as identifying earlier in this guide is more efficient.
++        have been placed independent of other system calls. Grouping system calls related
++        to the same event is more efficient. See the following example:
++        <pre>-a always,exit -F arch=b32 -S unlink,unlinkat,rename,renameat -F exit=-EACCES -F auid>=1000 -F auid!=unset -F key=unsuccesful-delete</pre>

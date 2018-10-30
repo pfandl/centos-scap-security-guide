@@ -1,0 +1,95 @@
+diff --git a/rhel7/profiles/ospp.profile b/rhel7/profiles/ospp.profile
+index 09136fb5ce..e0d9b02c38 100644
+--- a/rhel7/profiles/ospp.profile
++++ b/rhel7/profiles/ospp.profile
+@@ -2,34 +2,35 @@ documentation_complete: true
+ 
+ title: 'United States Government Configuration Baseline'
+ 
+-description: "This compliance profile reflects the core set of security \n
+-    \ related configuration settings for deployment of Red Hat Enterprise \n
+-    \ Linux 7.x into U.S. Defense, Intelligence, and Civilian agencies. \n
+-    \ Development partners and sponsors include the U.S. National Institute \n
+-    \ of Standards and Technology (NIST), U.S. Department of Defense, \n
+-    \ the National Security Agency, and Red Hat.  \n
+-    \ \n
+-    \ This baseline implements configuration requirements from the following \n
+-    \ sources: \n
+-    \ \n
+-    \ - Committee on National Security Systems Instruction No. 1253 (CNSSI 1253) \n
+-    \ - NIST Controlled Unclassified Information (NIST 800-171) \n
+-    \ - NIST 800-53 control selections for MODERATE impact systems (NIST 800-53) \n
+-    \ - U.S. Government Configuration Baseline (USGCB) \n
+-    \ - NIAP Protection Profile for General Purpose Operating Systems v4.0 (OSPP v4.0) \n
+-    \ - DISA Operating System Security Requirements Guide (OS SRG) \n
+-    \ \n
+-    \ For any differing configuration requirements, e.g. password lengths, the stricter \n
+-    \ security setting was chosen. Security Requirement Traceability Guides (RTMs) and \n
+-    \ sample System Security Configuration Guides are provided via the \n
+-    \ scap-security-guide-docs package. \n
+-    \ \n
+-    \ This profile reflects U.S. Government consensus content and is developed through \n
+-    \ the OpenSCAP/SCAP Security Guide initiative, championed by the National \n
+-    \ Security Agency. Except for differences in formatting to accommodate \n
+-    \ publishing processes, this profile mirrors OpenSCAP/SCAP Security Guide \n
+-    \ content as minor divergences, such as bugfixes, work through the \n 
+-    \ consensus and release processes."
++description: |-
++    This compliance profile reflects the core set of security
++    related configuration settings for deployment of Red Hat Enterprise
++    Linux 7.x into U.S. Defense, Intelligence, and Civilian agencies.
++    Development partners and sponsors include the U.S. National Institute
++    of Standards and Technology (NIST), U.S. Department of Defense,
++    the National Security Agency, and Red Hat.
++
++    This baseline implements configuration requirements from the following
++    sources:
++
++    - Committee on National Security Systems Instruction No. 1253 (CNSSI 1253)
++    - NIST Controlled Unclassified Information (NIST 800-171)
++    - NIST 800-53 control selections for MODERATE impact systems (NIST 800-53)
++    - U.S. Government Configuration Baseline (USGCB)
++    - NIAP Protection Profile for General Purpose Operating Systems v4.0 (OSPP v4.0)
++    - DISA Operating System Security Requirements Guide (OS SRG)
++
++    For any differing configuration requirements, e.g. password lengths, the stricter
++    security setting was chosen. Security Requirement Traceability Guides (RTMs) and
++    sample System Security Configuration Guides are provided via the
++    scap-security-guide-docs package.
++
++    This profile reflects U.S. Government consensus content and is developed through
++    the OpenSCAP/SCAP Security Guide initiative, championed by the National
++    Security Agency. Except for differences in formatting to accommodate
++    publishing processes, this profile mirrors OpenSCAP/SCAP Security Guide
++    content as minor divergences, such as bugfixes, work through the
++    consensus and release processes.
+ 
+ selections:
+     - installed_OS_is_certified
+diff --git a/rhel7/profiles/ospp42.profile b/rhel7/profiles/ospp42.profile
+index 8550434ffa..e4a5e9892c 100644
+--- a/rhel7/profiles/ospp42.profile
++++ b/rhel7/profiles/ospp42.profile
+@@ -1,12 +1,16 @@
+ documentation_complete: true
+ 
+-title: 'Protection Profile for General Purpose Operating Systems v. 4.2'
++title: 'OSPP - Protection Profile for General Purpose Operating Systems v. 4.2'
+ 
+-description: "This profile reflects mandatory configuration controls identified\nin the NIAP Configuration Annex to the Protection\
+-    \ Profile for General Purpose Operating\nSystems (Protection Profile Version 4.2). \n\nThis Annex is consistent\
+-    \ with CNSSI-1253, which requires US National Security\nSystems to adhere to certain configuration parameters. Accordingly,\
+-    \ configuration\nguidance produced according to the requirements of this Annex is suitable for use\nin US National Security\
+-    \ Systems."
++description: |-
++    This profile reflects mandatory configuration controls identified in the
++    NIAP Configuration Annex to the Protection Profile for General Purpose
++    Operating Systems (Protection Profile Version 4.2).
++
++    This Annex is consistent with CNSSI-1253, which requires US National Security
++    Systems to adhere to certain configuration parameters. Accordingly, configuration
++    guidance produced according to the requirements of this Annex is suitable for use
++    in US National Security Systems.
+ 
+ selections:
+     - installed_OS_is_certified

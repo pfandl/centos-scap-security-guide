@@ -1,0 +1,444 @@
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_chmod.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_chmod.rule
+new file mode 100644
+index 0000000000..fc5d1c0b92
+--- /dev/null
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_chmod.rule
+@@ -0,0 +1,38 @@
++documentation_complete: true
++
++prodtype: rhel7,fedora
++
++title: 'Record Unsuccessul Permission Changes to Files - chmod'
++
++description: |-
++    The audit system should collect unsuccessful file permission change
++    attempts for all users and root.
++    If the <tt>auditd</tt> daemon is configured
++    to use the <tt>augenrules</tt> program to read audit rules during daemon
++    startup (the default), add the following lines to a file with suffix
++    <tt>.rules</tt> in the directory <tt>/etc/audit/rules.d</tt>.
++    If the <tt>auditd</tt> daemon is configured to use the <tt>auditctl</tt>
++    utility to read audit rules during daemon startup, add the following lines to
++    <tt>/etc/audit/audit.rules</tt> file.
++    <pre>-a always,exit -F arch=b32 -S chmod -F exit=-EACCES -F auid>=1000 -F auid!=unset -F key=unsuccesful-perm-change
++    -a always,exit -F arch=b32 -S chmod -F exit=-EPERM -F auid>=1000 -F auid!=unset -F key=unsuccesful-perm-change</pre>
++    If the system is 64 bit then also add the following lines:
++    <pre>-a always,exit -F arch=b64 -S chmod -F exit=-EACCES -F auid>=1000 -F auid!=unset -F key=unsuccesful-perm-change
++    -a always,exit -F arch=b64 -S chmod -F exit=-EPERM -F auid>=1000 -F auid!=unset -F key=unsuccesful-perm-change</pre>
++
++
++rationale: |-
++    Unsuccessful attempts to change permissions of files could be an indicator of malicious activity on a system. Auditing
++    these events could serve as evidence of potential system compromise.
++
++severity: medium
++
++{{{ complete_ocil_entry_audit_syscall(syscall="chmod") }}}
++
++warnings:
++    - general: |-
++        Note that these rules can be configured in a
++        number of ways while still achieving the desired effect. Here the audit rule checks a
++        system call independently of other system calls. Grouping system calls related
++        to the same event is more efficient. See the following example:
++        <pre>-a always,exit -F arch=b32 -S chmod,fchmod,fchmodat,setxattr,lsetxattr,fsetxattr -F exit=-EACCES -F auid>=1000 -F auid!=unset -F key=unsuccesful-perm-change</pre>
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_fchmod.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_fchmod.rule
+new file mode 100644
+index 0000000000..0b86c9b6b9
+--- /dev/null
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_fchmod.rule
+@@ -0,0 +1,38 @@
++documentation_complete: true
++
++prodtype: rhel7,fedora
++
++title: 'Record Unsuccessul Permission Changes to Files - fchmod'
++
++description: |-
++    The audit system should collect unsuccessful file permission change
++    attempts for all users and root.
++    If the <tt>auditd</tt> daemon is configured
++    to use the <tt>augenrules</tt> program to read audit rules during daemon
++    startup (the default), add the following lines to a file with suffix
++    <tt>.rules</tt> in the directory <tt>/etc/audit/rules.d</tt>.
++    If the <tt>auditd</tt> daemon is configured to use the <tt>auditctl</tt>
++    utility to read audit rules during daemon startup, add the following lines to
++    <tt>/etc/audit/audit.rules</tt> file.
++    <pre>-a always,exit -F arch=b32 -S fchmod -F exit=-EACCES -F auid>=1000 -F auid!=unset -F key=unsuccesful-perm-change
++    -a always,exit -F arch=b32 -S fchmod -F exit=-EPERM -F auid>=1000 -F auid!=unset -F key=unsuccesful-perm-change</pre>
++    If the system is 64 bit then also add the following lines:
++    <pre>-a always,exit -F arch=b64 -S fchmod -F exit=-EACCES -F auid>=1000 -F auid!=unset -F key=unsuccesful-perm-change
++    -a always,exit -F arch=b64 -S fchmod -F exit=-EPERM -F auid>=1000 -F auid!=unset -F key=unsuccesful-perm-change</pre>
++
++
++rationale: |-
++    Unsuccessful attempts to change permissions of files could be an indicator of malicious activity on a system. Auditing
++    these events could serve as evidence of potential system compromise.
++
++severity: medium
++
++{{{ complete_ocil_entry_audit_syscall(syscall="fchmod") }}}
++
++warnings:
++    - general: |-
++        Note that these rules can be configured in a
++        number of ways while still achieving the desired effect. Here the audit rule checks a
++        system call independently of other system calls. Grouping system calls related
++        to the same event is more efficient. See the following example:
++        <pre>-a always,exit -F arch=b32 -S chmod,fchmod,fchmodat,setxattr,lsetxattr,fsetxattr -F exit=-EACCES -F auid>=1000 -F auid!=unset -F key=unsuccesful-perm-change</pre>
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_fchmodat.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_fchmodat.rule
+new file mode 100644
+index 0000000000..6b9a4796ca
+--- /dev/null
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_fchmodat.rule
+@@ -0,0 +1,38 @@
++documentation_complete: true
++
++prodtype: rhel7,fedora
++
++title: 'Record Unsuccessul Permission Changes to Files - fchmodat'
++
++description: |-
++    The audit system should collect unsuccessful file permission change
++    attempts for all users and root.
++    If the <tt>auditd</tt> daemon is configured
++    to use the <tt>augenrules</tt> program to read audit rules during daemon
++    startup (the default), add the following lines to a file with suffix
++    <tt>.rules</tt> in the directory <tt>/etc/audit/rules.d</tt>.
++    If the <tt>auditd</tt> daemon is configured to use the <tt>auditctl</tt>
++    utility to read audit rules during daemon startup, add the following lines to
++    <tt>/etc/audit/audit.rules</tt> file.
++    <pre>-a always,exit -F arch=b32 -S fchmodat -F exit=-EACCES -F auid>=1000 -F auid!=unset -F key=unsuccesful-perm-change
++    -a always,exit -F arch=b32 -S fchmodat -F exit=-EPERM -F auid>=1000 -F auid!=unset -F key=unsuccesful-perm-change</pre>
++    If the system is 64 bit then also add the following lines:
++    <pre>-a always,exit -F arch=b64 -S fchmodat -F exit=-EACCES -F auid>=1000 -F auid!=unset -F key=unsuccesful-perm-change
++    -a always,exit -F arch=b64 -S fchmodat -F exit=-EPERM -F auid>=1000 -F auid!=unset -F key=unsuccesful-perm-change</pre>
++
++
++rationale: |-
++    Unsuccessful attempts to change permissions of files could be an indicator of malicious activity on a system. Auditing
++    these events could serve as evidence of potential system compromise.
++
++severity: medium
++
++{{{ complete_ocil_entry_audit_syscall(syscall="fchmodat") }}}
++
++warnings:
++    - general: |-
++        Note that these rules can be configured in a
++        number of ways while still achieving the desired effect. Here the audit rule checks a
++        system call independently of other system calls. Grouping system calls related
++        to the same event is more efficient. See the following example:
++        <pre>-a always,exit -F arch=b32 -S chmod,fchmod,fchmodat,setxattr,lsetxattr,fsetxattr -F exit=-EACCES -F auid>=1000 -F auid!=unset -F key=unsuccesful-perm-change</pre>
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_fremovexattr.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_fremovexattr.rule
+new file mode 100644
+index 0000000000..7a20898b00
+--- /dev/null
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_fremovexattr.rule
+@@ -0,0 +1,38 @@
++documentation_complete: true
++
++prodtype: rhel7,fedora
++
++title: 'Record Unsuccessul Permission Changes to Files - fremovexattr'
++
++description: |-
++    The audit system should collect unsuccessful file permission change
++    attempts for all users and root.
++    If the <tt>auditd</tt> daemon is configured
++    to use the <tt>augenrules</tt> program to read audit rules during daemon
++    startup (the default), add the following lines to a file with suffix
++    <tt>.rules</tt> in the directory <tt>/etc/audit/rules.d</tt>.
++    If the <tt>auditd</tt> daemon is configured to use the <tt>auditctl</tt>
++    utility to read audit rules during daemon startup, add the following lines to
++    <tt>/etc/audit/audit.rules</tt> file.
++    <pre>-a always,exit -F arch=b32 -S fremovexattr -F exit=-EACCES -F auid>=1000 -F auid!=unset -F key=unsuccesful-perm-change
++    -a always,exit -F arch=b32 -S fremovexattr -F exit=-EPERM -F auid>=1000 -F auid!=unset -F key=unsuccesful-perm-change</pre>
++    If the system is 64 bit then also add the following lines:
++    <pre>-a always,exit -F arch=b64 -S fremovexattr -F exit=-EACCES -F auid>=1000 -F auid!=unset -F key=unsuccesful-perm-change
++    -a always,exit -F arch=b64 -S fremovexattr -F exit=-EPERM -F auid>=1000 -F auid!=unset -F key=unsuccesful-perm-change</pre>
++
++
++rationale: |-
++    Unsuccessful attempts to change permissions of files could be an indicator of malicious activity on a system. Auditing
++    these events could serve as evidence of potential system compromise.
++
++severity: medium
++
++{{{ complete_ocil_entry_audit_syscall(syscall="fremovexattr") }}}
++
++warnings:
++    - general: |-
++        Note that these rules can be configured in a
++        number of ways while still achieving the desired effect. Here the audit rule checks a
++        system call independently of other system calls. Grouping system calls related
++        to the same event is more efficient. See the following example:
++        <pre>-a always,exit -F arch=b32 -S chmod,fchmod,fchmodat,setxattr,lsetxattr,fsetxattr -F exit=-EACCES -F auid>=1000 -F auid!=unset -F key=unsuccesful-perm-change</pre>
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_fsetxattr.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_fsetxattr.rule
+new file mode 100644
+index 0000000000..aa2d8fddf1
+--- /dev/null
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_fsetxattr.rule
+@@ -0,0 +1,38 @@
++documentation_complete: true
++
++prodtype: rhel7,fedora
++
++title: 'Record Unsuccessul Permission Changes to Files - fsetxattr'
++
++description: |-
++    The audit system should collect unsuccessful file permission change
++    attempts for all users and root.
++    If the <tt>auditd</tt> daemon is configured
++    to use the <tt>augenrules</tt> program to read audit rules during daemon
++    startup (the default), add the following lines to a file with suffix
++    <tt>.rules</tt> in the directory <tt>/etc/audit/rules.d</tt>.
++    If the <tt>auditd</tt> daemon is configured to use the <tt>auditctl</tt>
++    utility to read audit rules during daemon startup, add the following lines to
++    <tt>/etc/audit/audit.rules</tt> file.
++    <pre>-a always,exit -F arch=b32 -S fsetxattr -F exit=-EACCES -F auid>=1000 -F auid!=unset -F key=unsuccesful-perm-change
++    -a always,exit -F arch=b32 -S fsetxattr -F exit=-EPERM -F auid>=1000 -F auid!=unset -F key=unsuccesful-perm-change</pre>
++    If the system is 64 bit then also add the following lines:
++    <pre>-a always,exit -F arch=b64 -S fsetxattr -F exit=-EACCES -F auid>=1000 -F auid!=unset -F key=unsuccesful-perm-change
++    -a always,exit -F arch=b64 -S fsetxattr -F exit=-EPERM -F auid>=1000 -F auid!=unset -F key=unsuccesful-perm-change</pre>
++
++
++rationale: |-
++    Unsuccessful attempts to change permissions of files could be an indicator of malicious activity on a system. Auditing
++    these events could serve as evidence of potential system compromise.
++
++severity: medium
++
++{{{ complete_ocil_entry_audit_syscall(syscall="fsetxattr") }}}
++
++warnings:
++    - general: |-
++        Note that these rules can be configured in a
++        number of ways while still achieving the desired effect. Here the audit rule checks a
++        system call independently of other system calls. Grouping system calls related
++        to the same event is more efficient. See the following example:
++        <pre>-a always,exit -F arch=b32 -S chmod,fchmod,fchmodat,setxattr,lsetxattr,fsetxattr -F exit=-EACCES -F auid>=1000 -F auid!=unset -F key=unsuccesful-perm-change</pre>
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_lremovexattr.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_lremovexattr.rule
+new file mode 100644
+index 0000000000..ceac04e986
+--- /dev/null
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_lremovexattr.rule
+@@ -0,0 +1,38 @@
++documentation_complete: true
++
++prodtype: rhel7,fedora
++
++title: 'Record Unsuccessul Permission Changes to Files - lremovexattr'
++
++description: |-
++    The audit system should collect unsuccessful file permission change
++    attempts for all users and root.
++    If the <tt>auditd</tt> daemon is configured
++    to use the <tt>augenrules</tt> program to read audit rules during daemon
++    startup (the default), add the following lines to a file with suffix
++    <tt>.rules</tt> in the directory <tt>/etc/audit/rules.d</tt>.
++    If the <tt>auditd</tt> daemon is configured to use the <tt>auditctl</tt>
++    utility to read audit rules during daemon startup, add the following lines to
++    <tt>/etc/audit/audit.rules</tt> file.
++    <pre>-a always,exit -F arch=b32 -S lremovexattr -F exit=-EACCES -F auid>=1000 -F auid!=unset -F key=unsuccesful-perm-change
++    -a always,exit -F arch=b32 -S lremovexattr -F exit=-EPERM -F auid>=1000 -F auid!=unset -F key=unsuccesful-perm-change</pre>
++    If the system is 64 bit then also add the following lines:
++    <pre>-a always,exit -F arch=b64 -S lremovexattr -F exit=-EACCES -F auid>=1000 -F auid!=unset -F key=unsuccesful-perm-change
++    -a always,exit -F arch=b64 -S lremovexattr -F exit=-EPERM -F auid>=1000 -F auid!=unset -F key=unsuccesful-perm-change</pre>
++
++
++rationale: |-
++    Unsuccessful attempts to change permissions of files could be an indicator of malicious activity on a system. Auditing
++    these events could serve as evidence of potential system compromise.
++
++severity: medium
++
++{{{ complete_ocil_entry_audit_syscall(syscall="lremovexattr") }}}
++
++warnings:
++    - general: |-
++        Note that these rules can be configured in a
++        number of ways while still achieving the desired effect. Here the audit rule checks a
++        system call independently of other system calls. Grouping system calls related
++        to the same event is more efficient. See the following example:
++        <pre>-a always,exit -F arch=b32 -S chmod,fchmod,fchmodat,setxattr,lsetxattr,fsetxattr -F exit=-EACCES -F auid>=1000 -F auid!=unset -F key=unsuccesful-perm-change</pre>
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_lsetxattr.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_lsetxattr.rule
+new file mode 100644
+index 0000000000..6ff2f59d03
+--- /dev/null
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_lsetxattr.rule
+@@ -0,0 +1,38 @@
++documentation_complete: true
++
++prodtype: rhel7,fedora
++
++title: 'Record Unsuccessul Permission Changes to Files - lsetxattr'
++
++description: |-
++    The audit system should collect unsuccessful file permission change
++    attempts for all users and root.
++    If the <tt>auditd</tt> daemon is configured
++    to use the <tt>augenrules</tt> program to read audit rules during daemon
++    startup (the default), add the following lines to a file with suffix
++    <tt>.rules</tt> in the directory <tt>/etc/audit/rules.d</tt>.
++    If the <tt>auditd</tt> daemon is configured to use the <tt>auditctl</tt>
++    utility to read audit rules during daemon startup, add the following lines to
++    <tt>/etc/audit/audit.rules</tt> file.
++    <pre>-a always,exit -F arch=b32 -S lsetxattr -F exit=-EACCES -F auid>=1000 -F auid!=unset -F key=unsuccesful-perm-change
++    -a always,exit -F arch=b32 -S lsetxattr -F exit=-EPERM -F auid>=1000 -F auid!=unset -F key=unsuccesful-perm-change</pre>
++    If the system is 64 bit then also add the following lines:
++    <pre>-a always,exit -F arch=b64 -S lsetxattr -F exit=-EACCES -F auid>=1000 -F auid!=unset -F key=unsuccesful-perm-change
++    -a always,exit -F arch=b64 -S lsetxattr -F exit=-EPERM -F auid>=1000 -F auid!=unset -F key=unsuccesful-perm-change</pre>
++
++
++rationale: |-
++    Unsuccessful attempts to change permissions of files could be an indicator of malicious activity on a system. Auditing
++    these events could serve as evidence of potential system compromise.
++
++severity: medium
++
++{{{ complete_ocil_entry_audit_syscall(syscall="lsetxattr") }}}
++
++warnings:
++    - general: |-
++        Note that these rules can be configured in a
++        number of ways while still achieving the desired effect. Here the audit rule checks a
++        system call independently of other system calls. Grouping system calls related
++        to the same event is more efficient. See the following example:
++        <pre>-a always,exit -F arch=b32 -S chmod,fchmod,fchmodat,setxattr,lsetxattr,fsetxattr -F exit=-EACCES -F auid>=1000 -F auid!=unset -F key=unsuccesful-perm-change</pre>
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_removexattr.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_removexattr.rule
+new file mode 100644
+index 0000000000..b8946872d7
+--- /dev/null
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_removexattr.rule
+@@ -0,0 +1,38 @@
++documentation_complete: true
++
++prodtype: rhel7,fedora
++
++title: 'Record Unsuccessul Permission Changes to Files - removexattr'
++
++description: |-
++    The audit system should collect unsuccessful file permission change
++    attempts for all users and root.
++    If the <tt>auditd</tt> daemon is configured
++    to use the <tt>augenrules</tt> program to read audit rules during daemon
++    startup (the default), add the following lines to a file with suffix
++    <tt>.rules</tt> in the directory <tt>/etc/audit/rules.d</tt>.
++    If the <tt>auditd</tt> daemon is configured to use the <tt>auditctl</tt>
++    utility to read audit rules during daemon startup, add the following lines to
++    <tt>/etc/audit/audit.rules</tt> file.
++    <pre>-a always,exit -F arch=b32 -S removexattr -F exit=-EACCES -F auid>=1000 -F auid!=unset -F key=unsuccesful-perm-change
++    -a always,exit -F arch=b32 -S removexattr -F exit=-EPERM -F auid>=1000 -F auid!=unset -F key=unsuccesful-perm-change</pre>
++    If the system is 64 bit then also add the following lines:
++    <pre>-a always,exit -F arch=b64 -S removexattr -F exit=-EACCES -F auid>=1000 -F auid!=unset -F key=unsuccesful-perm-change
++    -a always,exit -F arch=b64 -S removexattr -F exit=-EPERM -F auid>=1000 -F auid!=unset -F key=unsuccesful-perm-change</pre>
++
++
++rationale: |-
++    Unsuccessful attempts to change permissions of files could be an indicator of malicious activity on a system. Auditing
++    these events could serve as evidence of potential system compromise.
++
++severity: medium
++
++{{{ complete_ocil_entry_audit_syscall(syscall="removexattr") }}}
++
++warnings:
++    - general: |-
++        Note that these rules can be configured in a
++        number of ways while still achieving the desired effect. Here the audit rule checks a
++        system call independently of other system calls. Grouping system calls related
++        to the same event is more efficient. See the following example:
++        <pre>-a always,exit -F arch=b32 -S chmod,fchmod,fchmodat,setxattr,lsetxattr,fsetxattr -F exit=-EACCES -F auid>=1000 -F auid!=unset -F key=unsuccesful-perm-change</pre>
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_setxattr.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_setxattr.rule
+new file mode 100644
+index 0000000000..a14cc93628
+--- /dev/null
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_setxattr.rule
+@@ -0,0 +1,38 @@
++documentation_complete: true
++
++prodtype: rhel7,fedora
++
++title: 'Record Unsuccessul Permission Changes to Files - setxattr'
++
++description: |-
++    The audit system should collect unsuccessful file permission change
++    attempts for all users and root.
++    If the <tt>auditd</tt> daemon is configured
++    to use the <tt>augenrules</tt> program to read audit rules during daemon
++    startup (the default), add the following lines to a file with suffix
++    <tt>.rules</tt> in the directory <tt>/etc/audit/rules.d</tt>.
++    If the <tt>auditd</tt> daemon is configured to use the <tt>auditctl</tt>
++    utility to read audit rules during daemon startup, add the following lines to
++    <tt>/etc/audit/audit.rules</tt> file.
++    <pre>-a always,exit -F arch=b32 -S setxattr -F exit=-EACCES -F auid>=1000 -F auid!=unset -F key=unsuccesful-perm-change
++    -a always,exit -F arch=b32 -S setxattr -F exit=-EPERM -F auid>=1000 -F auid!=unset -F key=unsuccesful-perm-change</pre>
++    If the system is 64 bit then also add the following lines:
++    <pre>-a always,exit -F arch=b64 -S setxattr -F exit=-EACCES -F auid>=1000 -F auid!=unset -F key=unsuccesful-perm-change
++    -a always,exit -F arch=b64 -S setxattr -F exit=-EPERM -F auid>=1000 -F auid!=unset -F key=unsuccesful-perm-change</pre>
++
++
++rationale: |-
++    Unsuccessful attempts to change permissions of files could be an indicator of malicious activity on a system. Auditing
++    these events could serve as evidence of potential system compromise.
++
++severity: medium
++
++{{{ complete_ocil_entry_audit_syscall(syscall="setxattr") }}}
++
++warnings:
++    - general: |-
++        Note that these rules can be configured in a
++        number of ways while still achieving the desired effect. Here the audit rule checks a
++        system call independently of other system calls. Grouping system calls related
++        to the same event is more efficient. See the following example:
++        <pre>-a always,exit -F arch=b32 -S chmod,fchmod,fchmodat,setxattr,lsetxattr,fsetxattr -F exit=-EACCES -F auid>=1000 -F auid!=unset -F key=unsuccesful-perm-change</pre>
+diff --git a/rhel7/profiles/ospp42-draft.profile b/rhel7/profiles/ospp42-draft.profile
+index 42c1e98e39..9802576814 100644
+--- a/rhel7/profiles/ospp42-draft.profile
++++ b/rhel7/profiles/ospp42-draft.profile
+@@ -108,6 +108,15 @@ selections:
+     - audit_rules_dac_modification_lsetxattr
+     - audit_rules_dac_modification_removexattr
+     - audit_rules_dac_modification_setxattr
++    - audit_rules_unsuccessful_file_modification_chmod
++    - audit_rules_unsuccessful_file_modification_fchmodat
++    - audit_rules_unsuccessful_file_modification_fchmod
++    - audit_rules_unsuccessful_file_modification_fremovexattr
++    - audit_rules_unsuccessful_file_modification_fsetxattr
++    - audit_rules_unsuccessful_file_modification_lremovexattr
++    - audit_rules_unsuccessful_file_modification_lsetxattr
++    - audit_rules_unsuccessful_file_modification_removexattr
++    - audit_rules_unsuccessful_file_modification_setxattr
+     - audit_rules_execution_chcon
+     - audit_rules_execution_restorecon
+     - audit_rules_execution_semanage
+diff --git a/shared/templates/csv/audit_rules_unsuccessful_file_modification.csv b/shared/templates/csv/audit_rules_unsuccessful_file_modification.csv
+index 61b81a2ae0..5cc029eb92 100644
+--- a/shared/templates/csv/audit_rules_unsuccessful_file_modification.csv
++++ b/shared/templates/csv/audit_rules_unsuccessful_file_modification.csv
+@@ -1,14 +1,23 @@
+ creat
++chmod
+ chown
++fchmod
++fchmodat
+ fchown
+ fchownat
++fremovexattr
++fsetxattr
+ ftruncate
+ lchown
++lremovexattr
++lsetxattr
+ open
+ openat
+ open_by_handle_at
++removexattr
+ rename
+ renameat
++setxattr
+ truncate
+ unlink
+ unlinkat

@@ -1,0 +1,11 @@
+diff --git a/rhel7/profiles/ospp42.profile b/rhel7/profiles/ospp42.profile
+index d6068ea7f7..440de8b7f8 100644
+--- a/rhel7/profiles/ospp42.profile
++++ b/rhel7/profiles/ospp42.profile
+@@ -186,3 +186,6 @@ selections:
+     - audit_rules_etc_group_open_by_handle_at
+     - package_abrt_removed
+     - package_sendmail_removed
++    - mount_option_dev_shm_nodev
++    - mount_option_dev_shm_noexec
++    - mount_option_dev_shm_nosuid

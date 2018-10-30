@@ -1,0 +1,134 @@
+From 3cba3a59a004582c787cba725fee033c104bfe43 Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Wed, 25 Jul 2018 18:02:01 +0200
+Subject: [PATCH 1/4] Drop restrictions to build remediations for some sysctl
+ rules
+
+Templated generation of remediations for these rules were restricted.
+I don't see the motivation to restrict them, besides to easy comparison
+of generated datastream in 9aa2184d8d0f866df3fb6f1ea1beeafb076b3be5.
+
+RHEL7 content build the OVAL just fine.
+---
+ rhel6/templates/csv/sysctl_values.csv | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/rhel6/templates/csv/sysctl_values.csv b/rhel6/templates/csv/sysctl_values.csv
+index ad0507a2f4..af321acde0 100644
+--- a/rhel6/templates/csv/sysctl_values.csv
++++ b/rhel6/templates/csv/sysctl_values.csv
+@@ -21,8 +21,8 @@ net.ipv4.ip_forward,0
+ net.ipv4.tcp_syncookies,
+ net.ipv6.conf.default.accept_ra,
+ net.ipv6.conf.default.accept_redirects,
+-net.ipv6.conf.all.accept_ra,#only-for:oval
+-net.ipv6.conf.all.accept_redirects,#only-for:oval
+-net.ipv6.conf.default.accept_source_route,#only-for:oval
+-net.ipv6.conf.all.accept_source_route,#only-for:oval
+-net.ipv6.conf.all.forwarding,#only-for:oval
++net.ipv6.conf.all.accept_ra,
++net.ipv6.conf.all.accept_redirects,
++net.ipv6.conf.default.accept_source_route,
++net.ipv6.conf.all.accept_source_route,
++net.ipv6.conf.all.forwarding,
+
+From 574defca3e1559bb5b954e65763b5df542bfeb99 Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Wed, 25 Jul 2018 18:08:12 +0200
+Subject: [PATCH 2/4] Drop generation of kernel_dmesg_restrict
+
+Rule kernel_dmest_restrict is not selected by any sle12 Profile.
+And currently the rule is applicable for rhel6, rhel7 and fedora.
+I see this as a copy pasta legacy.
+---
+ sle12/templates/csv/sysctl_values.csv | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/sle12/templates/csv/sysctl_values.csv b/sle12/templates/csv/sysctl_values.csv
+index 9428bc8a9f..d9b34c9aad 100644
+--- a/sle12/templates/csv/sysctl_values.csv
++++ b/sle12/templates/csv/sysctl_values.csv
+@@ -1,7 +1,6 @@
+ # Add <sysctl_parameter_name, desired_value> to generate hard-coded OVAL and remediation content.
+ # Add <sysctl_parameter_name,> to generate OVAL and remediation content that use the XCCDF value.
+ fs.suid_dumpable,0
+-kernel.dmesg_restrict,1#only-for:bash,ansible
+ #kernel.exec-shield,1
+ kernel.randomize_va_space,2
+ net.ipv4.conf.all.accept_redirects,
+
+From 79166dab27c8f23e6918b675e126f473395bc70b Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Wed, 25 Jul 2018 18:27:08 +0200
+Subject: [PATCH 3/4] Flip template restriction to exclude target languages
+
+It is more likely and easier that we want to generate content for
+all supported languages, and filter out the exceptions.
+---
+ shared/templates/template_common.py | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/shared/templates/template_common.py b/shared/templates/template_common.py
+index da746e0323..b0fdf5fcc9 100644
+--- a/shared/templates/template_common.py
++++ b/shared/templates/template_common.py
+@@ -36,7 +36,7 @@ def __init__(self, template, paths):
+ 
+ 
+ TEMPLATED_LANGUAGES = ["bash", "ansible", "oval", "anaconda", "puppet"]
+-TARGET_REGEX = re.compile(r"#\s*only-for:([\s\w,]*)")
++TARGET_EXCLUDE_REGEX = re.compile(r"#\s*except-for:([\s\w,]*)")
+ 
+ 
+ class FilesGenerator(object):
+@@ -113,13 +113,13 @@ def process_csv_line(self, line, target):
+         """
+ 
+         if target is not None:
+-            match = TARGET_REGEX.search(line)
++            exclude_match = TARGET_EXCLUDE_REGEX.search(line)
+ 
+-            if match:
+-                # if line contains restriction to target, check it
+-                supported_targets = \
+-                    [x.strip() for x in match.group(1).split(",")]
+-                if target not in supported_targets:
++            if exclude_match:
++                # Check if line contains restriction to target
++                unsupported_targets = \
++                    [x.strip() for x in exclude_match.group(1).split(",")]
++                if target in unsupported_targets:
+                     return None
+ 
+         # get part before comment
+
+From 89a059d096641d8f971c9f2d9af903742d251083 Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Wed, 25 Jul 2018 18:44:11 +0200
+Subject: [PATCH 4/4] Dont generate fix for unavailable mount points
+
+Do not generate anaconda remediation for mount options of /dev/shm.
+These mount points are not there at install time.
+---
+ rhel7/templates/csv/mount_options.csv | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/rhel7/templates/csv/mount_options.csv b/rhel7/templates/csv/mount_options.csv
+index 759e51b0fe..f5d9ed8cea 100644
+--- a/rhel7/templates/csv/mount_options.csv
++++ b/rhel7/templates/csv/mount_options.csv
+@@ -6,9 +6,11 @@
+ #     '$' to reference a variable, e.g. var_removable_partition,nodev)
+ #  If the remediation can create (i.e. not just modify) an /etc/fstab line,
+ #  add the 'create_fstab_entry_if_needed' literal string as the third argument.
+-/dev/shm,nodev
+-/dev/shm,noexec
+-/dev/shm,nosuid
++
++# /dev/shm is created by systemd and is not available at install time
++/dev/shm,nodev #except-for:anaconda
++/dev/shm,noexec #except-for:anaconda
++/dev/shm,nosuid #except-for:anaconda
+ /home,nosuid
+ /home,nodev
+ /tmp,nodev

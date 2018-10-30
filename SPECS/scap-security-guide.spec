@@ -1,4 +1,4 @@
-%global		redhatssgversion	36
+%global		redhatssgversion	40
 
 # Somehow, _pkgdocdir is already defined and points to unversioned docs dir
 # RHEL 7.X uses versioned docs dir, hence the definition below
@@ -6,34 +6,50 @@
 
 Name:		scap-security-guide
 Version:	0.1.%{redhatssgversion}
-Release:	10%{?dist}
+Release:	12%{?dist}
 Summary:	Security guidance and baselines in SCAP formats
 
 Group:		System Environment/Base
-License:	Public Domain
+License:	BSD-3-Clause
 URL:		https://github.com/OpenSCAP/scap-security-guide
 Source0:	%{name}-%{version}.tar.bz2
-Patch1:		scap-security-guide-0.1.33-update-upstream-manual-page.patch
-Patch2:		scap-security-guide-0.1.37-add-disa-stig-rule-id.patch
-Patch3:     scap-security-guide-0.1.37-disable-check-libexec_ownership.patch
-Patch4:     scap-security-guide-0.1.37-fix-title.patch
-Patch5:     scap-security-guide-0.1.37-Deprecate-RhostsRSAAuthentication.patch
-Patch6:     scap-security-guide-0.1.37-fix-umask_for_daemons.patch
-Patch7:     scap-security-guide-0.1.37-fix-sshd_required-unset.patch
-Patch8:     scap-security-guide-0.1.37-fix-missing-bash-remediation-include.patch
-Patch9:     scap-security-guide-0.1.37-fix-srg-table-empty-column.path
-Patch10:    scap-security-guide-0.1.38-fix-reference-to-pam-config-manual.patch
-Patch11:    scap-security-guide-0.1.38-aide-scan-email-notification.patch
-Patch12:    scap-security-guide-0.1.39-fix-failing-rules-for-PCI-DSS-DISA-UGSCB.patch
-Patch13:    scap-security-guide-0.1.38-audit-kernel-module-loading.patch
-Patch14:    scap-security-guide-0.1.37-fix-aide-scan-email-notification-remediation.patch
-Patch15:    scap-security-guide-0.1.37-fix-local_d_typos.patch
-Patch16:    scap-security-guide-0.1.37-fix-rhel7-ansible-role.patch
-Patch17:    scap-security-guide-0.1.40-fix-login_d_umask.patch
-Patch18:    scap-security-guide-0.1.40-fix-login_d_umask-2.patch
+Patch1: 	scap-security-guide-0.1.33-update-upstream-manual-page.patch
+Patch2: 	scap-security-guide-0.1.41-restrict-remediation-for-dev-shm.patch
+Patch3: 	scap-security-guide-0.1.41-drop-dev-cdrom-fix.patch
+Patch4: 	scap-security-guide-0.1.41-install-dracut-fips.patch
+Patch5: 	scap-security-guide-0.1.41-audit_unset_4294967295.patch
+Patch6: 	scap-security-guide-0.1.41-audit_file_deletion.patch
+Patch7: 	scap-security-guide-0.1.41-audit_misc_improvements.patch
+Patch8: 	scap-security-guide-0.1.41-audit_file_ownership.patch
+Patch9: 	scap-security-guide-0.1.41-audit_file_permission.patch
+Patch10: 	scap-security-guide-0.1.41-audit_log_access.patch
+Patch11: 	scap-security-guide-0.1.41-audit_privileged_commands.patch
+Patch12: 	scap-security-guide-0.1.41-audit_file_open.patch
+Patch13: 	scap-security-guide-0.1.41-audit_file_open_ospp.patch
+Patch14:        scap-security-guide-0.1.41-audit_passwd_log_writes.patch
+Patch15: 	scap-security-guide-0.1.41-ospp_enable.patch
+Patch16:        scap-security-guide-0.1.41-template_syscall_rules.patch
+Patch17:        scap-security-guide-0.1.41-template_syscall_rules_ospp.patch
+Patch18:        scap-security-guide-0.1.41-template_watch_path.patch
+Patch19:        scap-security-guide-0.1.41-template_watch_path_build_templates.patch
+Patch20:        scap-security-guide-0.1.41-fix_audit_rules_unsuccessful_file_modification_regex.patch
+Patch21:	scap-security-guide-0.1.41-fix_unauthorized_syscall_regex.patch
+Patch22:        scap-security-guide-0.1.41-fix_syscall_in_last_position.patch
+Patch23:        scap-security-guide-0.1.41-fix_dconf_gnome_screensaver_lock_enabled.patch
+Patch24:        scap-security-guide-0.1.41-untemplate_var_tmp.patch
+Patch25:		scap-security-guide-0.1.41-bash_and_tests_for_grub2_audit_argument.patch
+Patch26:		scap-security-guide-0.1.41-small_bash_fix_for_gnome_screensaver_lock_delay.patch
+Patch27:		scap-security-guide-0.1.41-select_missing_arpc_for_OSPP42.patch
+Patch28:		scap-security-guide-0.1.41-fix_owners_groups.patch
+Patch29:		scap-security-guide-0.1.41-packages_abrt_sendmail_removed.patch
+Patch30:		scap-security-guide-0.1.41-dev_shm_mount_option.patch
+Patch31:		scap-security-guide-0.1.41-sysctl_kernel.patch
+Patch32:		scap-security-guide-0.1.41-kptr_restrict.patch
+Patch33:		scap-security-guide-0.1.41-grub2_bootloader_arguments.patch
+Patch34:		scap-security-guide-0.1.41-profile_title_rename_etc.patch
 BuildArch:	noarch
 
-BuildRequires:	libxslt, expat, python, openscap-scanner >= 1.2.5, python-lxml, cmake >= 2.8
+BuildRequires:	libxslt, expat, python, openscap-scanner >= 1.2.16, python-jinja2, cmake >= 2.8, PyYAML
 Requires:	xml-common, openscap-scanner >= 1.2.5
 
 %description
@@ -58,46 +74,45 @@ been generated from XCCDF benchmarks present in %{name} package.
 
 %prep
 %setup -q -n %{name}-%{version}
+mkdir build
 # Update manual page to drop the part dedicated to Fedora content
 %patch1 -p1 -b .man_page_update
-%patch2 -p1 -b .add_disa_stig_rule_id
-# patch2 introduces a script that build system needs to execute
-chmod u+x shared/utils/add_stig_references.py
-mkdir build
-# Fixes https://bugzilla.redhat.com/show_bug.cgi?id=1523809
-# Taken from https://github.com/OpenSCAP/scap-security-guide/pull/2479
-%patch3 -p1 -b .libexec_ownership
-# Fixes https://bugzilla.redhat.com/show_bug.cgi?id=1521081
-# Taken from https://github.com/OpenSCAP/scap-security-guide/pull/2481
-%patch4 -p1 -b .title
-# Fixes https://bugzilla.redhat.com/show_bug.cgi?id=1523827
-# Taken from https://github.com/OpenSCAP/scap-security-guide/pull/2480
-%patch5 -p1 -b .RhostsRSAAuthentication
-# Fixes https://bugzilla.redhat.com/show_bug.cgi?id=1520493
-# Taken from https://github.com/OpenSCAP/scap-security-guide/pull/2476
-%patch6 -p1 -b .umask_for_daemons
-%patch7 -p1 -b .sshd_required_unset
-%patch8 -p1 -b .bash_remediation_include
-%patch9 -p1 -b .srg_table_column_empty
-%patch10 -p1 -b .reference_pam_config
-# Fix from https://github.com/OpenSCAP/scap-security-guide/pull/2599
-%patch11 -p1 -b .aide_email_notification
-%patch12 -p1 -b .fix_failing_rules
-%patch13 -p1 -b .audit_kernel_module
-%patch14 -p1 -b .aide_notification_remediation
-# Fixes https://bugzilla.redhat.com/show_bug.cgi?id=1592887
-%patch15 -p1 -b .ansible_local_d_typos
-# Fixes https://bugzilla.redhat.com/show_bug.cgi?id=1592970
-%patch16 -p1 -b .ansible_roles_patch
-# Fixes https://bugzilla.redhat.com/show_bug.cgi?id=1592957
-%patch17 -p1 -b .ansible_login_defs_umask_patch
-%patch18 -p1 -b .ansible_login_defs_umask_patch-2
+%patch2 -p1 -b .remediation_for_dev_shm
+%patch3 -p1 -b .remediation_for_dev_cdrom
+%patch4 -p1 -b .install_dracut_fips
+%patch5 -p1
+%patch6 -p1
+%patch7 -p1
+%patch8 -p1
+%patch9 -p1
+%patch10 -p1
+%patch11 -p1
+%patch12 -p1
+%patch13 -p1
+%patch14 -p1
+%patch15 -p1
+%patch16 -p1
+%patch17 -p1
+%patch18 -p1
+%patch19 -p1
+%patch20 -p1
+%patch21 -p1
+%patch22 -p1
+%patch23 -p1
+%patch24 -p1
+%patch25 -p1
+%patch26 -p1
+%patch27 -p1
+%patch28 -p1
+%patch29 -p1
+%patch30 -p1
+%patch31 -p1
+%patch32 -p1
+%patch33 -p1
+%patch34 -p1
 
 %build
-
-# chmod is because of patches 17, 18 that strip the executable permission of this file.
-chmod a+x shared/utils/combine-remediations.py
-cd build
+mkdir -p build && cd build
 %cmake -D CMAKE_INSTALL_DOCDIR=%{_pkgdocdir} \
 -DSSG_PRODUCT_CHROMIUM:BOOL=OFF \
 -DSSG_PRODUCT_DEBIAN8:BOOL=OFF \
@@ -107,16 +122,20 @@ cd build
 -DSSG_PRODUCT_OCP3:BOOL=OFF \
 -DSSG_PRODUCT_OPENSUSE:BOOL=OFF \
 -DSSG_PRODUCT_OSP7:BOOL=OFF \
--DSSG_PRODUCT_RHEV3:BOOL=OFF \
 -DSSG_PRODUCT_SUSE11:BOOL=OFF \
 -DSSG_PRODUCT_SUSE12:BOOL=OFF \
 -DSSG_PRODUCT_UBUNTU14:BOOL=OFF \
 -DSSG_PRODUCT_UBUNTU16:BOOL=OFF \
 -DSSG_PRODUCT_WRLINUX:BOOL=OFF \
--DSSG_PRODUCT_WEBMIN:BOOL=OFF \
+-DSSG_PRODUCT_OL7:BOOL=OFF \
 -DSSG_CENTOS_DERIVATIVES_ENABLED:BOOL=OFF \
--DSSG_SCIENTIFIC_LINUX_DERIVATIVES_ENABLED:BOOL=OFF ../
+-DSSG_SCIENTIFIC_LINUX_DERIVATIVES_ENABLED:BOOL=OFF \
+../
 make %{?_smp_mflags}
+
+%check
+cd build
+ctest %{?_smp_mflags} -E linkchecker --output-on-failure
 
 %install
 cd build
@@ -140,18 +159,68 @@ cd build
 %doc build/guides/ssg-*-guide-*.html
 
 %changelog
-* Wed Jun 27 2018 Matěj Týč <matyc@redhat.com> - 0.1.36-10
-- Fix local/d typos in Ansible remediation (RHBZ#1592887)
-- Fix Ansible remediation of SELinux policies (RHBZ#1592970)
-- Fix Ansible remediation of login.defs umask (RHBZ#1592957)
+* Tue Sep 25 2018 Watson Yuuma Sato <wsato@redhat.com> - 0.1.40-12
+- Fix malformed patch for removal of abrt and sendmail (RHBZ#1619689)
 
-* Fri Apr 27 2018 Watson Yuuma Sato <wsato@redhat.com> - 0.1.36-9
-- Fix remediation of AIDE notification (RHBZ#1571315)
+* Tue Sep 25 2018 Matěj Týč <matyc@redhat.com> - 0.1.40-11
+- Fixes for RHBZ#1619689:
+- Added support for kernel parameters yama.ptrace_scope, kptr_restrict, dmesg_restrict and kexec_load_disabled.
+- Added support for boot parameters audit_backlog_limit=8192, slub_debug=P, page_poison=1 and vsyscall=none.
+- Added support for proper /dev/shm handling (noexec,nosuid,nodev,mode=1777)
+- Added support for checking that sendmail and abrt are not installed.
+- Introduced OSPP to the OSPP profile title.
+- Disabled linkcheck tests during the build.
 
-* Wed Apr 25 2018 Watson Yuuma Sato <wsato@redhat.com> - 0.1.36-8
-- Allow AIDE to notify other emails than only root (RHBZ#1571315)
-- Fix some failing rules from profiles PCI-DSS, DISA STIG and USGCB (RHBZ#1571312)
-- Fix kernel module loading rules (RHBZ#1571319)
+* Sun Sep 23 2018 Marek Haičman <mhaicman@redhat.com> - 0.1.40-10
+- Fix regression in file ownership and group OVAL. (RHBZ#1570802)
+
+* Fri Sep 21 2018 Watson Yuuma Sato <wsato@redhat.com> - 0.1.40-9
+- Fix malformed patch for Audit Rules (RHBZ#1619689)
+
+* Fri Sep 21 2018 Watson Yuuma Sato <wsato@redhat.com> - 0.1.40-8
+- Add Bash remediation for rule grub2_audit_arguments (RHBZ#1619689)
+- Allow remediation for rule dconf_gnome_screensaver_lock_delay to fix commented settings (RHBZ#1609122)
+- Select missing audit rules for privileged commands for OSPP4.2 Profile (RHBZ#1619689)
+
+* Wed Sep 19 2018 Matěj Týč <matyc@redhat.com> - 0.1.40-7
+- Fixed previously applied patches for OSPP 4.2 (RHBZ#1619689)
+
+* Mon Sep 17 2018 Matěj Týč <matyc@redhat.com> - 0.1.40-6
+- Applied a batch of patches that improve OSPP 4.2 profile support for RHEL7 (RHBZ#1619689)
+- Fixed the xccdf_org.ssgproject.content_rule_dconf_gnome_screensaver_lock_enabled check (RHBZ#1609122)
+
+* Fri Sep 14 2018 Marek Haičman <mhaicman@redhat.com> - 0.1.40-5
+- Re-fix FIPS patch. (RHBZ#1587911)
+
+* Wed Sep 12 2018 Matěj Týč <matyc@redhat.com> - 0.1.40-4
+- Applied a batch of patches that improve OSPP 4.2 profile support for RHEL7 (RHBZ#1619689)
+
+* Tue Sep 11 2018 Matěj Týč <matyc@redhat.com> - 0.1.40-3
+- Don't generate remediations for Anaconda for /dev/cdrom mount point (RHBZ#1618840)
+- Install dracut-fips when fips mode is enabled in the profile (RHBZ#1587911)
+
+* Wed Aug 01 2018 Watson Yuuma Sato <wsato@redhat.com> - 0.1.40-2
+- Don't generate remediations for Anaconda for /dev/shm mount point (RHBZ#1570956)
+
+* Wed Jul 25 2018 Matěj Týč <matyc@redhat.com> - 0.1.40-1
+- Update to upstream release 0.1.40
+- Underlying code has been deduplicated and unified, which fixes countless subtle bugs.
+- Updated Ansible playbooks, so they don't use deprecated constructs.
+- Service disable family of rules take the corresponding socket deactivation into account if applicable in check and in remediations.
+
+* Thu Jul 19 2018 Watson Yuuma Sato <wsato@redhat.com> - 0.1.39-2
+- Fix configuration to not build new products introduced in upstream
+- Test package with ctest
+
+* Fri Jul 13 2018 Watson Yuuma Sato <wsato@redhat.com> - 0.1.39-1
+- Update to upstream release 0.1.39
+- Profile IDs simplified
+- Common Profile removed in favor of Standard Profile
+- RHEL7 STIG reference updated to V1R4
+- RHEL6 STIG reference updated to V1R18
+- New License - BSD-3 Clause
+- Several remediation fixes
+- Better content support for DISA STIG Viewer (#2418)
 
 * Mon Jan 08 2018 Watson Yuuma Sato <wsato@redhat.com> - 0.1.36-7
 - Fix sshd_required unset (RHBZ#1522956)
