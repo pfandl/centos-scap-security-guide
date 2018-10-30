@@ -1,0 +1,388 @@
+From 0286990e3776fa2d3ecbff101eba824bd2addfc7 Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Thu, 20 Sep 2018 15:59:52 +0200
+Subject: [PATCH 1/5] Add tests for dconf_gnome_screensaver_lock_enabled
+
+---
+ .../comment.fail.sh                           | 14 ++++++++++++++
+ .../correct_value.pass.sh                     | 19 +++++++++++++++++++
+ .../correct_value_unlocked.fail.sh            | 13 +++++++++++++
+ .../line_not_there.fail.sh                    | 10 ++++++++++
+ .../wrong_value.fail.sh                       | 13 +++++++++++++
+ 5 files changed, 69 insertions(+)
+ create mode 100644 tests/data/group_system/group_software/group_gnome/group_gnome_screen_locking/rule_dconf_gnome_screensaver_lock_enabled/comment.fail.sh
+ create mode 100644 tests/data/group_system/group_software/group_gnome/group_gnome_screen_locking/rule_dconf_gnome_screensaver_lock_enabled/correct_value.pass.sh
+ create mode 100644 tests/data/group_system/group_software/group_gnome/group_gnome_screen_locking/rule_dconf_gnome_screensaver_lock_enabled/correct_value_unlocked.fail.sh
+ create mode 100644 tests/data/group_system/group_software/group_gnome/group_gnome_screen_locking/rule_dconf_gnome_screensaver_lock_enabled/line_not_there.fail.sh
+ create mode 100644 tests/data/group_system/group_software/group_gnome/group_gnome_screen_locking/rule_dconf_gnome_screensaver_lock_enabled/wrong_value.fail.sh
+
+diff --git a/tests/data/group_system/group_software/group_gnome/group_gnome_screen_locking/rule_dconf_gnome_screensaver_lock_enabled/comment.fail.sh b/tests/data/group_system/group_software/group_gnome/group_gnome_screen_locking/rule_dconf_gnome_screensaver_lock_enabled/comment.fail.sh
+new file mode 100644
+index 0000000000..e7598e6496
+--- /dev/null
++++ b/tests/data/group_system/group_software/group_gnome/group_gnome_screen_locking/rule_dconf_gnome_screensaver_lock_enabled/comment.fail.sh
+@@ -0,0 +1,14 @@
++#!/bin/bash
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++
++yum -y install dconf
++
++# It is ok if string is not found in any file
++file=$(grep -R "lock-enabled" /etc/dconf/db/local.d) || true
++
++if [ -n "$file" ] ; then
++	sed -i "s/^lock-enabled=.*/#lock-enabled=true/g" $file
++else
++	echo "[org/gnome/desktop/screensaver]" > /etc/dconf/db/local.d/00-security-settings
++	echo "#lock-enabled=true" >> /etc/dconf/db/local.d/00-security-settings
++fi
+diff --git a/tests/data/group_system/group_software/group_gnome/group_gnome_screen_locking/rule_dconf_gnome_screensaver_lock_enabled/correct_value.pass.sh b/tests/data/group_system/group_software/group_gnome/group_gnome_screen_locking/rule_dconf_gnome_screensaver_lock_enabled/correct_value.pass.sh
+new file mode 100644
+index 0000000000..0997842791
+--- /dev/null
++++ b/tests/data/group_system/group_software/group_gnome/group_gnome_screen_locking/rule_dconf_gnome_screensaver_lock_enabled/correct_value.pass.sh
+@@ -0,0 +1,19 @@
++#!/bin/bash
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++
++yum -y install dconf
++
++# It is ok if string is not found in any file
++file=$(grep -R "lock-enabled" /etc/dconf/db/local.d) || true
++if [ -n "$file" ] ; then
++	sed -i "s/^lock-enabled=.*/lock-enabled=true/g" $file
++else
++	echo "[org/gnome/desktop/screensaver]" > /etc/dconf/db/local.d/00-security-settings
++	echo "lock-enabled=true" >> /etc/dconf/db/local.d/00-security-settings
++fi
++
++lockfile=$(grep -R "lock-enabled" /etc/dconf/db/local.d/locks) || true
++if [ -z "$file" ] ; then
++    mkdir -p /etc/dconf/db/local.d/locks
++	echo "/org/gnome/desktop/screensaver/lock-enabled" >> /etc/dconf/db/local.d/locks/00-security-settings-lock
++fi
+diff --git a/tests/data/group_system/group_software/group_gnome/group_gnome_screen_locking/rule_dconf_gnome_screensaver_lock_enabled/correct_value_unlocked.fail.sh b/tests/data/group_system/group_software/group_gnome/group_gnome_screen_locking/rule_dconf_gnome_screensaver_lock_enabled/correct_value_unlocked.fail.sh
+new file mode 100644
+index 0000000000..0fd465d43b
+--- /dev/null
++++ b/tests/data/group_system/group_software/group_gnome/group_gnome_screen_locking/rule_dconf_gnome_screensaver_lock_enabled/correct_value_unlocked.fail.sh
+@@ -0,0 +1,13 @@
++#!/bin/bash
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++
++yum -y install dconf
++
++# It is ok if string is not found in any file
++file=$(grep -R "lock-enabled" /etc/dconf/db/local.d) || true
++if [ -n "$file" ] ; then
++	sed -i "s/^lock-enabled=.*/lock-enabled=true/g" $file
++else
++	echo "[org/gnome/desktop/screensaver]" > /etc/dconf/db/local.d/00-security-settings
++	echo "lock-enabled=true" >> /etc/dconf/db/local.d/00-security-settings
++fi
+diff --git a/tests/data/group_system/group_software/group_gnome/group_gnome_screen_locking/rule_dconf_gnome_screensaver_lock_enabled/line_not_there.fail.sh b/tests/data/group_system/group_software/group_gnome/group_gnome_screen_locking/rule_dconf_gnome_screensaver_lock_enabled/line_not_there.fail.sh
+new file mode 100644
+index 0000000000..fe09c8bf59
+--- /dev/null
++++ b/tests/data/group_system/group_software/group_gnome/group_gnome_screen_locking/rule_dconf_gnome_screensaver_lock_enabled/line_not_there.fail.sh
+@@ -0,0 +1,10 @@
++#!/bin/bash
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++
++yum -y install dconf
++
++# It is ok if string is not found in any file
++file=$(grep -R "lock-enabled" /etc/dconf/db/local.d) || true
++if [ -n "$file" ] ; then
++    sed -i "/^lock-enabled=.*/d" $file
++fi
+diff --git a/tests/data/group_system/group_software/group_gnome/group_gnome_screen_locking/rule_dconf_gnome_screensaver_lock_enabled/wrong_value.fail.sh b/tests/data/group_system/group_software/group_gnome/group_gnome_screen_locking/rule_dconf_gnome_screensaver_lock_enabled/wrong_value.fail.sh
+new file mode 100644
+index 0000000000..eb9e91c595
+--- /dev/null
++++ b/tests/data/group_system/group_software/group_gnome/group_gnome_screen_locking/rule_dconf_gnome_screensaver_lock_enabled/wrong_value.fail.sh
+@@ -0,0 +1,13 @@
++#!/bin/bash
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++
++yum -y install dconf
++
++# It is ok if string is not found in any file
++file=$(grep -R "lock-enabled" /etc/dconf/db/local.d) || true
++if [ -n "$file" ] ; then
++	sed -i "s/^lock-enabled=.*/lock-enabled=false/g" $file
++else
++	echo "[org/gnome/desktop/screensaver]" > /etc/dconf/db/local.d/00-security-settings
++	echo "lock-enabled=false" >> /etc/dconf/db/local.d/00-security-settings
++fi
+
+From d935d096b769223b40cf8fb08be93b317e9f7076 Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Thu, 20 Sep 2018 16:01:12 +0200
+Subject: [PATCH 2/5] Do not accept commented keys as correct
+
+---
+ shared/bash_remediation_functions/include_dconf_settings.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/shared/bash_remediation_functions/include_dconf_settings.sh b/shared/bash_remediation_functions/include_dconf_settings.sh
+index 9752698f34..ac79fe0653 100644
+--- a/shared/bash_remediation_functions/include_dconf_settings.sh
++++ b/shared/bash_remediation_functions/include_dconf_settings.sh
+@@ -32,7 +32,7 @@ function dconf_settings {
+ 		echo "[${_path}]" >> ${DCONFFILE}
+ 		echo "${_key}=${_value}" >> ${DCONFFILE}
+ 	else
+-		if grep -q "${_key}" ${SETTINGSFILES[@]}
++		if grep -q "^(?!#)${_key}" ${SETTINGSFILES[@]}
+ 		then
+ 			sed -i "s/${_key}\s*=\s*.*/${_key}=${_value}/g" ${SETTINGSFILES[@]}
+ 		else
+
+From e8e8b1e8b55dfa67affa07eecf8054d5ca77108c Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Thu, 20 Sep 2018 16:10:24 +0200
+Subject: [PATCH 3/5] Update dconf database after changing dconf setting
+
+---
+ shared/bash_remediation_functions/include_dconf_settings.sh | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/shared/bash_remediation_functions/include_dconf_settings.sh b/shared/bash_remediation_functions/include_dconf_settings.sh
+index ac79fe0653..02f9877e97 100644
+--- a/shared/bash_remediation_functions/include_dconf_settings.sh
++++ b/shared/bash_remediation_functions/include_dconf_settings.sh
+@@ -39,6 +39,8 @@ function dconf_settings {
+ 			sed -i "\|\[${_path}]|a\\${_key}=${_value}" ${SETTINGSFILES[@]}
+ 		fi
+ 	fi
++
++	dconf update
+ }
+ 
+ # Function to configure DConf locks for RHEL and Fedora systems.
+
+From 61bc573ca262c711c93304106c92ff423f186aa7 Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Thu, 20 Sep 2018 21:18:46 +0200
+Subject: [PATCH 4/5] Add common functions for testing
+
+Functions added:
+- Clean up all dconf settings
+- Add a dconf entry
+- Add a dconf lock
+---
+ .../group_gnome/dconf_test_functions.sh       | 29 +++++++++++++++++++
+ .../comment.fail.sh                           | 15 ++++------
+ .../correct_value.pass.sh                     | 20 ++++---------
+ .../correct_value_unlocked.fail.sh            | 13 +++------
+ .../line_not_there.fail.sh                    | 10 -------
+ .../setting_not_there.fail.sh                 |  7 +++++
+ .../wrong_value.fail.sh                       | 14 ++++-----
+ 7 files changed, 55 insertions(+), 53 deletions(-)
+ create mode 100644 tests/data/group_system/group_software/group_gnome/dconf_test_functions.sh
+ delete mode 100644 tests/data/group_system/group_software/group_gnome/group_gnome_screen_locking/rule_dconf_gnome_screensaver_lock_enabled/line_not_there.fail.sh
+ create mode 100644 tests/data/group_system/group_software/group_gnome/group_gnome_screen_locking/rule_dconf_gnome_screensaver_lock_enabled/setting_not_there.fail.sh
+
+diff --git a/tests/data/group_system/group_software/group_gnome/dconf_test_functions.sh b/tests/data/group_system/group_software/group_gnome/dconf_test_functions.sh
+new file mode 100644
+index 0000000000..f76d68e523
+--- /dev/null
++++ b/tests/data/group_system/group_software/group_gnome/dconf_test_functions.sh
+@@ -0,0 +1,29 @@
++
++# Wipes out dconf db settings directory
++clean_dconf_settings(){
++    rm -rf /etc/dconf/db/*
++}
++
++# Adds a new dconf setting
++# $1 _path
++# $2 _setting
++# $3 _value
++# $4 _db
++# $5 _settingFile
++add_dconf_setting() {
++	local _path=$1 _setting=$2 _value=$3 _db=$4 _settingFile=$5
++    mkdir /etc/dconf/db/${_db}
++	echo "[${_path}]" > /etc/dconf/db/${_db}/${_settingFile}
++	echo "${_setting}=${_value}" >> /etc/dconf/db/${_db}/${_settingFile}
++}
++
++# Adds a lock to a dconf setting
++# $1 _path
++# $2 _setting
++# $3 _db
++# $4 _settingFile
++add_dconf_lock(){
++	local _path=$1 _setting=$2 _db=$3 _settingFile=$4
++    mkdir -p /etc/dconf/db/${_db}/locks
++	echo "/${_path}/${_setting}" >> /etc/dconf/db/${_db}/locks/${_settingFile}
++}
+diff --git a/tests/data/group_system/group_software/group_gnome/group_gnome_screen_locking/rule_dconf_gnome_screensaver_lock_enabled/comment.fail.sh b/tests/data/group_system/group_software/group_gnome/group_gnome_screen_locking/rule_dconf_gnome_screensaver_lock_enabled/comment.fail.sh
+index e7598e6496..b76dee4f33 100644
+--- a/tests/data/group_system/group_software/group_gnome/group_gnome_screen_locking/rule_dconf_gnome_screensaver_lock_enabled/comment.fail.sh
++++ b/tests/data/group_system/group_software/group_gnome/group_gnome_screen_locking/rule_dconf_gnome_screensaver_lock_enabled/comment.fail.sh
+@@ -1,14 +1,9 @@
+ #!/bin/bash
+ # profiles = xccdf_org.ssgproject.content_profile_ospp
+ 
+-yum -y install dconf
+-
+-# It is ok if string is not found in any file
+-file=$(grep -R "lock-enabled" /etc/dconf/db/local.d) || true
++. ../../dconf_test_functions.sh
+ 
+-if [ -n "$file" ] ; then
+-	sed -i "s/^lock-enabled=.*/#lock-enabled=true/g" $file
+-else
+-	echo "[org/gnome/desktop/screensaver]" > /etc/dconf/db/local.d/00-security-settings
+-	echo "#lock-enabled=true" >> /etc/dconf/db/local.d/00-security-settings
+-fi
++yum -y install dconf
++clean_dconf_settings
++add_dconf_setting "org/gnome/desktop/screensaver" "#lock-enabled" "true" "local.d" "00-security-settings"
++add_dconf_lock "org/gnome/desktop/screensaver" "lock-enabled" "local.d" "00-security-settings"
+diff --git a/tests/data/group_system/group_software/group_gnome/group_gnome_screen_locking/rule_dconf_gnome_screensaver_lock_enabled/correct_value.pass.sh b/tests/data/group_system/group_software/group_gnome/group_gnome_screen_locking/rule_dconf_gnome_screensaver_lock_enabled/correct_value.pass.sh
+index 0997842791..a0e39c4409 100644
+--- a/tests/data/group_system/group_software/group_gnome/group_gnome_screen_locking/rule_dconf_gnome_screensaver_lock_enabled/correct_value.pass.sh
++++ b/tests/data/group_system/group_software/group_gnome/group_gnome_screen_locking/rule_dconf_gnome_screensaver_lock_enabled/correct_value.pass.sh
+@@ -1,19 +1,9 @@
+ #!/bin/bash
+ # profiles = xccdf_org.ssgproject.content_profile_ospp
+ 
+-yum -y install dconf
+-
+-# It is ok if string is not found in any file
+-file=$(grep -R "lock-enabled" /etc/dconf/db/local.d) || true
+-if [ -n "$file" ] ; then
+-	sed -i "s/^lock-enabled=.*/lock-enabled=true/g" $file
+-else
+-	echo "[org/gnome/desktop/screensaver]" > /etc/dconf/db/local.d/00-security-settings
+-	echo "lock-enabled=true" >> /etc/dconf/db/local.d/00-security-settings
+-fi
++. ../../dconf_test_functions.sh
+ 
+-lockfile=$(grep -R "lock-enabled" /etc/dconf/db/local.d/locks) || true
+-if [ -z "$file" ] ; then
+-    mkdir -p /etc/dconf/db/local.d/locks
+-	echo "/org/gnome/desktop/screensaver/lock-enabled" >> /etc/dconf/db/local.d/locks/00-security-settings-lock
+-fi
++yum -y install dconf
++clean_dconf_settings
++add_dconf_setting "org/gnome/desktop/screensaver" "lock-enabled" "true" "local.d" "00-security-settings"
++add_dconf_lock "org/gnome/desktop/screensaver" "lock-enabled" "local.d" "00-security-settings"
+diff --git a/tests/data/group_system/group_software/group_gnome/group_gnome_screen_locking/rule_dconf_gnome_screensaver_lock_enabled/correct_value_unlocked.fail.sh b/tests/data/group_system/group_software/group_gnome/group_gnome_screen_locking/rule_dconf_gnome_screensaver_lock_enabled/correct_value_unlocked.fail.sh
+index 0fd465d43b..53dea6c471 100644
+--- a/tests/data/group_system/group_software/group_gnome/group_gnome_screen_locking/rule_dconf_gnome_screensaver_lock_enabled/correct_value_unlocked.fail.sh
++++ b/tests/data/group_system/group_software/group_gnome/group_gnome_screen_locking/rule_dconf_gnome_screensaver_lock_enabled/correct_value_unlocked.fail.sh
+@@ -1,13 +1,8 @@
+ #!/bin/bash
+ # profiles = xccdf_org.ssgproject.content_profile_ospp
+ 
+-yum -y install dconf
++. ../../dconf_test_functions.sh
+ 
+-# It is ok if string is not found in any file
+-file=$(grep -R "lock-enabled" /etc/dconf/db/local.d) || true
+-if [ -n "$file" ] ; then
+-	sed -i "s/^lock-enabled=.*/lock-enabled=true/g" $file
+-else
+-	echo "[org/gnome/desktop/screensaver]" > /etc/dconf/db/local.d/00-security-settings
+-	echo "lock-enabled=true" >> /etc/dconf/db/local.d/00-security-settings
+-fi
++yum -y install dconf
++clean_dconf_settings
++add_dconf_setting "org/gnome/desktop/screensaver" "lock-enabled" "true" "local.d" "00-security-settings"
+diff --git a/tests/data/group_system/group_software/group_gnome/group_gnome_screen_locking/rule_dconf_gnome_screensaver_lock_enabled/line_not_there.fail.sh b/tests/data/group_system/group_software/group_gnome/group_gnome_screen_locking/rule_dconf_gnome_screensaver_lock_enabled/line_not_there.fail.sh
+deleted file mode 100644
+index fe09c8bf59..0000000000
+--- a/tests/data/group_system/group_software/group_gnome/group_gnome_screen_locking/rule_dconf_gnome_screensaver_lock_enabled/line_not_there.fail.sh
++++ /dev/null
+@@ -1,10 +0,0 @@
+-#!/bin/bash
+-# profiles = xccdf_org.ssgproject.content_profile_ospp
+-
+-yum -y install dconf
+-
+-# It is ok if string is not found in any file
+-file=$(grep -R "lock-enabled" /etc/dconf/db/local.d) || true
+-if [ -n "$file" ] ; then
+-    sed -i "/^lock-enabled=.*/d" $file
+-fi
+diff --git a/tests/data/group_system/group_software/group_gnome/group_gnome_screen_locking/rule_dconf_gnome_screensaver_lock_enabled/setting_not_there.fail.sh b/tests/data/group_system/group_software/group_gnome/group_gnome_screen_locking/rule_dconf_gnome_screensaver_lock_enabled/setting_not_there.fail.sh
+new file mode 100644
+index 0000000000..38789f575d
+--- /dev/null
++++ b/tests/data/group_system/group_software/group_gnome/group_gnome_screen_locking/rule_dconf_gnome_screensaver_lock_enabled/setting_not_there.fail.sh
+@@ -0,0 +1,7 @@
++#!/bin/bash
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++
++. ../../dconf_test_functions.sh
++
++yum -y install dconf
++clean_dconf_settings
+diff --git a/tests/data/group_system/group_software/group_gnome/group_gnome_screen_locking/rule_dconf_gnome_screensaver_lock_enabled/wrong_value.fail.sh b/tests/data/group_system/group_software/group_gnome/group_gnome_screen_locking/rule_dconf_gnome_screensaver_lock_enabled/wrong_value.fail.sh
+index eb9e91c595..19536910b2 100644
+--- a/tests/data/group_system/group_software/group_gnome/group_gnome_screen_locking/rule_dconf_gnome_screensaver_lock_enabled/wrong_value.fail.sh
++++ b/tests/data/group_system/group_software/group_gnome/group_gnome_screen_locking/rule_dconf_gnome_screensaver_lock_enabled/wrong_value.fail.sh
+@@ -1,13 +1,9 @@
+ #!/bin/bash
+ # profiles = xccdf_org.ssgproject.content_profile_ospp
+ 
+-yum -y install dconf
++. ../../dconf_test_functions.sh
+ 
+-# It is ok if string is not found in any file
+-file=$(grep -R "lock-enabled" /etc/dconf/db/local.d) || true
+-if [ -n "$file" ] ; then
+-	sed -i "s/^lock-enabled=.*/lock-enabled=false/g" $file
+-else
+-	echo "[org/gnome/desktop/screensaver]" > /etc/dconf/db/local.d/00-security-settings
+-	echo "lock-enabled=false" >> /etc/dconf/db/local.d/00-security-settings
+-fi
++yum -y install dconf
++clean_dconf_settings
++add_dconf_setting "org/gnome/desktop/screensaver" "lock-enabled" "false" "local.d" "00-security-settings"
++add_dconf_lock "org/gnome/desktop/screensaver" "lock-enabled" "local.d" "00-security-settings"
+
+From cb2ca84970c783660c03464a55295243841baaa1 Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Thu, 20 Sep 2018 21:34:58 +0200
+Subject: [PATCH 5/5] Fix indents in dconf_test_functions.sh
+
+---
+ .../group_software/group_gnome/dconf_test_functions.sh      | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/tests/data/group_system/group_software/group_gnome/dconf_test_functions.sh b/tests/data/group_system/group_software/group_gnome/dconf_test_functions.sh
+index f76d68e523..07940ea272 100644
+--- a/tests/data/group_system/group_software/group_gnome/dconf_test_functions.sh
++++ b/tests/data/group_system/group_software/group_gnome/dconf_test_functions.sh
+@@ -1,7 +1,7 @@
+ 
+ # Wipes out dconf db settings directory
+ clean_dconf_settings(){
+-    rm -rf /etc/dconf/db/*
++	rm -rf /etc/dconf/db/*
+ }
+ 
+ # Adds a new dconf setting
+@@ -12,7 +12,7 @@ clean_dconf_settings(){
+ # $5 _settingFile
+ add_dconf_setting() {
+ 	local _path=$1 _setting=$2 _value=$3 _db=$4 _settingFile=$5
+-    mkdir /etc/dconf/db/${_db}
++	mkdir /etc/dconf/db/${_db}
+ 	echo "[${_path}]" > /etc/dconf/db/${_db}/${_settingFile}
+ 	echo "${_setting}=${_value}" >> /etc/dconf/db/${_db}/${_settingFile}
+ }
+@@ -24,6 +24,6 @@ add_dconf_setting() {
+ # $4 _settingFile
+ add_dconf_lock(){
+ 	local _path=$1 _setting=$2 _db=$3 _settingFile=$4
+-    mkdir -p /etc/dconf/db/${_db}/locks
++	mkdir -p /etc/dconf/db/${_db}/locks
+ 	echo "/${_path}/${_setting}" >> /etc/dconf/db/${_db}/locks/${_settingFile}
+ }

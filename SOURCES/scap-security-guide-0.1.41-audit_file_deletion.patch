@@ -1,0 +1,275 @@
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_rename.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_rename.rule
+new file mode 100644
+index 0000000000..3fdcb3e89d
+--- /dev/null
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_rename.rule
+@@ -0,0 +1,46 @@
++documentation_complete: true
++
++prodtype: rhel7,fedora
++
++title: 'Record Unsuccessul Delete Attempts to Files - rename'
++
++description: |-
++    The audit system should collect unsuccessful file deletion
++    attempts for all users and root. If the <tt>auditd</tt> daemon is configured
++    to use the <tt>augenrules</tt> program to read audit rules during daemon
++    startup (the default), add the following lines to a file with suffix
++    <tt>.rules</tt> in the directory <tt>/etc/audit/rules.d</tt>.
++    If the <tt>auditd</tt> daemon is configured to use the <tt>auditctl</tt>
++    utility to read audit rules during daemon startup, add the following lines to
++    <tt>/etc/audit/audit.rules</tt> file.
++    <pre>-a always,exit -F arch=b32 -S rename -F exit=-EACCES -F auid&gt;=1000 -F auid!=unset -F key=unsuccessful-delete
++    -a always,exit -F arch=b32 -S rename -F exit=-EPERM -F auid&gt;=1000 -F auid!=unset -F key=unsuccessful-delete</pre>
++    If the system is 64 bit then also add the following lines:
++    <pre>
++    -a always,exit -F arch=b64 -S rename -F exit=-EACCES -F auid&gt;=1000 -F auid!=unset -F key=unsuccessful-delete
++    -a always,exit -F arch=b64 -S rename -F exit=-EPERM -F auid&gt;=1000 -F auid!=unset -F key=unsuccessful-delete</pre>
++
++rationale: |-
++    Unsuccessful attempts to delete files could be an indicator of malicious activity on a system. Auditing
++    these events could serve as evidence of potential system compromise.
++
++severity: medium
++
++references:
++    cis: 5.2.10
++    cui: 3.1.7
++    disa: 172,2884
++    hipaa: 164.308(a)(1)(ii)(D),164.308(a)(3)(ii)(A),164.308(a)(5)(ii)(C),164.312(a)(2)(i),164.312(b),164.312(d),164.312(e)
++    nist: AC-17(7),AU-1(b),AU-2(a),AU-2(c),AU-2(d),AU-12(a),AU-12(c),IR-5
++    ospp@rhel7: FAU_GEN.1.1.c
++    pcidss: Req-10.2.4,Req-10.2.1
++    srg: SRG-OS-000064-GPOS-00033,SRG-OS-000458-GPOS-00203,SRG-OS-000461-GPOS-00205,SRG-OS-000392-GPOS-00172
++
++{{{ complete_ocil_entry_audit_syscall(syscall="rename") }}}
++
++warnings:
++    - general: |-
++        Note that these rules can be configured in a
++        number of ways while still achieving the desired effect. Here the system calls
++        have been placed independent of other system calls. Grouping these system
++        calls with others as identifying earlier in this guide is more efficient.
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_renameat.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_renameat.rule
+new file mode 100644
+index 0000000000..848ea3256e
+--- /dev/null
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_renameat.rule
+@@ -0,0 +1,46 @@
++documentation_complete: true
++
++prodtype: rhel7,fedora
++
++title: 'Record Unsuccessul Delete Attempts to Files - renameat'
++
++description: |-
++    The audit system should collect unsuccessful file deletion
++    attempts for all users and root. If the <tt>auditd</tt> daemon is configured
++    to use the <tt>augenrules</tt> program to read audit rules during daemon
++    startup (the default), add the following lines to a file with suffix
++    <tt>.rules</tt> in the directory <tt>/etc/audit/rules.d</tt>.
++    If the <tt>auditd</tt> daemon is configured to use the <tt>auditctl</tt>
++    utility to read audit rules during daemon startup, add the following lines to
++    <tt>/etc/audit/audit.rules</tt> file.
++    <pre>-a always,exit -F arch=b32 -S renameat -F exit=-EACCES -F auid&gt;=1000 -F auid!=unset -F key=unsuccessful-delete
++    -a always,exit -F arch=b32 -S renameat -F exit=-EPERM -F auid&gt;=1000 -F auid!=unset -F key=unsuccessful-delete</pre>
++    If the system is 64 bit then also add the following lines:
++    <pre>
++    -a always,exit -F arch=b64 -S renameat -F exit=-EACCES -F auid&gt;=1000 -F auid!=unset -F key=unsuccessful-delete
++    -a always,exit -F arch=b64 -S renameat -F exit=-EPERM -F auid&gt;=1000 -F auid!=unset -F key=unsuccessful-delete</pre>
++
++rationale: |-
++    Unsuccessful attempts to delete files could be an indicator of malicious activity on a system. Auditing
++    these events could serve as evidence of potential system compromise.
++
++severity: medium
++
++references:
++    cis: 5.2.10
++    cui: 3.1.7
++    disa: 172,2884
++    hipaa: 164.308(a)(1)(ii)(D),164.308(a)(3)(ii)(A),164.308(a)(5)(ii)(C),164.312(a)(2)(i),164.312(b),164.312(d),164.312(e)
++    nist: AC-17(7),AU-1(b),AU-2(a),AU-2(c),AU-2(d),AU-12(a),AU-12(c),IR-5
++    ospp@rhel7: FAU_GEN.1.1.c
++    pcidss: Req-10.2.4,Req-10.2.1
++    srg: SRG-OS-000064-GPOS-00033,SRG-OS-000458-GPOS-00203,SRG-OS-000461-GPOS-00205,SRG-OS-000392-GPOS-00172
++
++{{{ complete_ocil_entry_audit_syscall(syscall="renameat") }}}
++
++warnings:
++    - general: |-
++        Note that these rules can be configured in a
++        number of ways while still achieving the desired effect. Here the system calls
++        have been placed independent of other system calls. Grouping these system
++        calls with others as identifying earlier in this guide is more efficient.
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_unlink.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_unlink.rule
+new file mode 100644
+index 0000000000..8a64a965ea
+--- /dev/null
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_unlink.rule
+@@ -0,0 +1,46 @@
++documentation_complete: true
++
++prodtype: rhel7,fedora
++
++title: 'Record Unsuccessul Delete Attempts to Files - unlink'
++
++description: |-
++    The audit system should collect unsuccessful file deletion
++    attempts for all users and root. If the <tt>auditd</tt> daemon is configured
++    to use the <tt>augenrules</tt> program to read audit rules during daemon
++    startup (the default), add the following lines to a file with suffix
++    <tt>.rules</tt> in the directory <tt>/etc/audit/rules.d</tt>.
++    If the <tt>auditd</tt> daemon is configured to use the <tt>auditctl</tt>
++    utility to read audit rules during daemon startup, add the following lines to
++    <tt>/etc/audit/audit.rules</tt> file.
++    <pre>-a always,exit -F arch=b32 -S unlink -F exit=-EACCES -F auid&gt;=1000 -F auid!=unset -F key=unsuccessful-delete
++    -a always,exit -F arch=b32 -S unlink -F exit=-EPERM -F auid&gt;=1000 -F auid!=unset -F key=unsuccessful-delete</pre>
++    If the system is 64 bit then also add the following lines:
++    <pre>
++    -a always,exit -F arch=b64 -S unlink -F exit=-EACCES -F auid&gt;=1000 -F auid!=unset -F key=unsuccessful-delete
++    -a always,exit -F arch=b64 -S unlink -F exit=-EPERM -F auid&gt;=1000 -F auid!=unset -F key=unsuccessful-delete</pre>
++
++rationale: |-
++    Unsuccessful attempts to delete files could be an indicator of malicious activity on a system. Auditing
++    these events could serve as evidence of potential system compromise.
++
++severity: medium
++
++references:
++    cis: 5.2.10
++    cui: 3.1.7
++    disa: 172,2884
++    hipaa: 164.308(a)(1)(ii)(D),164.308(a)(3)(ii)(A),164.308(a)(5)(ii)(C),164.312(a)(2)(i),164.312(b),164.312(d),164.312(e)
++    nist: AC-17(7),AU-1(b),AU-2(a),AU-2(c),AU-2(d),AU-12(a),AU-12(c),IR-5
++    ospp@rhel7: FAU_GEN.1.1.c
++    pcidss: Req-10.2.4,Req-10.2.1
++    srg: SRG-OS-000064-GPOS-00033,SRG-OS-000458-GPOS-00203,SRG-OS-000461-GPOS-00205,SRG-OS-000392-GPOS-00172
++
++{{{ complete_ocil_entry_audit_syscall(syscall="unlink") }}}
++
++warnings:
++    - general: |-
++        Note that these rules can be configured in a
++        number of ways while still achieving the desired effect. Here the system calls
++        have been placed independent of other system calls. Grouping these system
++        calls with others as identifying earlier in this guide is more efficient.
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_unlinkat.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_unlinkat.rule
+new file mode 100644
+index 0000000000..c89d7d880b
+--- /dev/null
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_unlinkat.rule
+@@ -0,0 +1,46 @@
++documentation_complete: true
++
++prodtype: rhel7,fedora
++
++title: 'Record Unsuccessul Delete Attempts to Files - unlinkat'
++
++description: |-
++    The audit system should collect unsuccessful file deletion
++    attempts for all users and root. If the <tt>auditd</tt> daemon is configured
++    to use the <tt>augenrules</tt> program to read audit rules during daemon
++    startup (the default), add the following lines to a file with suffix
++    <tt>.rules</tt> in the directory <tt>/etc/audit/rules.d</tt>.
++    If the <tt>auditd</tt> daemon is configured to use the <tt>auditctl</tt>
++    utility to read audit rules during daemon startup, add the following lines to
++    <tt>/etc/audit/audit.rules</tt> file.
++    <pre>-a always,exit -F arch=b32 -S unlinkat -F exit=-EACCES -F auid&gt;=1000 -F auid!=unset -F key=unsuccessful-delete
++    -a always,exit -F arch=b32 -S unlinkat -F exit=-EPERM -F auid&gt;=1000 -F auid!=unset -F key=unsuccessful-delete</pre>
++    If the system is 64 bit then also add the following lines:
++    <pre>
++    -a always,exit -F arch=b64 -S unlinkat -F exit=-EACCES -F auid&gt;=1000 -F auid!=unset -F key=unsuccessful-delete
++    -a always,exit -F arch=b64 -S unlinkat -F exit=-EPERM -F auid&gt;=1000 -F auid!=unset -F key=unsuccessful-delete</pre>
++
++rationale: |-
++    Unsuccessful attempts to delete files could be an indicator of malicious activity on a system. Auditing
++    these events could serve as evidence of potential system compromise.
++
++severity: medium
++
++references:
++    cis: 5.2.10
++    cui: 3.1.7
++    disa: 172,2884
++    hipaa: 164.308(a)(1)(ii)(D),164.308(a)(3)(ii)(A),164.308(a)(5)(ii)(C),164.312(a)(2)(i),164.312(b),164.312(d),164.312(e)
++    nist: AC-17(7),AU-1(b),AU-2(a),AU-2(c),AU-2(d),AU-12(a),AU-12(c),IR-5
++    ospp@rhel7: FAU_GEN.1.1.c
++    pcidss: Req-10.2.4,Req-10.2.1
++    srg: SRG-OS-000064-GPOS-00033,SRG-OS-000458-GPOS-00203,SRG-OS-000461-GPOS-00205,SRG-OS-000392-GPOS-00172
++
++{{{ complete_ocil_entry_audit_syscall(syscall="unlinkat") }}}
++
++warnings:
++    - general: |-
++        Note that these rules can be configured in a
++        number of ways while still achieving the desired effect. Here the system calls
++        have been placed independent of other system calls. Grouping these system
++        calls with others as identifying earlier in this guide is more efficient.
+diff --git a/rhel7/profiles/ospp42-draft.profile b/rhel7/profiles/ospp42-draft.profile
+index 6ca2b4b58f..1f5e45a436 100644
+--- a/rhel7/profiles/ospp42-draft.profile
++++ b/rhel7/profiles/ospp42-draft.profile
+@@ -90,6 +90,10 @@ selections:
+     - audit_rules_unsuccessful_file_modification_open
+     - audit_rules_unsuccessful_file_modification_ftruncate
+     - audit_rules_unsuccessful_file_modification_truncate
++    - audit_rules_unsuccessful_file_modification_unlink
++    - audit_rules_unsuccessful_file_modification_unlinkat
++    - audit_rules_unsuccessful_file_modification_rename
++    - audit_rules_unsuccessful_file_modification_renameat
+     - audit_rules_file_deletion_events_renameat
+     - audit_rules_file_deletion_events_rename
+     - audit_rules_file_deletion_events_rmdir
+diff --git a/shared/templates/csv/audit_rules_unsuccessful_file_modification.csv b/shared/templates/csv/audit_rules_unsuccessful_file_modification.csv
+index 632bd19a68..3246204984 100644
+--- a/shared/templates/csv/audit_rules_unsuccessful_file_modification.csv
++++ b/shared/templates/csv/audit_rules_unsuccessful_file_modification.csv
+@@ -3,4 +3,8 @@ ftruncate
+ open
+ openat
+ open_by_handle_at
++rename
++renameat
+ truncate
++unlink
++unlinkat
+diff --git a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_unlink/default.pass.sh b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_unlink/default.pass.sh
+new file mode 100644
+index 0000000000..a6b47565ea
+--- /dev/null
++++ b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_unlink/default.pass.sh
+@@ -0,0 +1,8 @@
++#!/bin/bash
++
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++
++echo "-a always,exit -F arch=b32 -S unlink -F exit=-EACCES -F auid>=1000 -F auid!=unset -F key=unsuccesful-delete" >> /etc/audit/rules.d/unsuccessful-delete.rules
++echo "-a always,exit -F arch=b64 -S unlink -F exit=-EACCES -F auid>=1000 -F auid!=unset -F key=unsuccesful-delete" >> /etc/audit/rules.d/unsuccessful-delete.rules
++echo "-a always,exit -F arch=b32 -S unlink -F exit=-EPERM -F auid>=1000 -F auid!=unset -F key=unsuccesful-delete" >> /etc/audit/rules.d/unsuccessful-delete.rules
++echo "-a always,exit -F arch=b64 -S unlink -F exit=-EPERM -F auid>=1000 -F auid!=unset -F key=unsuccesful-delete" >> /etc/audit/rules.d/unsuccessful-delete.rules
+diff --git a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_unlink/empty.fail.sh b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_unlink/empty.fail.sh
+new file mode 100644
+index 0000000000..d703da5cf8
+--- /dev/null
++++ b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_unlink/empty.fail.sh
+@@ -0,0 +1,7 @@
++#!/bin/bash
++
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++
++rm -f /etc/audit/rules.d/*
++> /etc/audit/audit.rules
++true
+diff --git a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_unlink/only_eacces.fail.sh b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_unlink/only_eacces.fail.sh
+new file mode 100644
+index 0000000000..07d6e6b22b
+--- /dev/null
++++ b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_unlink/only_eacces.fail.sh
+@@ -0,0 +1,6 @@
++#!/bin/bash
++
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++
++echo "-a always,exit -F arch=b32 -S unlink -F exit=-EACCES -F auid>=1000 -F auid!=unset -F key=unsuccesful-delete" >> /etc/audit/rules.d/unsuccessful-delete.rules
++echo "-a always,exit -F arch=b64 -S unlink -F exit=-EACCES -F auid>=1000 -F auid!=unset -F key=unsuccesful-delete" >> /etc/audit/rules.d/unsuccessful-delete.rules

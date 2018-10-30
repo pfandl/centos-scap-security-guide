@@ -1,0 +1,150 @@
+diff --git a/linux_os/guide/system/permissions/restrictions/sysctl_kernel_kexec_load_disabled.rule b/linux_os/guide/system/permissions/restrictions/sysctl_kernel_kexec_load_disabled.rule
+new file mode 100644
+index 0000000000..a8fc8715e1
+--- /dev/null
++++ b/linux_os/guide/system/permissions/restrictions/sysctl_kernel_kexec_load_disabled.rule
+@@ -0,0 +1,17 @@
++documentation_complete: true
++
++prodtype: rhel6,rhel7,fedora
++
++title: 'Disable kernel image loading'
++
++description: '{{{ describe_sysctl_option_value(sysctl="kernel.kexec_load_disabled", value="1") }}}'
++
++rationale: |
++    Disabling kexec_load allows greater control of the kernel memory.
++    It makes it impossible to load another kernel image after it has been disabled.
++
++severity: unknown
++
++
++{{{ complete_ocil_entry_sysctl_option_value(sysctl="kernel.kexec_load_disabled", value="1") }}}
++
+diff --git a/linux_os/guide/system/permissions/restrictions/sysctl_kernel_yama_ptrace_scope.rule b/linux_os/guide/system/permissions/restrictions/sysctl_kernel_yama_ptrace_scope.rule
+new file mode 100644
+index 0000000000..67b7ff8056
+--- /dev/null
++++ b/linux_os/guide/system/permissions/restrictions/sysctl_kernel_yama_ptrace_scope.rule
+@@ -0,0 +1,19 @@
++documentation_complete: true
++
++prodtype: rhel6,rhel7,fedora
++
++title: 'Restrict usage of ptrace to descendant processes'
++
++description: '{{{ describe_sysctl_option_value(sysctl="kernel.yama.ptrace_scope", value="1") }}}'
++
++rationale: |
++    Unrestricted usage of ptrace allows compromised binaries to run ptrace
++    on another processes of the user. Like this, the attacker can steal
++    sensitive information from the target processes (e.g. SSH sessions, web browser, ...)
++    without any additional assistance from the user (i.e. without resorting to phishing).
++
++severity: unknown
++
++
++{{{ complete_ocil_entry_sysctl_option_value(sysctl="kernel.yama.ptrace_scope", value="1") }}}
++
+diff --git a/rhel7/profiles/ospp42.profile b/rhel7/profiles/ospp42.profile
+index 8550434ffa..a29e282b6e 100644
+--- a/rhel7/profiles/ospp42.profile
++++ b/rhel7/profiles/ospp42.profile
+@@ -33,6 +33,10 @@ selections:
+     - var_password_pam_lcredit=1
+     - accounts_password_pam_lcredit
+     - package_screen_installed
++    - sysctl_kernel_yama_ptrace_scope
++    - sysctl_kernel_kptr_restrict
++    - sysctl_kernel_kexec_load_disabled
++    - sysctl_kernel_dmesg_restrict
+     - dconf_gnome_screensaver_idle_activation_enabled
+     - dconf_gnome_screensaver_idle_delay
+     - dconf_gnome_screensaver_lock_delay
+diff --git a/rhel7/templates/csv/sysctl_values.csv b/rhel7/templates/csv/sysctl_values.csv
+index 12f0232760..3090159aa5 100644
+--- a/rhel7/templates/csv/sysctl_values.csv
++++ b/rhel7/templates/csv/sysctl_values.csv
+@@ -1,7 +1,10 @@
+ # Add <sysctl_parameter_name, desired_value> to generate hard-coded OVAL and remediation content.
+ # Add <sysctl_parameter_name,> to generate OVAL and remediation content that use the XCCDF value.
+ fs.suid_dumpable,0
++kernel.yama.ptrace_scope,1
++kernel.kptr_restrict,1
+ kernel.dmesg_restrict,1
++kernel.kexec_load_disabled,1
+ #kernel.exec-shield,1
+ kernel.randomize_va_space,2
+ net.ipv4.conf.all.accept_redirects,
+diff --git a/tests/data/group_system/group_permissions/group_restrictions/rule_sysctl_kernel_dmesg_restrict/disabled.fail.sh b/tests/data/group_system/group_permissions/group_restrictions/rule_sysctl_kernel_dmesg_restrict/disabled.fail.sh
+new file mode 100644
+index 0000000000..715f0b81dc
+--- /dev/null
++++ b/tests/data/group_system/group_permissions/group_restrictions/rule_sysctl_kernel_dmesg_restrict/disabled.fail.sh
+@@ -0,0 +1,7 @@
++#!/bin/bash
++#
++# profiles = xccdf_org.ssgproject.content_profile_ospp42
++
++. ../sysctl.sh
++
++sysctl_set_kernel_setting_to dmsg_restrict 0
+diff --git a/tests/data/group_system/group_permissions/group_restrictions/rule_sysctl_kernel_kexec_load_disabled/disabled.fail.sh b/tests/data/group_system/group_permissions/group_restrictions/rule_sysctl_kernel_kexec_load_disabled/disabled.fail.sh
+new file mode 100644
+index 0000000000..05cd772b7f
+--- /dev/null
++++ b/tests/data/group_system/group_permissions/group_restrictions/rule_sysctl_kernel_kexec_load_disabled/disabled.fail.sh
+@@ -0,0 +1,7 @@
++#!/bin/bash
++#
++# profiles = xccdf_org.ssgproject.content_profile_ospp42
++
++. ../sysctl.sh
++
++sysctl_set_kernel_setting_to kexec_load_disabled 0
+diff --git a/tests/data/group_system/group_permissions/group_restrictions/rule_sysctl_kernel_kptr_restrict/disabled.fail.sh b/tests/data/group_system/group_permissions/group_restrictions/rule_sysctl_kernel_kptr_restrict/disabled.fail.sh
+new file mode 100644
+index 0000000000..ac7922d927
+--- /dev/null
++++ b/tests/data/group_system/group_permissions/group_restrictions/rule_sysctl_kernel_kptr_restrict/disabled.fail.sh
+@@ -0,0 +1,7 @@
++#!/bin/bash
++#
++# profiles = xccdf_org.ssgproject.content_profile_ospp42
++
++. ../sysctl.sh
++
++sysctl_set_kernel_setting_to kptr_restrict 0
+diff --git a/tests/data/group_system/group_permissions/group_restrictions/rule_sysctl_kernel_yama_ptrace_scope/disabled.fail.sh b/tests/data/group_system/group_permissions/group_restrictions/rule_sysctl_kernel_yama_ptrace_scope/disabled.fail.sh
+new file mode 100644
+index 0000000000..6e0892c4d8
+--- /dev/null
++++ b/tests/data/group_system/group_permissions/group_restrictions/rule_sysctl_kernel_yama_ptrace_scope/disabled.fail.sh
+@@ -0,0 +1,7 @@
++#!/bin/bash
++#
++# profiles = xccdf_org.ssgproject.content_profile_ospp42
++
++. ../sysctl.sh
++
++sysctl_set_kernel_setting_to yama.ptrace_scope 0
+diff --git a/tests/data/group_system/group_permissions/group_restrictions/sysctl.sh b/tests/data/group_system/group_permissions/group_restrictions/sysctl.sh
+new file mode 100644
+index 0000000000..6a424a3641
+--- /dev/null
++++ b/tests/data/group_system/group_permissions/group_restrictions/sysctl.sh
+@@ -0,0 +1,14 @@
++#!/bin/bash
++
++# Sets the kernel setting using sysctl exec as well as in sysctl config file.
++# $1: The setting name without the leading 'kernel.'
++# $2: The value to set the setting to
++function sysctl_set_kernel_setting_to {
++	local setting_name="kernel.$1" setting_value="$2"
++	sysctl -w "$setting_name=$setting_value"
++	if grep -q "^$setting_name" /etc/sysctl.conf; then
++		sed -i "s/^$setting_name.*/$setting_name = $setting_value/" /etc/sysctl.conf
++	else
++		echo "$setting_name = $setting_value" >> /etc/sysctl.conf
++	fi
++}

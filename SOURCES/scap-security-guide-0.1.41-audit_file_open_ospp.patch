@@ -1,0 +1,14 @@
+diff --git a/rhel7/profiles/ospp42-draft.profile b/rhel7/profiles/ospp42-draft.profile
+index 6ca2b4b58f..2d39437948 100644
+--- a/rhel7/profiles/ospp42-draft.profile
++++ b/rhel7/profiles/ospp42-draft.profile
+@@ -87,6 +87,9 @@
+     - audit_rules_unsuccessful_file_modification_creat
+     - audit_rules_unsuccessful_file_modification_openat
+     - audit_rules_unsuccessful_file_modification_open_by_handle_at
++    - audit_rules_unsuccessful_file_modification_open_o_creat
++    - audit_rules_unsuccessful_file_modification_open_o_trunc_write
++    - audit_rules_unsuccessful_file_modification_open_rule_order
+     - audit_rules_unsuccessful_file_modification_open
+     - audit_rules_unsuccessful_file_modification_ftruncate
+     - audit_rules_unsuccessful_file_modification_truncate

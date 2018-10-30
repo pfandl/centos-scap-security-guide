@@ -1,0 +1,151 @@
+diff --git a/rhel7/fixes/anaconda/grub2_enable_fips_mode.anaconda b/rhel7/fixes/anaconda/grub2_enable_fips_mode.anaconda
+new file mode 100644
+index 0000000..99693f6
+--- /dev/null
++++ b/rhel7/fixes/anaconda/grub2_enable_fips_mode.anaconda
+@@ -0,0 +1,3 @@
++# platform = Red Hat Enterprise Linux 7
++
++package --add=dracut-fips
+diff --git a/linux_os/guide/system/software/integrity/fips/grub2_enable_fips_mode.rule b/linux_os/guide/system/software/integrity/fips/grub2_enable_fips_mode.rule
+index ac89c4e8ac..4f70107829 100644
+--- a/linux_os/guide/system/software/integrity/fips/grub2_enable_fips_mode.rule
++++ b/linux_os/guide/system/software/integrity/fips/grub2_enable_fips_mode.rule
+@@ -5,8 +5,9 @@ prodtype: rhel7
+ title: 'Enable FIPS Mode in GRUB2'
+ 
+ description: |-
+-    To ensure FIPS mode is enabled, rebuild <tt>initramfs</tt> by running the following command:
+-    <pre>dracut -f</pre>
++    To ensure FIPS mode is enabled, install package <tt>dracut-fips</tt>, and rebuild <tt>initramfs</tt> by running the following commands:
++    <pre>{{{ package_install("dracut-fips") }}}
++    dracut -f</pre>
+     After the <tt>dracut</tt> command has been run, add the argument <tt>fips=1</tt> to the default
+     GRUB 2 command line for the Linux operating system in
+     <tt>/etc/default/grub</tt>, in the manner below:
+diff --git a/shared/macros-highlevel.jinja b/shared/macros-highlevel.jinja
+index 722f15fd2a..d1dba54154 100644
+--- a/shared/macros-highlevel.jinja
++++ b/shared/macros-highlevel.jinja
+@@ -19,31 +19,39 @@
+     {{%- endif -%}}
+ {{%- endmacro %}}
+ 
+-
+ {{%- macro describe_package_install(package) -%}}
++    The <code>{{{ package }}}</code> package can be installed with the following command:
++    <pre>{{{ package_install(package) }}}</pre>
++{{%- endmacro %}}
++
++{{%- macro package_install(package) -%}}
+     {{%- if pkg_manager == "apt_get" -%}}
+-        {{{ apt_get_describe_package_install(package) }}}
++        {{{ apt_get_package_install(package) }}}
+     {{%- elif pkg_manager == "zypper" -%}}
+-        {{{ zypper_describe_package_install(package) }}}
++        {{{ zypper_package_install(package) }}}
+     {{%- elif pkg_manager == "yum" -%}}
+-        {{{ yum_describe_package_install(package) }}}
++        {{{ yum_package_install(package) }}}
+     {{%- elif pkg_manager == "dnf" -%}}
+-        {{{ dnf_describe_package_install(package) }}}
++        {{{ dnf_package_install(package) }}}
+     {{%- else %}}
+         JINJA MACRO ERROR: Unknown package manager '{{{ pkg_manager }}}'.
+     {{%- endif -%}}
+ {{%- endmacro %}}
+ 
+-
+ {{%- macro describe_package_remove(package) -%}}
++    The <code>{{{ package }}}</code> package can be removed with the following command:
++    <pre>{{{ package_remove(package) }}}</pre>
++{{%- endmacro %}}
++
++{{%- macro package_remove(package) -%}}
+     {{%- if pkg_manager == "apt_get" -%}}
+-        {{{ apt_get_describe_package_remove(package) }}}
++        {{{ apt_get_package_remove(package) }}}
+     {{%- elif pkg_manager == "zypper" -%}}
+-        {{{ zypper_describe_package_remove(package) }}}
++        {{{ zypper_package_remove(package) }}}
+     {{%- elif pkg_manager == "yum" -%}}
+-        {{{ yum_describe_package_remove(package) }}}
++        {{{ yum_package_remove(package) }}}
+     {{%- elif pkg_manager == "dnf" -%}}
+-        {{{ dnf_describe_package_remove(package) }}}
++        {{{ dnf_package_remove(package) }}}
+     {{%- else %}}
+         JINJA MACRO ERROR: Unknown package manager '{{{ pkg_manager }}}'.
+     {{%- endif -%}}
+diff --git a/shared/macros.jinja b/shared/macros.jinja
+index 2d93808ed2..e2b46e9a44 100644
+--- a/shared/macros.jinja
++++ b/shared/macros.jinja
+@@ -395,51 +395,43 @@ ocil_clause: "{{{ sebool }}} is not enabled"
+ {{%- endmacro %}}
+ 
+ 
+-{{%- macro apt_get_describe_package_install(package) %}}
+-    The <code>{{{ package }}}</code> package can be installed with the following command:
+-    <pre>$ apt-get install {{{ package }}}</pre>
++{{%- macro apt_get_package_install(package) %}}
++    $ apt-get install {{{ package }}}
+ {{%- endmacro %}}
+ 
+ 
+-{{%- macro apt_get_describe_package_remove(package) %}}
+-    The <code>{{{ package }}}</code> package can be removed with the following command:
+-    <pre>$ apt-get remove {{{ package }}}</pre>
++{{%- macro apt_get_package_remove(package) %}}
++    $ apt-get remove {{{ package }}}
+ {{%- endmacro %}}
+ 
+ 
+-{{%- macro dnf_describe_package_install(package) %}}
+-    The <code>{{{ package }}}</code> package can be installed with the following command:
+-    <pre>$ sudo dnf install {{{ package }}}</pre>
++{{%- macro dnf_package_install(package) %}}
++    $ sudo dnf install {{{ package }}}
+ {{%- endmacro %}}
+ 
+ 
+-{{%- macro dnf_describe_package_remove(package) %}}
+-    The <code>{{{ package }}}</code> package can be removed with the following command:
+-    <pre>$ sudo dnf erase {{{ package }}}</pre>
++{{%- macro dnf_package_remove(package) %}}
++    $ sudo dnf erase {{{ package }}}
+ {{%- endmacro %}}
+ 
+ 
+-{{%- macro yum_describe_package_install(package) %}}
+-    The <code>{{{ package }}}</code> package can be installed with the following command:
+-    <pre>$ sudo yum install {{{ package }}}</pre>
++{{%- macro yum_package_install(package) %}}
++    $ sudo yum install {{{ package }}}
+ {{%- endmacro %}}
+ 
+ 
+-{{%- macro yum_describe_package_remove(package) %}}
+-    The <code>{{{ package }}}</code> package can be removed with the following command:
+-    <pre>$ sudo yum erase {{{ package }}}</pre>
++{{%- macro yum_package_remove(package) %}}
++    $ sudo yum erase {{{ package }}}
+ {{%- endmacro %}}
+ 
+ 
+-{{%- macro zypper_describe_package_install(package) %}}
+-    The <code>{{{ package }}}</code> package can be installed with the following command:
+-    <pre>$ sudo zypper install {{{ package }}}</pre>
++{{%- macro zypper_package_install(package) %}}
++    $ sudo zypper install {{{ package }}}
+ {{%- endmacro %}}
+ 
+ 
+-{{%- macro zypper_describe_package_remove(package) %}}
+-    The <code>{{{ package }}}</code> package can be removed with the following command:
+-    <pre>$ sudo zypper remove {{{ package }}}</pre>
++{{%- macro zypper_package_remove(package) %}}
++    $ sudo zypper remove {{{ package }}}
+ {{%- endmacro %}}
+ 
+ 

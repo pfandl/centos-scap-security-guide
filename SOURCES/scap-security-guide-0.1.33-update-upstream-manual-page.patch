@@ -26,4 +26,4 @@ index 10b83bc..305957b 100644
 -
  .SH EXAMPLES
  To scan your system utilizing the OpenSCAP utility against the
- ospp-rhel7 profile:
+ ospp profile:

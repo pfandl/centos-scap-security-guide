@@ -1,0 +1,131 @@
+From fde8c630799aee5339076355be0812b64f89c733 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Jan=20=C4=8Cern=C3=BD?= <jcerny@redhat.com>
+Date: Tue, 11 Sep 2018 10:27:48 +0200
+Subject: [PATCH 1/3] Add bash for rule grub2_audit_argument
+
+---
+ .../auditing/grub2_audit_argument/bash/shared.sh    | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+ create mode 100644 shared/fixes/bash/grub2_audit_argument.sh
+
+diff --git a/shared/fixes/bash/grub2_audit_argument.sh b/shared/fixes/bash/grub2_audit_argument.sh
+new file mode 100644
+index 0000000000..913ebd6788
+--- /dev/null
++++ b/shared/fixes/bash/grub2_audit_argument.sh
+@@ -0,0 +1,13 @@
++# platform = Red Hat Enterprise Linux 7, multi_platform_fedora
++
++# Correct the form of default kernel command line in GRUB
++if grep -q '^GRUB_CMDLINE_LINUX=.*audit=.*"'  '/etc/default/grub' ; then
++	# modify the GRUB command-line if an audit= arg already exists
++	sed -i 's/\(^GRUB_CMDLINE_LINUX=".*\)audit=[^[:space:]]*\(.*"\)/\1 audit=1 \2/'  '/etc/default/grub'
++else
++	# no audit=arg is present, append it
++	sed -i 's/\(^GRUB_CMDLINE_LINUX=".*\)"/\1 audit=1"/'  '/etc/default/grub'
++fi
++
++# Correct the form of kernel command line for each installed kernel in the bootloader
++grubby --update-kernel=ALL --args="audit=1"
+
+From 3cb4d82b850c6b8a29a449a68ce30254508a6fd6 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Jan=20=C4=8Cern=C3=BD?= <jcerny@redhat.com>
+Date: Tue, 11 Sep 2018 10:28:15 +0200
+Subject: [PATCH 2/3] Add tests for grub2_audit_argument
+
+---
+ .../rule_grub2_audit_argument/arg_not_there.fail.sh   |  9 +++++++++
+ .../rule_grub2_audit_argument/correct_value.pass.sh   | 11 +++++++++++
+ .../rule_grub2_audit_argument/wrong_value.fail.sh     | 11 +++++++++++
+ 3 files changed, 31 insertions(+)
+ create mode 100644 tests/data/group_system/group_auditing/rule_grub2_audit_argument/arg_not_there.fail.sh
+ create mode 100644 tests/data/group_system/group_auditing/rule_grub2_audit_argument/correct_value.pass.sh
+ create mode 100644 tests/data/group_system/group_auditing/rule_grub2_audit_argument/wrong_value.fail.sh
+
+diff --git a/tests/data/group_system/group_auditing/rule_grub2_audit_argument/arg_not_there.fail.sh b/tests/data/group_system/group_auditing/rule_grub2_audit_argument/arg_not_there.fail.sh
+new file mode 100644
+index 0000000000..04f07457b0
+--- /dev/null
++++ b/tests/data/group_system/group_auditing/rule_grub2_audit_argument/arg_not_there.fail.sh
+@@ -0,0 +1,9 @@
++#!/bin/bash
++
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++
++# Correct the form of default kernel command line in GRUB
++if grep -q '^GRUB_CMDLINE_LINUX=.*audit=.*"'  '/etc/default/grub' ; then
++	# Remove the audit arg from the GRUB command-line if an audit arg already exists
++	sed -i 's/\(^GRUB_CMDLINE_LINUX=".*\)audit=[^[:space:]]*\(.*"\)/\1 \2/'  '/etc/default/grub'
++fi
+diff --git a/tests/data/group_system/group_auditing/rule_grub2_audit_argument/correct_value.pass.sh b/tests/data/group_system/group_auditing/rule_grub2_audit_argument/correct_value.pass.sh
+new file mode 100644
+index 0000000000..320d979a9b
+--- /dev/null
++++ b/tests/data/group_system/group_auditing/rule_grub2_audit_argument/correct_value.pass.sh
+@@ -0,0 +1,11 @@
++#!/bin/bash
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++
++# Correct the form of default kernel command line in GRUB
++if grep -q '^GRUB_CMDLINE_LINUX=.*audit=.*"'  '/etc/default/grub' ; then
++	# modify the GRUB command-line if an audit= arg already exists
++	sed -i 's/\(^GRUB_CMDLINE_LINUX=".*\)audit=[^[:space:]]*\(.*"\)/\1 audit=1 \2/'  '/etc/default/grub'
++else
++	# no audit=arg is present, append it
++	sed -i 's/\(^GRUB_CMDLINE_LINUX=".*\)"/\1 audit=1"/'  '/etc/default/grub'
++fi
+diff --git a/tests/data/group_system/group_auditing/rule_grub2_audit_argument/wrong_value.fail.sh b/tests/data/group_system/group_auditing/rule_grub2_audit_argument/wrong_value.fail.sh
+new file mode 100644
+index 0000000000..4c3ce2c723
+--- /dev/null
++++ b/tests/data/group_system/group_auditing/rule_grub2_audit_argument/wrong_value.fail.sh
+@@ -0,0 +1,11 @@
++#!/bin/bash
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++
++# Correct the form of default kernel command line in GRUB
++if grep -q '^GRUB_CMDLINE_LINUX=.*audit=.*"'  '/etc/default/grub' ; then
++	# modify the GRUB command-line if an audit= arg already exists
++	sed -i 's/\(^GRUB_CMDLINE_LINUX=".*\)audit=[^[:space:]]*\(.*"\)/\1 audit=0 \2/'  '/etc/default/grub'
++else
++	# no audit=arg is present, append it
++	sed -i 's/\(^GRUB_CMDLINE_LINUX=".*\)"/\1 audit=0"/'  '/etc/default/grub'
++fi
+
+From b0cf50b476bd626b7cbf60e18726e02a6282f977 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Jan=20=C4=8Cern=C3=BD?= <jcerny@redhat.com>
+Date: Tue, 11 Sep 2018 13:10:16 +0200
+Subject: [PATCH 3/3] Improve comments
+
+---
+ .../rule_grub2_audit_argument/arg_not_there.fail.sh            | 3 +--
+ .../rule_grub2_audit_argument/wrong_value.fail.sh              | 2 +-
+ 2 files changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/tests/data/group_system/group_auditing/rule_grub2_audit_argument/arg_not_there.fail.sh b/tests/data/group_system/group_auditing/rule_grub2_audit_argument/arg_not_there.fail.sh
+index 04f07457b0..0230da8045 100644
+--- a/tests/data/group_system/group_auditing/rule_grub2_audit_argument/arg_not_there.fail.sh
++++ b/tests/data/group_system/group_auditing/rule_grub2_audit_argument/arg_not_there.fail.sh
+@@ -2,8 +2,7 @@
+ 
+ # profiles = xccdf_org.ssgproject.content_profile_ospp
+ 
+-# Correct the form of default kernel command line in GRUB
++# Removes audit argument from kernel command line
+ if grep -q '^GRUB_CMDLINE_LINUX=.*audit=.*"'  '/etc/default/grub' ; then
+-	# Remove the audit arg from the GRUB command-line if an audit arg already exists
+ 	sed -i 's/\(^GRUB_CMDLINE_LINUX=".*\)audit=[^[:space:]]*\(.*"\)/\1 \2/'  '/etc/default/grub'
+ fi
+diff --git a/tests/data/group_system/group_auditing/rule_grub2_audit_argument/wrong_value.fail.sh b/tests/data/group_system/group_auditing/rule_grub2_audit_argument/wrong_value.fail.sh
+index 4c3ce2c723..21dc897d4a 100644
+--- a/tests/data/group_system/group_auditing/rule_grub2_audit_argument/wrong_value.fail.sh
++++ b/tests/data/group_system/group_auditing/rule_grub2_audit_argument/wrong_value.fail.sh
+@@ -1,7 +1,7 @@
+ #!/bin/bash
+ # profiles = xccdf_org.ssgproject.content_profile_ospp
+ 
+-# Correct the form of default kernel command line in GRUB
++# Break the audit argument in kernel command line
+ if grep -q '^GRUB_CMDLINE_LINUX=.*audit=.*"'  '/etc/default/grub' ; then
+ 	# modify the GRUB command-line if an audit= arg already exists
+ 	sed -i 's/\(^GRUB_CMDLINE_LINUX=".*\)audit=[^[:space:]]*\(.*"\)/\1 audit=0 \2/'  '/etc/default/grub'
