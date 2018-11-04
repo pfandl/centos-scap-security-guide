@@ -128,7 +128,7 @@ mkdir -p build && cd build
 -DSSG_PRODUCT_UBUNTU16:BOOL=OFF \
 -DSSG_PRODUCT_WRLINUX:BOOL=OFF \
 -DSSG_PRODUCT_OL7:BOOL=OFF \
--DSSG_CENTOS_DERIVATIVES_ENABLED:BOOL=OFF \
+-DSSG_CENTOS_DERIVATIVES_ENABLED:BOOL=ON \
 -DSSG_SCIENTIFIC_LINUX_DERIVATIVES_ENABLED:BOOL=OFF \
 ../
 make %{?_smp_mflags}
@@ -139,6 +139,7 @@ ctest %{?_smp_mflags} -E linkchecker --output-on-failure
 
 %install
 cd build
+sed 's/Red Hat Enterprise Linux/CentOS Linux/g' -i ssg-centos*.xml
 %make_install
 
 %files
@@ -159,6 +160,9 @@ cd build
 %doc build/guides/ssg-*-guide-*.html
 
 %changelog
+* Sun Nov  4 2018 Johnny Hughes <johnny@centos.org> - 0.1.40-12
+- Manual CentOS Debranding
+
 * Tue Sep 25 2018 Watson Yuuma Sato <wsato@redhat.com> - 0.1.40-12
 - Fix malformed patch for removal of abrt and sendmail (RHBZ#1619689)
 
