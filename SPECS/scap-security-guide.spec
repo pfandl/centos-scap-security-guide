@@ -6,7 +6,7 @@
 
 Name:		scap-security-guide
 Version:	0.1.%{redhatssgversion}
-Release:	12%{?dist}
+Release:	12%{?dist}.0.1
 Summary:	Security guidance and baselines in SCAP formats
 
 Group:		System Environment/Base
@@ -47,6 +47,7 @@ Patch31:		scap-security-guide-0.1.41-sysctl_kernel.patch
 Patch32:		scap-security-guide-0.1.41-kptr_restrict.patch
 Patch33:		scap-security-guide-0.1.41-grub2_bootloader_arguments.patch
 Patch34:		scap-security-guide-0.1.41-profile_title_rename_etc.patch
+Patch999:		centos-debranding.patch
 BuildArch:	noarch
 
 BuildRequires:	libxslt, expat, python, openscap-scanner >= 1.2.16, python-jinja2, cmake >= 2.8, PyYAML
@@ -110,6 +111,7 @@ mkdir build
 %patch32 -p1
 %patch33 -p1
 %patch34 -p1
+%patch999 -p1
 
 %build
 mkdir -p build && cd build
@@ -139,7 +141,6 @@ ctest %{?_smp_mflags} -E linkchecker --output-on-failure
 
 %install
 cd build
-sed 's/Red Hat Enterprise Linux/CentOS Linux/g' -i ssg-centos*.xml
 %make_install
 
 %files
