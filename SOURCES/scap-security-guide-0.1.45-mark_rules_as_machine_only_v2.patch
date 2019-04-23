@@ -1,0 +1,1007 @@
+commit 470fb4275710c828f3cdd91ce65c69f78e2e6451
+Author: Gabriel Becker <ggasparb@redhat.com>
+Date:   Fri Apr 5 16:28:44 2019 +0200
+
+    Mark rules not applicable for container as machine only.
+
+diff --git a/linux_os/guide/services/obsolete/inetd_and_xinetd/group.yml b/linux_os/guide/services/obsolete/inetd_and_xinetd/group.yml
+index 6acdd02..79d7023 100644
+--- a/linux_os/guide/services/obsolete/inetd_and_xinetd/group.yml
++++ b/linux_os/guide/services/obsolete/inetd_and_xinetd/group.yml
+@@ -10,3 +10,5 @@ description: |-
+     controls and perform some logging. It has been largely obsoleted by other
+     features, and it is not installed by default. The older Inetd service
+     is not even available as part of {{{ full_name }}}.
++
++platform: machine
+diff --git a/linux_os/guide/system/accounts/accounts-physical/screen_locking/smart_card_login/install_smartcard_packages.rule b/linux_os/guide/system/accounts/accounts-physical/screen_locking/smart_card_login/install_smartcard_packages.rule
+index 5c58455..815097b 100644
+--- a/linux_os/guide/system/accounts/accounts-physical/screen_locking/smart_card_login/install_smartcard_packages.rule
++++ b/linux_os/guide/system/accounts/accounts-physical/screen_locking/smart_card_login/install_smartcard_packages.rule
+@@ -37,5 +37,3 @@ ocil: |-
+     To verify the operating system has the packages required for multifactor
+     authentication installed, run the following command:
+     <pre>$ sudo yum list installed esc pam_pkcs11 authconfig-gtk</pre>
+-
+-platform: machine
+diff --git a/linux_os/guide/system/accounts/accounts-physical/screen_locking/smart_card_login/smartcard_auth.rule b/linux_os/guide/system/accounts/accounts-physical/screen_locking/smart_card_login/smartcard_auth.rule
+index e4c0870..5b01b62 100644
+--- a/linux_os/guide/system/accounts/accounts-physical/screen_locking/smart_card_login/smartcard_auth.rule
++++ b/linux_os/guide/system/accounts/accounts-physical/screen_locking/smart_card_login/smartcard_auth.rule
+@@ -41,5 +41,3 @@ references:
+ ocil_clause: 'non-exempt accounts are not using CAC authentication'
+ 
+ ocil: "Interview the SA to determine if all accounts not exempted by policy are\nusing CAC authentication.\nFor DoD systems, the following systems and accounts are exempt from using\nsmart card (CAC) authentication:\n<ul>\n<li>SIPRNET systems</li> \n<li>Standalone systems</li>\n<li>Application accounts</li>\n<li>Temporary employee accounts, such as students or interns, who cannot easily receive a CAC or PIV</li>\n<li>Operational tactical locations that are not collocated with RAPIDS workstations to issue CAC or ALT</li>\n<li>Test systems, such as those with an Interim Approval to Test (IATT) and use a separate VPN, firewall, or security measure preventing access to network and system components from outside the protection boundary documented in the IATT.</li>\n</ul>"
+-
+-platform: machine
+diff --git a/linux_os/guide/system/accounts/accounts-physical/screen_locking/smart_card_login/smartcard_configure_cert_checking.rule b/linux_os/guide/system/accounts/accounts-physical/screen_locking/smart_card_login/smartcard_configure_cert_checking.rule
+index c68db6d..9af1126 100644
+--- a/linux_os/guide/system/accounts/accounts-physical/screen_locking/smart_card_login/smartcard_configure_cert_checking.rule
++++ b/linux_os/guide/system/accounts/accounts-physical/screen_locking/smart_card_login/smartcard_configure_cert_checking.rule
+@@ -42,5 +42,3 @@ ocil: |-
+     <pre>cert_policy = ca, ocsp_on, signature;
+     cert_policy = ca, ocsp_on, signature;
+     cert_policy = ca, ocsp_on, signature;</pre>
+-
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_chmod.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_chmod.rule
+index 98fb3f8..b3bba5b 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_chmod.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_chmod.rule
+@@ -58,4 +58,3 @@ warnings:
+         have been placed independent of other system calls.  Grouping these system
+         calls with others as identifying earlier in this guide is more efficient.
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_chown.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_chown.rule
+index 77be3c4..c3e5036 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_chown.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_chown.rule
+@@ -56,4 +56,3 @@ warnings:
+         have been placed independent of other system calls.  Grouping these system
+         calls with others as identifying earlier in this guide is more efficient.
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fchmod.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fchmod.rule
+index e530ea9..76bb69d 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fchmod.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fchmod.rule
+@@ -56,4 +56,3 @@ warnings:
+         have been placed independent of other system calls. Grouping these system
+         calls with others as identifying earlier in this guide is more efficient.
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fchmodat.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fchmodat.rule
+index 2410fc9..502e3a0 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fchmodat.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fchmodat.rule
+@@ -56,4 +56,3 @@ warnings:
+         have been placed independent of other system calls. Grouping these system
+         calls with others as identifying earlier in this guide is more efficient.
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fchown.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fchown.rule
+index 4f0c7e7..d980704 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fchown.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fchown.rule
+@@ -56,4 +56,3 @@ warnings:
+         have been placed independent of other system calls. Grouping these system
+         calls with others as identifying earlier in this guide is more efficient.
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fchownat.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fchownat.rule
+index 12d51f8..99d2083 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fchownat.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fchownat.rule
+@@ -56,4 +56,3 @@ warnings:
+         have been placed independent of other system calls. Grouping these system
+         calls with others as identifying earlier in this guide is more efficient.
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fremovexattr.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fremovexattr.rule
+index b0ff227..bda4448 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fremovexattr.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fremovexattr.rule
+@@ -62,4 +62,3 @@ warnings:
+         have been placed independent of other system calls. Grouping these system
+         calls with others as identifying earlier in this guide is more efficient.
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fsetxattr.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fsetxattr.rule
+index 4e19015..e5ba297 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fsetxattr.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fsetxattr.rule
+@@ -56,4 +56,3 @@ warnings:
+         have been placed independent of other system calls. Grouping these system
+         calls with others as identifying earlier in this guide is more efficient.
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_lchown.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_lchown.rule
+index 39fb8bd..d88a48f 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_lchown.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_lchown.rule
+@@ -56,4 +56,3 @@ warnings:
+         have been placed independent of other system calls. Grouping these system
+         calls with others as identifying earlier in this guide is more efficient.
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_lremovexattr.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_lremovexattr.rule
+index 52d0c85..0b0100e 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_lremovexattr.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_lremovexattr.rule
+@@ -62,4 +62,3 @@ warnings:
+         have been placed independent of other system calls. Grouping these system
+         calls with others as identifying earlier in this guide is more efficient.
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_lsetxattr.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_lsetxattr.rule
+index f7ffae4..07222b0 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_lsetxattr.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_lsetxattr.rule
+@@ -56,4 +56,3 @@ warnings:
+         have been placed independent of other system calls. Grouping these system
+         calls with others as identifying earlier in this guide is more efficient.
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_removexattr.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_removexattr.rule
+index 3ff38cf..f27667d 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_removexattr.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_removexattr.rule
+@@ -61,4 +61,3 @@ warnings:
+         have been placed independent of other system calls. Grouping these system
+         calls with others as identifying earlier in this guide is more efficient.
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_setxattr.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_setxattr.rule
+index da633bd..ccc90e8 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_setxattr.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_setxattr.rule
+@@ -56,4 +56,3 @@ warnings:
+         have been placed independent of other system calls. Grouping these system
+         calls with others as identifying earlier in this guide is more efficient.
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_execution_selinux_commands/audit_rules_execution_chcon.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_execution_selinux_commands/audit_rules_execution_chcon.rule
+index f2c7891..8e40014 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_execution_selinux_commands/audit_rules_execution_chcon.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_execution_selinux_commands/audit_rules_execution_chcon.rule
+@@ -47,5 +47,3 @@ ocil: |-
+     <pre>$ sudo grep "path=/usr/bin/chcon" /etc/audit/audit.rules /etc/audit/rules.d/*</pre>
+     The output should return something similar to:
+     <pre>-a always,exit -F path=/usr/bin/chcon -F perm=x -F auid&gt;=1000 -F auid!=4294967295 -F key=privileged-priv_change</pre>
+-
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_execution_selinux_commands/audit_rules_execution_restorecon.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_execution_selinux_commands/audit_rules_execution_restorecon.rule
+index ea42555..2a97b84 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_execution_selinux_commands/audit_rules_execution_restorecon.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_execution_selinux_commands/audit_rules_execution_restorecon.rule
+@@ -46,5 +46,3 @@ ocil: |-
+     <pre>$ sudo grep "path=/usr/sbin/restorecon" /etc/audit/audit.rules /etc/audit/rules.d/*</pre>
+     The output should return something similar to:
+     <pre>-a always,exit -F path=/usr/sbin/restorecon -F perm=x -F auid&gt;=1000 -F auid!=4294967295 -F key=privileged-priv_change</pre>
+-
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_execution_selinux_commands/audit_rules_execution_semanage.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_execution_selinux_commands/audit_rules_execution_semanage.rule
+index dd62afa..c2aedce 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_execution_selinux_commands/audit_rules_execution_semanage.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_execution_selinux_commands/audit_rules_execution_semanage.rule
+@@ -47,5 +47,3 @@ ocil: |-
+     <pre>$ sudo grep "path=/usr/sbin/semanage" /etc/audit/audit.rules /etc/audit/rules.d/*</pre>
+     The output should return something similar to:
+     <pre>-a always,exit -F path=/usr/sbin/semanage -F perm=x -F auid&gt;=1000 -F auid!=4294967295 -F key=privileged-priv_change</pre>
+-
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_execution_selinux_commands/audit_rules_execution_setsebool.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_execution_selinux_commands/audit_rules_execution_setsebool.rule
+index 2804b8d..247453e 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_execution_selinux_commands/audit_rules_execution_setsebool.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_execution_selinux_commands/audit_rules_execution_setsebool.rule
+@@ -47,5 +47,3 @@ ocil: |-
+     <pre>$ sudo grep "path=/usr/sbin/setsebool" /etc/audit/audit.rules /etc/audit/rules.d/*</pre>
+     The output should return something similar to:
+     <pre>-a always,exit -F path=/usr/sbin/setsebool -F perm=x -F auid&gt;=1000 -F auid!=4294967295 -F key=privileged-priv_change</pre>
+-
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_deletion_events/audit_rules_file_deletion_events.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_deletion_events/audit_rules_file_deletion_events.rule
+index d110f8a..916af4c 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_deletion_events/audit_rules_file_deletion_events.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_deletion_events/audit_rules_file_deletion_events.rule
+@@ -66,4 +66,3 @@ warnings:
+         <li><tt>audit_rules_file_deletion_events_unlinkat</tt></li>
+         </ul>
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_deletion_events/audit_rules_file_deletion_events_rename.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_deletion_events/audit_rules_file_deletion_events_rename.rule
+index 51b1d54..80eb011 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_deletion_events/audit_rules_file_deletion_events_rename.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_deletion_events/audit_rules_file_deletion_events_rename.rule
+@@ -41,4 +41,3 @@ references:
+ 
+ {{{ complete_ocil_entry_audit_syscall(syscall="rename") }}}
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_deletion_events/audit_rules_file_deletion_events_renameat.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_deletion_events/audit_rules_file_deletion_events_renameat.rule
+index 96133fc..b219eda 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_deletion_events/audit_rules_file_deletion_events_renameat.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_deletion_events/audit_rules_file_deletion_events_renameat.rule
+@@ -41,4 +41,3 @@ references:
+ 
+ {{{ complete_ocil_entry_audit_syscall(syscall="renameat") }}}
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_deletion_events/audit_rules_file_deletion_events_rmdir.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_deletion_events/audit_rules_file_deletion_events_rmdir.rule
+index 21abd3a..37e7fb2 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_deletion_events/audit_rules_file_deletion_events_rmdir.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_deletion_events/audit_rules_file_deletion_events_rmdir.rule
+@@ -41,4 +41,3 @@ references:
+ 
+ {{{ complete_ocil_entry_audit_syscall(syscall="rmdir") }}}
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_deletion_events/audit_rules_file_deletion_events_unlink.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_deletion_events/audit_rules_file_deletion_events_unlink.rule
+index 25c2ec2..7c392bc 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_deletion_events/audit_rules_file_deletion_events_unlink.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_deletion_events/audit_rules_file_deletion_events_unlink.rule
+@@ -41,4 +41,3 @@ references:
+ 
+ {{{ complete_ocil_entry_audit_syscall(syscall="unlink") }}}
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_deletion_events/audit_rules_file_deletion_events_unlinkat.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_deletion_events/audit_rules_file_deletion_events_unlinkat.rule
+index 390a4e5..793f9b0 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_deletion_events/audit_rules_file_deletion_events_unlinkat.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_deletion_events/audit_rules_file_deletion_events_unlinkat.rule
+@@ -41,4 +41,3 @@ references:
+ 
+ {{{ complete_ocil_entry_audit_syscall(syscall="unlinkat") }}}
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_delete.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_delete.rule
+index 370fbab..58e81a1 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_delete.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_delete.rule
+@@ -39,4 +39,3 @@ references:
+ 
+ {{{ complete_ocil_entry_audit_syscall(syscall="delete_module") }}}
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_finit.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_finit.rule
+index d86680d..992bce9 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_finit.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_finit.rule
+@@ -37,4 +37,3 @@ references:
+ 
+ {{{ complete_ocil_entry_audit_syscall(syscall="finit_module") }}}
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_init.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_init.rule
+index 01de6c8..7631ecd 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_init.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_init.rule
+@@ -38,4 +38,3 @@ references:
+ 
+ {{{ complete_ocil_entry_audit_syscall(syscall="init_module") }}}
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_insmod.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_insmod.rule
+index 9610d30..3c4e05f 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_insmod.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_insmod.rule
+@@ -41,5 +41,3 @@ ocil_clause: 'there is not output'
+ ocil: |-
+     To verify that auditing is configured for system administrator actions, run the following command:
+     <pre>$ sudo auditctl -l | grep "watch=/usr/sbin/insmod"</pre>
+-
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_modprobe.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_modprobe.rule
+index bd266b8..8ce37aa 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_modprobe.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_modprobe.rule
+@@ -41,5 +41,3 @@ ocil_clause: 'there is not output'
+ ocil: |-
+     To verify that auditing is configured for system administrator actions, run the following command:
+     <pre>$ sudo auditctl -l | grep "watch=/usr/sbin/modprobe"</pre>
+-
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_rmmod.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_rmmod.rule
+index b913129..7ab7824 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_rmmod.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_rmmod.rule
+@@ -41,5 +41,3 @@ ocil_clause: 'there is not output'
+ ocil: |-
+     To verify that auditing is configured for system administrator actions, run the following command:
+     <pre>$ sudo auditctl -l | grep "watch=/usr/sbin/rmmod"</pre>
+-
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_login_events/audit_rules_login_events.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_login_events/audit_rules_login_events.rule
+index 11d187d..20edbdf 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_login_events/audit_rules_login_events.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_login_events/audit_rules_login_events.rule
+@@ -54,4 +54,3 @@ warnings:
+         <li><tt>audit_rules_login_events_lastlog</tt></li>
+         </ul>
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_login_events/audit_rules_login_events_faillock.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_login_events/audit_rules_login_events_faillock.rule
+index b730fdd..78f9d91 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_login_events/audit_rules_login_events_faillock.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_login_events/audit_rules_login_events_faillock.rule
+@@ -43,5 +43,3 @@ ocil_clause: 'there is not output'
+ ocil: |-
+     To verify that auditing is configured for system administrator actions, run the following command:
+     <pre>$ sudo auditctl -l | grep "watch=/var/log/faillock"</pre>
+-
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_login_events/audit_rules_login_events_lastlog.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_login_events/audit_rules_login_events_lastlog.rule
+index 83c5cb7..6c1919d 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_login_events/audit_rules_login_events_lastlog.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_login_events/audit_rules_login_events_lastlog.rule
+@@ -43,5 +43,3 @@ ocil_clause: 'there is not output'
+ ocil: |-
+     To verify that auditing is configured for system administrator actions, run the following command:
+     <pre>$ sudo auditctl -l | grep "watch=/var/log/lastlog"</pre>
+-
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_login_events/audit_rules_login_events_tallylog.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_login_events/audit_rules_login_events_tallylog.rule
+index 9a9770a..b0eed40 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_login_events/audit_rules_login_events_tallylog.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_login_events/audit_rules_login_events_tallylog.rule
+@@ -43,5 +43,3 @@ ocil_clause: 'there is not output'
+ ocil: |-
+     To verify that auditing is configured for system administrator actions, run the following command:
+     <pre>$ sudo auditctl -l | grep "watch=/var/log/tallylog"</pre>
+-
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands.rule
+index 3815429..b6ec543 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands.rule
+@@ -82,4 +82,3 @@ warnings:
+         <li><tt>audit_rules_privileged_commands_passwd</tt></li>
+         </ul>
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_chage.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_chage.rule
+index 9d6c828..5d0478a 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_chage.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_chage.rule
+@@ -49,4 +49,3 @@ ocil: |-
+     <pre>$ sudo grep chage /etc/audit/audit.rules /etc/audit/rules.d/*</pre>
+     It should return a relevant line in the audit rules.
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_chsh.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_chsh.rule
+index ac5c38a..e89b93f 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_chsh.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_chsh.rule
+@@ -49,4 +49,3 @@ ocil: |-
+     <pre>$ sudo grep chsh /etc/audit/audit.rules /etc/audit/rules.d/*</pre>
+     It should return a relevant line in the audit rules.
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_crontab.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_crontab.rule
+index 03bcb6c..dfffee9 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_crontab.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_crontab.rule
+@@ -49,4 +49,3 @@ ocil: |-
+     <pre>$ sudo grep crontab /etc/audit/audit.rules /etc/audit/rules.d/*</pre>
+     It should return a relevant line in the audit rules.
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_gpasswd.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_gpasswd.rule
+index 5c8c407..7d77eb9 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_gpasswd.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_gpasswd.rule
+@@ -50,4 +50,3 @@ ocil: |-
+     <pre>$ sudo grep gpasswd /etc/audit/audit.rules /etc/audit/rules.d/*</pre>
+     It should return a relevant line in the audit rules.
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_newgrp.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_newgrp.rule
+index b8f8e5c..e97e83c 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_newgrp.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_newgrp.rule
+@@ -50,4 +50,3 @@ ocil: |-
+     <pre>$ sudo grep newgrp /etc/audit/audit.rules /etc/audit/rules.d/*</pre>
+     It should return a relevant line in the audit rules.
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_pam_timestamp_check.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_pam_timestamp_check.rule
+index fda2e0c..6398885 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_pam_timestamp_check.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_pam_timestamp_check.rule
+@@ -49,4 +49,3 @@ ocil: |-
+     <pre>$ sudo grep pam_timestamp_check /etc/audit/audit.rules /etc/audit/rules.d/*</pre>
+     It should return a relevant line in the audit rules.
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_passwd.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_passwd.rule
+index cb41772..fc955cd 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_passwd.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_passwd.rule
+@@ -50,4 +50,3 @@ ocil: |-
+     <pre>$ sudo grep passwd /etc/audit/audit.rules /etc/audit/rules.d/*</pre>
+     It should return a relevant line in the audit rules.
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_postdrop.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_postdrop.rule
+index 6f3f787..1f55e04 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_postdrop.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_postdrop.rule
+@@ -49,4 +49,3 @@ ocil: |-
+     <pre>$ sudo grep postdrop /etc/audit/audit.rules /etc/audit/rules.d/*</pre>
+     It should return a relevant line in the audit rules.
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_postqueue.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_postqueue.rule
+index d6f4eeb..91a9d64 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_postqueue.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_postqueue.rule
+@@ -49,4 +49,3 @@ ocil: |-
+     <pre>$ sudo grep postqueue /etc/audit/audit.rules /etc/audit/rules.d/*</pre>
+     It should return a relevant line in the audit rules.
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_pt_chown.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_pt_chown.rule
+index 21e0a11..293a033 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_pt_chown.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_pt_chown.rule
+@@ -47,4 +47,3 @@ ocil: |-
+     <pre>$ sudo grep pt_chown /etc/audit/audit.rules /etc/audit/rules.d/*</pre>
+     It should return a relevant line in the audit rules.
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_ssh_keysign.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_ssh_keysign.rule
+index fa7ff2b..4bb59ae 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_ssh_keysign.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_ssh_keysign.rule
+@@ -50,4 +50,3 @@ ocil: |-
+     <pre>$ sudo grep ssh-keysign /etc/audit/audit.rules /etc/audit/rules.d/*</pre>
+     It should return a relevant line in the audit rules.
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_su.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_su.rule
+index d791805..7c2e986 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_su.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_su.rule
+@@ -50,4 +50,3 @@ ocil: |-
+     <pre>$ sudo grep su /etc/audit/audit.rules /etc/audit/rules.d/*</pre>
+     It should return a relevant line in the audit rules.
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_sudo.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_sudo.rule
+index e8b3585..4103c8a 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_sudo.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_sudo.rule
+@@ -50,4 +50,3 @@ ocil: |-
+     <pre>$ sudo grep sudo /etc/audit/audit.rules /etc/audit/rules.d/*</pre>
+     It should return a relevant line in the audit rules.
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_sudoedit.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_sudoedit.rule
+index 8984a84..6f2fd62 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_sudoedit.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_sudoedit.rule
+@@ -50,4 +50,3 @@ ocil: |-
+     <pre>$ sudo grep sudoedit /etc/audit/audit.rules /etc/audit/rules.d/*</pre>
+     It should return a relevant line in the audit rules.
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_umount.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_umount.rule
+index 5b636ea..db6d4db 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_umount.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_umount.rule
+@@ -49,4 +49,3 @@ ocil: |-
+     <pre>$ sudo grep umount /etc/audit/audit.rules /etc/audit/rules.d/*</pre>
+     It should return a relevant line in the audit rules.
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_unix_chkpwd.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_unix_chkpwd.rule
+index 205bf97..743ea9f 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_unix_chkpwd.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_unix_chkpwd.rule
+@@ -50,4 +50,3 @@ ocil: |-
+     <pre>$ sudo grep unix_chkpwd /etc/audit/audit.rules /etc/audit/rules.d/*</pre>
+     It should return a relevant line in the audit rules.
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_userhelper.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_userhelper.rule
+index 91f31f3..97c3683 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_userhelper.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_userhelper.rule
+@@ -50,4 +50,3 @@ ocil: |-
+     <pre>$ sudo grep userhelper /etc/audit/audit.rules /etc/audit/rules.d/*</pre>
+     It should return a relevant line in the audit rules.
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_immutable.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_immutable.rule
+index 2c42c74..991abcf 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_immutable.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_immutable.rule
+@@ -37,5 +37,3 @@ references:
+     hipaa: 164.308(a)(1)(ii)(D),164.308(a)(3)(ii)(A),164.308(a)(5)(ii)(C),164.312(a)(2)(i),164.310(a)(2)(iv),164.312(d),164.310(d)(2)(iii),164.312(b),164.312(e)
+     nist: AC-6,AU-1(b),AU-2(a),AU-2(c),AU-2(d),IR-5
+     pcidss: Req-10.5.2
+-
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_mac_modification.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_mac_modification.rule
+index 5952dbb..0636d42 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_mac_modification.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_mac_modification.rule
+@@ -48,4 +48,3 @@ ocil: |-
+     configuration, a line should be returned (including
+     <tt>perm=wa</tt> indicating permissions that are watched).
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_media_export.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_media_export.rule
+index 28c64ca..2ec5b8d 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_media_export.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_media_export.rule
+@@ -51,4 +51,3 @@ ocil: |-
+     To verify that auditing is configured for all media exportation events, run the following command:
+     <pre>$ sudo auditctl -l | grep syscall | grep mount</pre>
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_networkconfig_modification.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_networkconfig_modification.rule
+index 55e1893..9ee65de 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_networkconfig_modification.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_networkconfig_modification.rule
+@@ -56,4 +56,3 @@ ocil: |-
+     If the system is configured to watch for network configuration changes, a line should be returned for
+     each file specified (and <tt>perm=wa</tt> should be indicated for each).
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_session_events.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_session_events.rule
+index 017a053..e63f61a 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_session_events.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_session_events.rule
+@@ -41,5 +41,3 @@ references:
+     nist: AC-17(7),AU-1(b),AU-2(a),AU-2(c),AU-2(d),AU-12(a),AU-12(c),IR-5
+     ospp@rhel7: FAU_GEN.1.1.c
+     pcidss: Req-10.2.3
+-
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_sysadmin_actions.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_sysadmin_actions.rule
+index 3be1932..15c33a2 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_sysadmin_actions.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_sysadmin_actions.rule
+@@ -47,5 +47,3 @@ ocil_clause: 'there is not output'
+ ocil: |-
+     To verify that auditing is configured for system administrator actions, run the following command:
+     <pre>$ sudo auditctl -l | grep "watch=/etc/sudoers\|watch=/etc/sudoers.d"</pre>
+-
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_system_shutdown.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_system_shutdown.rule
+index d40c9df..7be7503 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_system_shutdown.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_system_shutdown.rule
+@@ -47,4 +47,3 @@ ocil: |-
+     The output should contain:
+     <pre>-f 2</pre>
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification.rule
+index 2838470..2278906 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification.rule
+@@ -69,4 +69,3 @@ warnings:
+         <li><tt>audit_rules_usergroup_modification_passwd</tt></li>
+         </ul>
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_group.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_group.rule
+index 143e63b..1a5251f 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_group.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_group.rule
+@@ -53,4 +53,3 @@ ocil: |-
+     If the system is configured to watch for account changes, lines should be returned for
+     each file specified (and with <tt>perm=wa</tt> for each).
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_gshadow.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_gshadow.rule
+index 5e14989..0d54b2f 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_gshadow.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_gshadow.rule
+@@ -53,4 +53,3 @@ ocil: |-
+     If the system is configured to watch for account changes, lines should be returned for
+     each file specified (and with <tt>perm=wa</tt> for each).
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_opasswd.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_opasswd.rule
+index 9e7ce3d..0567184 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_opasswd.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_opasswd.rule
+@@ -53,4 +53,3 @@ ocil: |-
+     If the system is configured to watch for account changes, lines should be returned for
+     each file specified (and with <tt>perm=wa</tt> for each).
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_passwd.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_passwd.rule
+index 76bce57..1c97a40 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_passwd.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_passwd.rule
+@@ -53,4 +53,3 @@ ocil: |-
+     If the system is configured to watch for account changes, lines should be returned for
+     each file specified (and with <tt>perm=wa</tt> for each).
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_shadow.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_shadow.rule
+index 74819f5..4076bac 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_shadow.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_shadow.rule
+@@ -53,4 +53,3 @@ ocil: |-
+     If the system is configured to watch for account changes, lines should be returned for
+     each file specified (and with <tt>perm=wa</tt> for each).
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_time_rules/audit_rules_time_adjtimex.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_time_rules/audit_rules_time_adjtimex.rule
+index 9dc2ceb..6e86964 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_time_rules/audit_rules_time_adjtimex.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_time_rules/audit_rules_time_adjtimex.rule
+@@ -52,4 +52,3 @@ ocil_clause: 'the system is not configured to audit time changes'
+ 
+ {{{ complete_ocil_entry_audit_syscall(syscall="adjtimex") }}}
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_time_rules/audit_rules_time_clock_settime.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_time_rules/audit_rules_time_clock_settime.rule
+index 436f5f0..66e7f7c 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_time_rules/audit_rules_time_clock_settime.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_time_rules/audit_rules_time_clock_settime.rule
+@@ -52,4 +52,3 @@ ocil_clause: 'the system is not configured to audit time changes'
+ 
+ {{{ complete_ocil_entry_audit_syscall(syscall="clock_settime") }}}
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_time_rules/audit_rules_time_settimeofday.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_time_rules/audit_rules_time_settimeofday.rule
+index 22ec976..654fd13 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_time_rules/audit_rules_time_settimeofday.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_time_rules/audit_rules_time_settimeofday.rule
+@@ -52,4 +52,3 @@ ocil_clause: 'the system is not configured to audit time changes'
+ 
+ {{{ complete_ocil_entry_audit_syscall(syscall="settimeofday") }}}
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_time_rules/audit_rules_time_stime.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_time_rules/audit_rules_time_stime.rule
+index 0572156..4c0ca3c 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_time_rules/audit_rules_time_stime.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_time_rules/audit_rules_time_stime.rule
+@@ -58,4 +58,3 @@ ocil: |-
+     If the system is 64-bit only, this is not applicable<br />
+     {{{ complete_ocil_entry_audit_syscall(syscall="stime") }}}
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_time_rules/audit_rules_time_watch_localtime.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_time_rules/audit_rules_time_watch_localtime.rule
+index 2fb8f7d..d4c02a2 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_time_rules/audit_rules_time_watch_localtime.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_time_rules/audit_rules_time_watch_localtime.rule
+@@ -51,4 +51,3 @@ ocil: |-
+     <pre>$ sudo auditctl -l | grep "watch=/etc/localtime"</pre>
+     If the system is configured to audit this activity, it will return a line.
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification.rule
+index ea42793..1e2437a 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification.rule
+@@ -70,4 +70,3 @@ warnings:
+         <li><tt>audit_rules_unsuccessful_file_modification_creat</tt></li>
+         </ul>
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_creat.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_creat.rule
+index a328ff9..bd91a9f 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_creat.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_creat.rule
+@@ -55,4 +55,3 @@ warnings:
+         have been placed independent of other system calls. Grouping these system
+         calls with others as identifying earlier in this guide is more efficient.
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_ftruncate.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_ftruncate.rule
+index 6229398..8fadeaa 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_ftruncate.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_ftruncate.rule
+@@ -55,4 +55,3 @@ warnings:
+         have been placed independent of other system calls. Grouping these system
+         calls with others as identifying earlier in this guide is more efficient.
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open.rule
+index 13f12fe..656de99 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open.rule
+@@ -55,4 +55,3 @@ warnings:
+         have been placed independent of other system calls. Grouping these system
+         calls with others as identifying earlier in this guide is more efficient.
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open_by_handle_at.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open_by_handle_at.rule
+index ce4193a..30ee748 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open_by_handle_at.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open_by_handle_at.rule
+@@ -55,4 +55,3 @@ warnings:
+         have been placed independent of other system calls. Grouping these system
+         calls with others as identifying earlier in this guide is more efficient.
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_openat.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_openat.rule
+index 6f3c38a..532f355 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_openat.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_openat.rule
+@@ -55,4 +55,3 @@ warnings:
+         have been placed independent of other system calls. Grouping these system
+         calls with others as identifying earlier in this guide is more efficient.
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_truncate.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_truncate.rule
+index f6e0263..d7d37ac 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_truncate.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_truncate.rule
+@@ -55,4 +55,3 @@ warnings:
+         have been placed independent of other system calls. Grouping these system
+         calls with others as identifying earlier in this guide is more efficient.
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/directory_access_var_log_audit.rule b/linux_os/guide/system/auditing/auditd_configure_rules/directory_access_var_log_audit.rule
+index acf6fc6..b892c5a 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/directory_access_var_log_audit.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/directory_access_var_log_audit.rule
+@@ -31,3 +31,5 @@ ocil: |-
+     <code>/var/log/audit</code> directory, run the following command:
+     <pre space="preserve">$ sudo grep "dir=/var/log/audit" /etc/audit/audit.rules</pre>
+     If the system is configured to audit this activity, it will return a line.
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/file_ownership_var_log_audit.rule b/linux_os/guide/system/auditing/auditd_configure_rules/file_ownership_var_log_audit.rule
+index 14d41d0..543f887 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/file_ownership_var_log_audit.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/file_ownership_var_log_audit.rule
+@@ -34,4 +34,3 @@ ocil: |-
+     {{{ describe_file_owner(file="/var/log/audit", owner="root") }}}
+     {{{ describe_file_owner(file="/var/log/audit/*", owner="root") }}}
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/file_permissions_var_log_audit.rule b/linux_os/guide/system/auditing/auditd_configure_rules/file_permissions_var_log_audit.rule
+index 319b1bb..39ddc5b 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/file_permissions_var_log_audit.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/file_permissions_var_log_audit.rule
+@@ -36,4 +36,3 @@ ocil: |-
+     <pre>$ sudo ls -l /var/log/audit</pre>
+     Audit logs must be mode 0640 or less permissive.
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_configure_remote_server.rule b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_configure_remote_server.rule
+index 94af473..c5cf669 100644
+--- a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_configure_remote_server.rule
++++ b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_configure_remote_server.rule
+@@ -38,4 +38,3 @@ ocil: |-
+     is an IP address or hostname:
+     <pre>remote_server = <i>REMOTE_SYSTEM</i></pre>
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_disk_full_action.rule b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_disk_full_action.rule
+index 502843d..e4e96d4 100644
+--- a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_disk_full_action.rule
++++ b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_disk_full_action.rule
+@@ -41,4 +41,3 @@ ocil: |-
+     Acceptable values also include <tt>syslog</tt> and
+     <tt>halt</tt>.
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_encrypt_sent_records.rule b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_encrypt_sent_records.rule
+index 07d36df..94292ff 100644
+--- a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_encrypt_sent_records.rule
++++ b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_encrypt_sent_records.rule
+@@ -34,5 +34,3 @@ ocil: |-
+     <pre>$ sudo grep -i enable_krb5 /etc/audisp/audisp-remote.conf</pre>
+     The output should return the following:
+     <pre>enable_krb5 = yes</pre>
+-
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_network_failure_action.rule b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_network_failure_action.rule
+index 7fc5566..79b8909 100644
+--- a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_network_failure_action.rule
++++ b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_network_failure_action.rule
+@@ -41,4 +41,3 @@ ocil: |-
+     Acceptable values also include <tt>syslog</tt> and
+     <tt>halt</tt>.
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_syslog_plugin_activated.rule b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_syslog_plugin_activated.rule
+index c2891ab..75edf6a 100644
+--- a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_syslog_plugin_activated.rule
++++ b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_syslog_plugin_activated.rule
+@@ -40,5 +40,3 @@ ocil: |-
+     To verify the audispd's syslog plugin is active, run the following command:
+     <pre>$ sudo grep active /etc/audisp/plugins.d/syslog.conf</pre>
+     If the plugin is active, the output will show <tt>yes</tt>.
+-
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_action_mail_acct.rule b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_action_mail_acct.rule
+index cabdc03..3b45bc2 100644
+--- a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_action_mail_acct.rule
++++ b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_action_mail_acct.rule
+@@ -44,4 +44,3 @@ ocil: |-
+     account when it needs to notify an administrator:
+     <pre>action_mail_acct = root</pre>
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_admin_space_left_action.rule b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_admin_space_left_action.rule
+index 7bad632..46102a1 100644
+--- a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_admin_space_left_action.rule
++++ b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_admin_space_left_action.rule
+@@ -49,4 +49,3 @@ ocil: |-
+     or halt when disk space has run low:
+     <pre>admin_space_left_action single</pre>
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_flush.rule b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_flush.rule
+index 5475a85..a070c4a 100644
+--- a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_flush.rule
++++ b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_flush.rule
+@@ -38,4 +38,3 @@ ocil: |-
+     Acceptable values are <tt>DATA</tt>, and <tt>SYNC</tt>. The setting is
+     case-insensitive.
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_max_log_file.rule b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_max_log_file.rule
+index 06ec11d..b123481 100644
+--- a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_max_log_file.rule
++++ b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_max_log_file.rule
+@@ -41,4 +41,3 @@ ocil: |-
+     <tt>$ sudo grep max_log_file /etc/audit/auditd.conf</tt>
+     <pre>max_log_file = 6</pre>
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_max_log_file_action.rule b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_max_log_file_action.rule
+index 609ca46..1c90f9e 100644
+--- a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_max_log_file_action.rule
++++ b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_max_log_file_action.rule
+@@ -52,4 +52,3 @@ ocil: |-
+     <tt>$ sudo grep max_log_file_action /etc/audit/auditd.conf</tt>
+     <pre>max_log_file_action <tt>rotate</tt></pre>
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_num_logs.rule b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_num_logs.rule
+index 5b1debc..619b19e 100644
+--- a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_num_logs.rule
++++ b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_num_logs.rule
+@@ -40,4 +40,3 @@ ocil: |-
+     <tt>$ sudo grep num_logs /etc/audit/auditd.conf</tt>
+     <pre>num_logs = 5</pre>
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_space_left.rule b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_space_left.rule
+index d86ae02..c6fd4ea 100644
+--- a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_space_left.rule
++++ b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_space_left.rule
+@@ -40,4 +40,3 @@ ocil: |-
+     determine if the system is configured correctly:
+     <pre>space_left <i>SIZE_in_MB</i></pre>
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_space_left_action.rule b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_space_left_action.rule
+index 7b4360f..65523e0 100644
+--- a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_space_left_action.rule
++++ b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_space_left_action.rule
+@@ -58,4 +58,3 @@ ocil: |-
+     <pre>space_left_action</pre>
+     Acceptable values are <tt>email</tt>, <tt>suspend</tt>, <tt>single</tt>, and <tt>halt</tt>.
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/grub2_audit_argument.rule b/linux_os/guide/system/auditing/grub2_audit_argument.rule
+index 29c451c..68d4f49 100644
+--- a/linux_os/guide/system/auditing/grub2_audit_argument.rule
++++ b/linux_os/guide/system/auditing/grub2_audit_argument.rule
+@@ -57,5 +57,3 @@ warnings:
+         <li>On UEFI-based machines, issue the following command as <tt>root</tt>:
+         <pre>~]# grub2-mkconfig -o /boot/efi/EFI/redhat/grub.cfg</pre></li>
+         </ul>
+-
+-platform: machine
+diff --git a/linux_os/guide/system/auditing/grub2_audit_backlog_limit_argument.rule b/linux_os/guide/system/auditing/grub2_audit_backlog_limit_argument.rule
+index 361a6b9..82cd257 100644
+--- a/linux_os/guide/system/auditing/grub2_audit_backlog_limit_argument.rule
++++ b/linux_os/guide/system/auditing/grub2_audit_backlog_limit_argument.rule
+@@ -49,3 +49,5 @@ warnings:
+         <pre>~]# grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg</pre></li>
+ {{% endif %}}
+         </ul>
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/service_auditd_enabled.rule b/linux_os/guide/system/auditing/service_auditd_enabled.rule
+index ce32390..058a689 100644
+--- a/linux_os/guide/system/auditing/service_auditd_enabled.rule
++++ b/linux_os/guide/system/auditing/service_auditd_enabled.rule
+@@ -42,4 +42,3 @@ references:
+ 
+ ocil: '{{{ ocil_service_enabled(service="auditd") }}}'
+ 
+-platform: machine
+diff --git a/linux_os/guide/system/permissions/restrictions/enable_execshield_settings/sysctl_kernel_kptr_restrict.rule b/linux_os/guide/system/permissions/restrictions/enable_execshield_settings/sysctl_kernel_kptr_restrict.rule
+index 492d2e7..eb56d1c 100644
+--- a/linux_os/guide/system/permissions/restrictions/enable_execshield_settings/sysctl_kernel_kptr_restrict.rule
++++ b/linux_os/guide/system/permissions/restrictions/enable_execshield_settings/sysctl_kernel_kptr_restrict.rule
+@@ -17,3 +17,5 @@ references:
+     anssi: NT28(R23)
+ 
+ {{{ complete_ocil_entry_sysctl_option_value(sysctl="kernel.kptr_restrict", value="1") }}}
++
++platform: machine
+diff --git a/linux_os/guide/system/permissions/restrictions/grub2_vsyscall_argument.rule b/linux_os/guide/system/permissions/restrictions/grub2_vsyscall_argument.rule
+index 8773f24..d9d53c2 100644
+--- a/linux_os/guide/system/permissions/restrictions/grub2_vsyscall_argument.rule
++++ b/linux_os/guide/system/permissions/restrictions/grub2_vsyscall_argument.rule
+@@ -47,3 +47,5 @@ warnings:
+         <pre>~]# grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg</pre></li>
+ {{% endif %}}
+         </ul>
++
++platform: machine
+diff --git a/linux_os/guide/system/permissions/restrictions/poisoning/grub2_page_poison_argument.rule b/linux_os/guide/system/permissions/restrictions/poisoning/grub2_page_poison_argument.rule
+index 9056613..b72c6b5 100644
+--- a/linux_os/guide/system/permissions/restrictions/poisoning/grub2_page_poison_argument.rule
++++ b/linux_os/guide/system/permissions/restrictions/poisoning/grub2_page_poison_argument.rule
+@@ -50,3 +50,5 @@ warnings:
+         <pre>~]# grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg</pre></li>
+ {{% endif %}}
+         </ul>
++
++platform: machine
+diff --git a/linux_os/guide/system/permissions/restrictions/poisoning/grub2_slub_debug_argument.rule b/linux_os/guide/system/permissions/restrictions/poisoning/grub2_slub_debug_argument.rule
+index ea982ee..970025d 100644
+--- a/linux_os/guide/system/permissions/restrictions/poisoning/grub2_slub_debug_argument.rule
++++ b/linux_os/guide/system/permissions/restrictions/poisoning/grub2_slub_debug_argument.rule
+@@ -50,3 +50,5 @@ warnings:
+         <pre>~]# grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg</pre></li>
+ {{% endif %}}
+         </ul>
++
++platform: machine
+diff --git a/linux_os/guide/system/permissions/restrictions/sysctl_kernel_kexec_load_disabled.rule b/linux_os/guide/system/permissions/restrictions/sysctl_kernel_kexec_load_disabled.rule
+index a8fc871..463cda6 100644
+--- a/linux_os/guide/system/permissions/restrictions/sysctl_kernel_kexec_load_disabled.rule
++++ b/linux_os/guide/system/permissions/restrictions/sysctl_kernel_kexec_load_disabled.rule
+@@ -15,3 +15,4 @@ severity: unknown
+ 
+ {{{ complete_ocil_entry_sysctl_option_value(sysctl="kernel.kexec_load_disabled", value="1") }}}
+ 
++platform: machine
+diff --git a/linux_os/guide/system/permissions/restrictions/sysctl_kernel_yama_ptrace_scope.rule b/linux_os/guide/system/permissions/restrictions/sysctl_kernel_yama_ptrace_scope.rule
+index 67b7ff8..44febe9 100644
+--- a/linux_os/guide/system/permissions/restrictions/sysctl_kernel_yama_ptrace_scope.rule
++++ b/linux_os/guide/system/permissions/restrictions/sysctl_kernel_yama_ptrace_scope.rule
+@@ -17,3 +17,4 @@ severity: unknown
+ 
+ {{{ complete_ocil_entry_sysctl_option_value(sysctl="kernel.yama.ptrace_scope", value="1") }}}
+ 
++platform: machine
+diff --git a/linux_os/guide/system/selinux/selinux_user_login_roles.rule b/linux_os/guide/system/selinux/selinux_user_login_roles.rule
+index 47690e0..65cbf1f 100644
+--- a/linux_os/guide/system/selinux/selinux_user_login_roles.rule
++++ b/linux_os/guide/system/selinux/selinux_user_login_roles.rule
+@@ -54,3 +54,5 @@ ocil: |-
+     All authorized non-administrative
+     users must be mapped to the <tt>user_u</tt> role or the appropriate domain
+     (user_t).
++
++platform: machine
+diff --git a/linux_os/guide/system/software/integrity/fips/group.yml b/linux_os/guide/system/software/integrity/fips/group.yml
+index 75916e9..e9ff7cb 100644
+--- a/linux_os/guide/system/software/integrity/fips/group.yml
++++ b/linux_os/guide/system/software/integrity/fips/group.yml
+@@ -14,3 +14,5 @@ description: |-
+     Security Levels 1, 2, 3, or 4 for use on Red Hat Enterprise Linux.
+     <br /><br />
+     See <b>{{{ weblink(link="http://csrc.nist.gov/publications/PubsFIPS.html") }}}</b> for more information.
++
++platform: machine
+diff --git a/linux_os/guide/system/software/integrity/fips/grub2_enable_fips_mode.rule b/linux_os/guide/system/software/integrity/fips/grub2_enable_fips_mode.rule
+index c1223d6..4f70107 100644
+--- a/linux_os/guide/system/software/integrity/fips/grub2_enable_fips_mode.rule
++++ b/linux_os/guide/system/software/integrity/fips/grub2_enable_fips_mode.rule
+@@ -60,5 +60,3 @@ warnings:
+         <br /><br />
+         See <b>{{{ weblink(link="http://csrc.nist.gov/groups/STM/cmvp/documents/140-1/1401vend.htm") }}}</b>
+         for a list of FIPS certified vendors.
+-
+-platform: machine

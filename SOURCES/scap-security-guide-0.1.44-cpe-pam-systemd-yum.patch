@@ -1,0 +1,831 @@
+From 32caed89b5cf14f86e5d842569c4f73cdae6ed26 Mon Sep 17 00:00:00 2001
+From: Shawn Wells <shawn@redhat.com>
+Date: Wed, 3 Apr 2019 16:49:38 -0400
+Subject: [PATCH 01/11] create PAM package CPE
+
+---
+ .../oval/installed_env_has_pam_package.xml    | 25 +++++++++++++++++++
+ 1 file changed, 25 insertions(+)
+ create mode 100644 shared/checks/oval/installed_env_has_pam_package.xml
+
+diff --git a/shared/checks/oval/installed_env_has_pam_package.xml b/shared/checks/oval/installed_env_has_pam_package.xml
+new file mode 100644
+index 0000000000..b6376575b2
+--- /dev/null
++++ b/shared/checks/oval/installed_env_has_pam_package.xml
+@@ -0,0 +1,25 @@
++<def-group>
++
++  <definition class="inventory"
++  id="installed_env_has_pam_package" version="1">
++    <metadata>
++      <title>Package pam is installed</title>
++      <affected family="unix">
++        <platform>multi_platform_all</platform>
++      </affected>
++      <description>Checks if package pam is installed.</description>
++      <reference ref_id="cpe:/a:pam" source="CPE" />
++    </metadata>
++    <criteria>
++      <criterion comment="Package pam is installed" test_ref="test_env_has_pam_installed" />
++    </criteria>
++  </definition>
++
++  <linux:rpminfo_test check="all" check_existence="at_least_one_exists" comment="system has package pam installed" id="test_env_has_pam_installed" version="1">
++    <linux:object object_ref="obj_env_has_pam_installed" />
++  </linux:rpminfo_test>
++  <linux:rpminfo_object id="obj_env_has_pam_installed" version="1">
++    <linux:name>pam</linux:name>
++  </linux:rpminfo_object>
++
++</def-group>
+
+From 213a472a89b3b591a4fd441bcf0f0f3ba633afe3 Mon Sep 17 00:00:00 2001
+From: Shawn Wells <shawn@redhat.com>
+Date: Wed, 3 Apr 2019 16:49:53 -0400
+Subject: [PATCH 02/11] add PAM CPE to constants
+
+---
+ ssg/constants.py | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/ssg/constants.py b/ssg/constants.py
+index f96fd51790..e87eb7f43c 100644
+--- a/ssg/constants.py
++++ b/ssg/constants.py
+@@ -376,6 +376,7 @@
+ XCCDF_PLATFORM_TO_CPE = {
+     "machine": "cpe:/a:machine",
+     "container": "cpe:/a:container",
++    "pam": "cpe:/a:pam",
+     "shadow-utils": "cpe:/a:shadow-utils",
+ }
+ 
+
+From 6afde50cf7a4a75829ed092c8e30116df7a99601 Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Mon, 8 Apr 2019 15:43:04 +0200
+Subject: [PATCH 03/11] Update rules for PAM CPE check
+
+---
+ .../accounts_password_pam_dcredit.rule                      | 2 ++
+ .../accounts_password_pam_difok.rule                        | 2 ++
+ .../accounts_password_pam_maxclassrepeat.rule               | 2 ++
+ .../accounts_password_pam_minclass.rule                     | 2 ++
+ .../accounts_password_pam_minlen.rule                       | 2 ++
+ .../accounts_max_concurrent_login_sessions.rule             | 2 ++
+ 6 files changed, 12 insertions(+)
+
+diff --git a/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_dcredit.rule b/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_dcredit.rule
+index 72fc5970ea..fe997d97c8 100644
+--- a/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_dcredit.rule
++++ b/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_dcredit.rule
+@@ -52,3 +52,5 @@ ocil: |-
+     <pre>$ grep dcredit /etc/security/pwquality.conf</pre>
+     The <tt>dcredit</tt> parameter (as a negative number) will indicate how many digits are required.
+     The DoD requires at least one digit in a password. This would appear as <tt>dcredit = -1</tt>.
++
++platform: pam
+diff --git a/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_difok.rule b/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_difok.rule
+index 931f0aa9e4..d1855a2cf4 100644
+--- a/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_difok.rule
++++ b/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_difok.rule
+@@ -53,3 +53,5 @@ ocil: |-
+     To check how many characters must differ during a password change, run the following command:
+     <pre>$ grep difok /etc/security/pwquality.conf</pre>
+     The <tt>difok</tt> parameter will indicate how many characters must differ.
++
++platform: pam
+diff --git a/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_maxclassrepeat.rule b/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_maxclassrepeat.rule
+index 35de1318d5..d964a5e3ea 100644
+--- a/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_maxclassrepeat.rule
++++ b/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_maxclassrepeat.rule
+@@ -43,3 +43,5 @@ ocil: |-
+     To check the value for maximum consecutive repeating characters, run the following command:
+     <pre>$ grep maxclassrepeat /etc/security/pwquality.conf</pre>
+     For DoD systems, the output should show <tt>maxclassrepeat</tt>=4.
++
++platform: pam
+diff --git a/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_minclass.rule b/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_minclass.rule
+index 7f99aba143..dc3377de0b 100644
+--- a/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_minclass.rule
++++ b/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_minclass.rule
+@@ -60,3 +60,5 @@ ocil: |-
+     The <tt>minclass</tt> parameter will indicate how many character classes must be used. If
+     the requirement was for the password to contain characters from three different categories,
+     then this would appear as <tt>minclass = 3</tt>.
++
++platform: pam
+diff --git a/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_minlen.rule b/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_minlen.rule
+index d6462579fe..0799aecf01 100644
+--- a/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_minlen.rule
++++ b/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_minlen.rule
+@@ -49,3 +49,5 @@ ocil: |-
+     To check how many characters are required in a password, run the following command:
+     <pre>$ grep minlen /etc/security/pwquality.conf</pre>
+     Your output should contain <tt>minlen = <sub idref="var_password_pam_minlen" /></tt>
++
++platform: pam
+diff --git a/linux_os/guide/system/accounts/accounts-session/accounts_max_concurrent_login_sessions.rule b/linux_os/guide/system/accounts/accounts-session/accounts_max_concurrent_login_sessions.rule
+index bd53c19c08..f9d9a08706 100644
+--- a/linux_os/guide/system/accounts/accounts-session/accounts_max_concurrent_login_sessions.rule
++++ b/linux_os/guide/system/accounts/accounts-session/accounts_max_concurrent_login_sessions.rule
+@@ -45,3 +45,5 @@
+ ocil_clause: 'maxlogins is not equal to or less than the expected value'
+ 
+ ocil: "Run the following command to ensure the <tt>maxlogins</tt> value is configured for all users\non the system:\n<pre># grep \"maxlogins\" /etc/security/limits.conf</pre>\nYou should receive output similar to the following:\n<pre>*\t\thard\tmaxlogins\t<sub idref=\"var_accounts_max_concurrent_login_sessions\" /></pre>"
++
++platform: pam
+
+From 351ee6945df37a28cc4f4589b17eb4c35066b00b Mon Sep 17 00:00:00 2001
+From: Shawn Wells <shawn@redhat.com>
+Date: Wed, 3 Apr 2019 17:17:40 -0400
+Subject: [PATCH 04/11] add libuser CPE
+
+---
+ .../installed_env_has_libuser_package.xml     | 24 +++++++++++++++++++
+ 1 file changed, 24 insertions(+)
+ create mode 100644 shared/checks/oval/installed_env_has_libuser_package.xml
+
+diff --git a/shared/checks/oval/installed_env_has_libuser_package.xml b/shared/checks/oval/installed_env_has_libuser_package.xml
+new file mode 100644
+index 0000000000..ee79b19f8a
+--- /dev/null
++++ b/shared/checks/oval/installed_env_has_libuser_package.xml
+@@ -0,0 +1,24 @@
++<def-group>
++  <definition class="inventory"
++  id="installed_env_has_libuser_package" version="1">
++    <metadata>
++      <title>Package libuser is installed</title>
++      <affected family="unix">
++        <platform>multi_platform_all</platform>
++      </affected>
++      <description>Checks if package libuser is installed.</description>
++      <reference ref_id="cpe:/a:libuser" source="CPE" />
++    </metadata>
++    <criteria>
++      <criterion comment="Package libuser is installed" test_ref="test_env_has_libuser_installed" />
++    </criteria>
++  </definition>
++
++  <linux:rpminfo_test check="all" check_existence="at_least_one_exists" comment="system has package libuser installed" id="test_env_has_libuser_installed" version="1">
++    <linux:object object_ref="obj_env_has_libuser_installed" />
++  </linux:rpminfo_test>
++  <linux:rpminfo_object id="obj_env_has_libuser_installed" version="1">
++    <linux:name>libuser</linux:name>
++  </linux:rpminfo_object>
++
++</def-group>
+
+From e0b2db79f718b2f64ec25c39f01b53d4e9a80b00 Mon Sep 17 00:00:00 2001
+From: Shawn Wells <shawn@redhat.com>
+Date: Wed, 3 Apr 2019 17:17:50 -0400
+Subject: [PATCH 05/11] add systemd CPE
+
+---
+ .../installed_env_has_systemd_package.xml     | 24 +++++++++++++++++++
+ 1 file changed, 24 insertions(+)
+ create mode 100644 shared/checks/oval/installed_env_has_systemd_package.xml
+
+diff --git a/shared/checks/oval/installed_env_has_systemd_package.xml b/shared/checks/oval/installed_env_has_systemd_package.xml
+new file mode 100644
+index 0000000000..99706ee1c6
+--- /dev/null
++++ b/shared/checks/oval/installed_env_has_systemd_package.xml
+@@ -0,0 +1,24 @@
++<def-group>
++  <definition class="inventory"
++  id="installed_env_has_systemd_package" version="1">
++    <metadata>
++      <title>Package systemd is installed</title>
++      <affected family="unix">
++        <platform>multi_platform_all</platform>
++      </affected>
++      <description>Checks if package systemd is installed.</description>
++      <reference ref_id="cpe:/a:systemd" source="CPE" />
++    </metadata>
++    <criteria>
++      <criterion comment="Package systemd is installed" test_ref="test_env_has_systemd_installed" />
++    </criteria>
++  </definition>
++
++  <linux:rpminfo_test check="all" check_existence="at_least_one_exists" comment="system has package systemd installed" id="test_env_has_systemd_installed" version="1">
++    <linux:object object_ref="obj_env_has_systemd_installed" />
++  </linux:rpminfo_test>
++  <linux:rpminfo_object id="obj_env_has_systemd_installed" version="1">
++    <linux:name>systemd</linux:name>
++  </linux:rpminfo_object>
++
++</def-group>
+
+From 2ec6e5654ef63232c973d91cdee6f8eb9156eb9b Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Mon, 8 Apr 2019 15:45:01 +0200
+Subject: [PATCH 06/11] Update rules with package CPEs
+
+---
+ .../accounts/accounts-pam/display_login_attempts.rule       | 2 ++
+ .../accounts_password_pam_unix_remember.rule                | 2 ++
+ .../accounts_passwords_pam_faillock_deny.rule               | 2 ++
+ .../accounts_passwords_pam_faillock_deny_root.rule          | 2 ++
+ .../accounts_passwords_pam_faillock_interval.rule           | 2 ++
+ .../accounts_passwords_pam_faillock_unlock_time.rule        | 2 ++
+ .../accounts_password_pam_lcredit.rule                      | 2 ++
+ .../accounts_password_pam_ocredit.rule                      | 2 ++
+ .../accounts_password_pam_retry.rule                        | 2 ++
+ .../accounts_password_pam_ucredit.rule                      | 2 ++
+ .../set_password_hashing_algorithm_libuserconf.rule         | 2 ++
+ .../set_password_hashing_algorithm_logindefs.rule           | 2 ++
+ .../set_password_hashing_algorithm_systemauth.rule          | 2 ++
+ .../accounts-physical/disable_ctrlaltdel_burstaction.rule   | 2 ++
+ .../user_umask/accounts_umask_etc_login_defs.rule           | 2 ++
+ ssg/constants.py                                                | 2 ++
+ 16 files changed, 32 insertions(+)
+
+diff --git a/linux_os/guide/system/accounts/accounts-pam/display_login_attempts.rule b/linux_os/guide/system/accounts/accounts-pam/display_login_attempts.rule
+index 5c2287a4d3..baeece4b59 100644
+--- a/linux_os/guide/system/accounts/accounts-pam/display_login_attempts.rule
++++ b/linux_os/guide/system/accounts/accounts-pam/display_login_attempts.rule
+@@ -47,3 +47,5 @@ ocil: |-
+     the following command:
+     <pre>$ grep pam_lastlog.so /etc/pam.d/postlogin</pre>
+     The output should show output <tt>showfailed</tt>.
++
++platform: pam
+diff --git a/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_password_pam_unix_remember.rule b/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_password_pam_unix_remember.rule
+index dcde239e85..a63e0e6d1d 100644
+--- a/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_password_pam_unix_remember.rule
++++ b/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_password_pam_unix_remember.rule
+@@ -56,3 +56,5 @@ ocil: |-
+     <pre>$ grep remember /etc/pam.d/system-auth</pre>
+     The output should show the following at the end of the line:
+     <pre>remember=<sub idref="var_password_pam_unix_remember" /></pre>
++
++platform: pam
+diff --git a/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_passwords_pam_faillock_deny.rule b/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_passwords_pam_faillock_deny.rule
+index c8147e7c17..e10b0a1b67 100644
+--- a/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_passwords_pam_faillock_deny.rule
++++ b/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_passwords_pam_faillock_deny.rule
+@@ -56,3 +56,5 @@ ocil: |-
+     To ensure the failed password attempt policy is configured correctly, run the following command:
+     <pre>$ grep pam_faillock /etc/pam.d/system-auth</pre>
+     The output should show <tt>deny=<sub idref="var_accounts_passwords_pam_faillock_deny" /></tt>.
++
++platform: pam
+diff --git a/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_passwords_pam_faillock_deny_root.rule b/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_passwords_pam_faillock_deny_root.rule
+index b5283b052e..b4c4df7186 100644
+--- a/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_passwords_pam_faillock_deny_root.rule
++++ b/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_passwords_pam_faillock_deny_root.rule
+@@ -50,3 +50,5 @@ ocil: |-
+     attempts, run the following command:
+     <pre>$ grep even_deny_root /etc/pam.d/system-auth</pre>
+     The output should show <tt>even_deny_root</tt>.
++
++platform: pam
+diff --git a/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_passwords_pam_faillock_interval.rule b/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_passwords_pam_faillock_interval.rule
+index 485fb7970d..ac21fe4c81 100644
+--- a/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_passwords_pam_faillock_interval.rule
++++ b/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_passwords_pam_faillock_interval.rule
+@@ -65,3 +65,5 @@
+ ocil_clause: 'fail_interval is less than the required value'
+ 
+ ocil: "To ensure the failed password attempt policy is configured correctly, run the following command:\n<pre>$ grep pam_faillock /etc/pam.d/system-auth /etc/pam.d/password-auth</pre>\nFor each file, the output should show <tt>fail_interval=&lt;interval-in-seconds&gt;</tt> where <tt>interval-in-seconds</tt> is \n<tt><sub idref=\"var_accounts_passwords_pam_faillock_fail_interval\" /></tt>  or greater. \nIf the <tt>fail_interval</tt> parameter is not set, the default setting of 900 seconds is acceptable."
++
++platform: pam
+diff --git a/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_passwords_pam_faillock_unlock_time.rule b/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_passwords_pam_faillock_unlock_time.rule
+index 9abd02feea..f4bfaec622 100644
+--- a/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_passwords_pam_faillock_unlock_time.rule
++++ b/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_passwords_pam_faillock_unlock_time.rule
+@@ -59,3 +59,5 @@ ocil: |-
+     To ensure the failed password attempt policy is configured correctly, run the following command:
+     <pre>$ grep pam_faillock /etc/pam.d/system-auth</pre>
+     The output should show <tt>unlock_time=&lt;some-large-number&gt;</tt> or <tt>never</tt>.
++
++platform: pam
+diff --git a/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_lcredit.rule b/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_lcredit.rule
+index ba0be4ebeb..21d86585ed 100644
+--- a/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_lcredit.rule
++++ b/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_lcredit.rule
+@@ -51,3 +51,5 @@ ocil: |-
+     <pre>$ grep lcredit /etc/security/pwquality.conf</pre>
+     The <tt>lcredit</tt> parameter (as a negative number) will indicate how many special characters are required.
+     The DoD and FISMA require at least one lowercase character in a password. This would appear as <tt>lcredit = -1</tt>.
++
++platform: pam
+diff --git a/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_ocredit.rule b/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_ocredit.rule
+index c39cc2a09b..d7f7083d27 100644
+--- a/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_ocredit.rule
++++ b/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_ocredit.rule
+@@ -53,3 +53,5 @@ ocil: |-
+     The <tt>ocredit</tt> parameter (as a negative number) will indicate how many special characters are required.
+     The DoD and FISMA require at least one special character in a password.
+     This would appear as <tt>ocredit = -1</tt>.
++
++platform: pam
+diff --git a/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_retry.rule b/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_retry.rule
+index c0f8ed8d6d..fea35e37a3 100644
+--- a/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_retry.rule
++++ b/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_retry.rule
+@@ -46,3 +46,5 @@ ocil: |-
+     The <tt>retry</tt> parameter will indicate how many attempts are permitted.
+     The DoD required value is less than or equal to 3.
+     This would appear as <tt>retry=3</tt>, or a lower value.
++
++platform: pam
+diff --git a/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_ucredit.rule b/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_ucredit.rule
+index 2222ac2297..a4ecdf969d 100644
+--- a/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_ucredit.rule
++++ b/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_ucredit.rule
+@@ -50,3 +50,5 @@ ocil: |-
+     The <tt>ucredit</tt> parameter (as a negative number) will indicate how many uppercase characters are required.
+     The DoD and FISMA require at least one uppercase character in a password.
+     This would appear as <tt>ucredit = -1</tt>.
++
++platform: pam
+diff --git a/linux_os/guide/system/accounts/accounts-pam/set_password_hashing_algorithm/set_password_hashing_algorithm_libuserconf.rule b/linux_os/guide/system/accounts/accounts-pam/set_password_hashing_algorithm/set_password_hashing_algorithm_libuserconf.rule
+index 0f6cf57e57..397bad4ea6 100644
+--- a/linux_os/guide/system/accounts/accounts-pam/set_password_hashing_algorithm/set_password_hashing_algorithm_libuserconf.rule
++++ b/linux_os/guide/system/accounts/accounts-pam/set_password_hashing_algorithm/set_password_hashing_algorithm_libuserconf.rule
+@@ -55,3 +55,5 @@ ocil: |-
+     Inspect <tt>/etc/libuser.conf</tt> and ensure the following line appears
+     in the <tt>[default]</tt> section:
+     <pre>crypt_style = sha512</pre>
++
++platform: libuser
+diff --git a/linux_os/guide/system/accounts/accounts-pam/set_password_hashing_algorithm/set_password_hashing_algorithm_logindefs.rule b/linux_os/guide/system/accounts/accounts-pam/set_password_hashing_algorithm/set_password_hashing_algorithm_logindefs.rule
+index a23a7863c9..84212c7648 100644
+--- a/linux_os/guide/system/accounts/accounts-pam/set_password_hashing_algorithm/set_password_hashing_algorithm_logindefs.rule
++++ b/linux_os/guide/system/accounts/accounts-pam/set_password_hashing_algorithm/set_password_hashing_algorithm_logindefs.rule
+@@ -47,3 +47,5 @@ ocil_clause: 'it does not'
+ ocil: |-
+     Inspect <tt>/etc/login.defs</tt> and ensure the following line appears:
+     <pre>ENCRYPT_METHOD SHA512</pre>
++
++platform: shadow-utils
+diff --git a/linux_os/guide/system/accounts/accounts-pam/set_password_hashing_algorithm/set_password_hashing_algorithm_systemauth.rule b/linux_os/guide/system/accounts/accounts-pam/set_password_hashing_algorithm/set_password_hashing_algorithm_systemauth.rule
+index 070e65fc3a..48e8ac427d 100644
+--- a/linux_os/guide/system/accounts/accounts-pam/set_password_hashing_algorithm/set_password_hashing_algorithm_systemauth.rule
++++ b/linux_os/guide/system/accounts/accounts-pam/set_password_hashing_algorithm/set_password_hashing_algorithm_systemauth.rule
+@@ -65,3 +65,5 @@ ocil: |-
+     ensure that the <tt>pam_unix.so</tt> module includes the argument
+     <tt>sha512</tt>:
+     <pre>$ grep sha512 /etc/pam.d/system-auth</pre>
++
++platform: pam
+diff --git a/linux_os/guide/system/accounts/accounts-physical/disable_ctrlaltdel_burstaction.rule b/linux_os/guide/system/accounts/accounts-physical/disable_ctrlaltdel_burstaction.rule
+index e215a41a91..d68bf2be38 100644
+--- a/linux_os/guide/system/accounts/accounts-physical/disable_ctrlaltdel_burstaction.rule
++++ b/linux_os/guide/system/accounts/accounts-physical/disable_ctrlaltdel_burstaction.rule
+@@ -53,3 +53,5 @@ warnings:
+         key sequence if running in <tt>runlevel 6</tt> (e.g. in GNOME, KDE, etc.)! The
+         <tt>Ctrl-Alt-Del</tt> key sequence will only be disabled if running in
+         the non-graphical <tt>runlevel 3</tt>.
++
++platform: systemd
+diff --git a/linux_os/guide/system/accounts/accounts-session/user_umask/accounts_umask_etc_login_defs.rule b/linux_os/guide/system/accounts/accounts-session/user_umask/accounts_umask_etc_login_defs.rule
+index e9e327352b..a087ca8f6a 100644
+--- a/linux_os/guide/system/accounts/accounts-session/user_umask/accounts_umask_etc_login_defs.rule
++++ b/linux_os/guide/system/accounts/accounts-session/user_umask/accounts_umask_etc_login_defs.rule
+@@ -41,3 +41,5 @@ ocil: |-
+     All output must show the value of <tt>umask</tt> set as shown in the below:
+     <pre># grep -i "UMASK" /etc/login.defs
+     umask <sub idref="var_accounts_user_umask" /></pre>
++
++platform: shadow-utils
+diff --git a/ssg/constants.py b/ssg/constants.py
+index e87eb7f43c..8b3a792f10 100644
+--- a/ssg/constants.py
++++ b/ssg/constants.py
+@@ -376,8 +376,10 @@
+ XCCDF_PLATFORM_TO_CPE = {
+     "machine": "cpe:/a:machine",
+     "container": "cpe:/a:container",
++    "libuser": "cpe:/a:libuser",
+     "pam": "cpe:/a:pam",
+     "shadow-utils": "cpe:/a:shadow-utils",
++    "systemd": "cpe:/a:systemd",
+ }
+ 
+ # Application constants
+
+From e884c6f090bf4a7963721b4948f18b05193cc0bb Mon Sep 17 00:00:00 2001
+From: Shawn Wells <shawn@redhat.com>
+Date: Wed, 3 Apr 2019 17:45:31 -0400
+Subject: [PATCH 07/11] Update LDAP check to evaluate for nss-pam-ldapd CPE
+
+---
+ .../ldap_client_start_tls.rule            |  2 ++
+ ...nstalled_env_has_nss-pam-ldapd_package.xml | 24 +++++++++++++++++++
+ ssg/constants.py                              |  1 +
+ 3 files changed, 27 insertions(+)
+ create mode 100644 shared/checks/oval/installed_env_has_nss-pam-ldapd_package.xml
+
+diff --git a/linux_os/guide/services/ldap/openldap_client/ldap_client_start_tls.rule b/linux_os/guide/services/ldap/openldap_client/ldap_client_start_tls.rule
+index c4839d7de5..22a9fd60d9 100644
+--- a/linux_os/guide/services/ldap/openldap_client/ldap_client_start_tls.rule
++++ b/linux_os/guide/services/ldap/openldap_client/ldap_client_start_tls.rule
+@@ -48,3 +48,5 @@ ocil: |-
+     <pre>$ grep start_tls /etc/pam_ldap.conf</pre>
+     The result should contain:
+     <pre>ssl start_tls</pre>
++
++platform: nss-pam-ldapd
+diff --git a/shared/checks/oval/installed_env_has_nss-pam-ldapd_package.xml b/shared/checks/oval/installed_env_has_nss-pam-ldapd_package.xml
+new file mode 100644
+index 0000000000..0637e4a64e
+--- /dev/null
++++ b/shared/checks/oval/installed_env_has_nss-pam-ldapd_package.xml
+@@ -0,0 +1,24 @@
++<def-group>
++  <definition class="inventory"
++  id="installed_env_has_nss-pam-ldapd_package" version="1">
++    <metadata>
++      <title>Package nss-pam-ldapd is installed</title>
++      <affected family="unix">
++        <platform>multi_platform_all</platform>
++      </affected>
++      <description>Checks if package nss-pam-ldapd is installed.</description>
++      <reference ref_id="cpe:/a:nss-pam-ldapd" source="CPE" />
++    </metadata>
++    <criteria>
++      <criterion comment="Package nss-pam-ldapd is installed" test_ref="test_env_has_nss-pam-ldapd_installed" />
++    </criteria>
++  </definition>
++
++  <linux:rpminfo_test check="all" check_existence="at_least_one_exists" comment="system has package nss-pam-ldapd installed" id="test_env_has_nss-pam-ldapd_installed" version="1">
++    <linux:object object_ref="obj_env_has_nss-pam-ldapd_installed" />
++  </linux:rpminfo_test>
++  <linux:rpminfo_object id="obj_env_has_nss-pam-ldapd_installed" version="1">
++    <linux:name>nss-pam-ldapd</linux:name>
++  </linux:rpminfo_object>
++
++</def-group>
+diff --git a/ssg/constants.py b/ssg/constants.py
+index 8b3a792f10..8d7a4cc290 100644
+--- a/ssg/constants.py
++++ b/ssg/constants.py
+@@ -377,6 +377,7 @@
+     "machine": "cpe:/a:machine",
+     "container": "cpe:/a:container",
+     "libuser": "cpe:/a:libuser",
++    "nss-pam-ldapd": "cpe:/a:nss-pam-ldapd",
+     "pam": "cpe:/a:pam",
+     "shadow-utils": "cpe:/a:shadow-utils",
+     "systemd": "cpe:/a:systemd",
+
+From 7cbbe94a051f3978592edb207b5fb178fd6d0e2f Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Mon, 8 Apr 2019 15:55:08 +0200
+Subject: [PATCH 08/11] Update FIPS checks to evaluate if in machine
+ environment
+
+---
+ .../integrity/fips/grub_legacy_enable_fips_mode.rule        | 2 ++
+ .../integrity/fips/package_dracut-fips_installed.rule       | 2 ++
+ 3 files changed, 6 insertions(+)
+
+diff --git a/linux_os/guide/system/software/integrity/fips/grub_legacy_enable_fips_mode.rule b/linux_os/guide/system/software/integrity/fips/grub_legacy_enable_fips_mode.rule
+index f112bddacd..6761b8736d 100644
+--- a/linux_os/guide/system/software/integrity/fips/grub_legacy_enable_fips_mode.rule
++++ b/linux_os/guide/system/software/integrity/fips/grub_legacy_enable_fips_mode.rule
+@@ -50,3 +50,5 @@ warnings:
+         <br /><br />
+         See <b>{{{ weblink(link="http://csrc.nist.gov/groups/STM/cmvp/documents/140-1/1401vend.htm") }}}</b>
+         for a list of FIPS certified vendors.
++
++platform: machine
+diff --git a/linux_os/guide/system/software/integrity/fips/package_dracut-fips_installed.rule b/linux_os/guide/system/software/integrity/fips/package_dracut-fips_installed.rule
+index c1f6e515e6..055ec8f774 100644
+--- a/linux_os/guide/system/software/integrity/fips/package_dracut-fips_installed.rule
++++ b/linux_os/guide/system/software/integrity/fips/package_dracut-fips_installed.rule
+@@ -37,3 +37,5 @@ references:
+ ocil_clause: 'the package is not installed'
+ 
+ ocil: '{{{ ocil_package(package="dracut-fips") }}}'
++
++platform: machine
+
+From 86704595eb3500a8ef15f5fc0c1412d000c201d1 Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Mon, 8 Apr 2019 16:15:45 +0200
+Subject: [PATCH 09/11] Update CPE package check to handle deb packages
+
+---
+ .../oval/installed_env_has_libuser_package.xml    | 15 ++++++++++++++-
+ .../installed_env_has_nss-pam-ldapd_package.xml   | 15 ++++++++++++++-
+ .../checks/oval/installed_env_has_pam_package.xml | 15 ++++++++++++++-
+ .../installed_env_has_shadow-utils_package.xml    | 15 ++++++++++++++-
+ .../oval/installed_env_has_systemd_package.xml    | 15 ++++++++++++++-
+ 5 files changed, 70 insertions(+), 5 deletions(-)
+
+diff --git a/shared/checks/oval/installed_env_has_libuser_package.xml b/shared/checks/oval/installed_env_has_libuser_package.xml
+index ee79b19f8a..b848337b0e 100644
+--- a/shared/checks/oval/installed_env_has_libuser_package.xml
++++ b/shared/checks/oval/installed_env_has_libuser_package.xml
+@@ -14,11 +14,24 @@
+     </criteria>
+   </definition>
+ 
+-  <linux:rpminfo_test check="all" check_existence="at_least_one_exists" comment="system has package libuser installed" id="test_env_has_libuser_installed" version="1">
++{{% if pkg_system == "rpm" %}}
++  <linux:rpminfo_test check="all" check_existence="at_least_one_exists"
++  id="test_env_has_libuser_installed" version="1"
++  comment="system has package libuser installed">
+     <linux:object object_ref="obj_env_has_libuser_installed" />
+   </linux:rpminfo_test>
+   <linux:rpminfo_object id="obj_env_has_libuser_installed" version="1">
+     <linux:name>libuser</linux:name>
+   </linux:rpminfo_object>
++{{% elif pkg_system == "dpkg" %}}
++  <linux:dpkginfo_test check="all" check_existence="all_exist"
++  id="test_env_has_libuser_installed" version="1"
++  comment="system has package libuser installed">
++    <linux:object object_ref="obj_env_has_libuser_installed" />
++  </linux:dpkginfo_test>
++  <linux:dpkginfo_object id="obj_env_has_libuser_installed" version="1">
++    <linux:name>libuser</linux:name>
++  </linux:dpkginfo_object>
++{{% endif %}}
+ 
+ </def-group>
+diff --git a/shared/checks/oval/installed_env_has_nss-pam-ldapd_package.xml b/shared/checks/oval/installed_env_has_nss-pam-ldapd_package.xml
+index 0637e4a64e..748f68f60f 100644
+--- a/shared/checks/oval/installed_env_has_nss-pam-ldapd_package.xml
++++ b/shared/checks/oval/installed_env_has_nss-pam-ldapd_package.xml
+@@ -14,11 +14,24 @@
+     </criteria>
+   </definition>
+ 
+-  <linux:rpminfo_test check="all" check_existence="at_least_one_exists" comment="system has package nss-pam-ldapd installed" id="test_env_has_nss-pam-ldapd_installed" version="1">
++{{% if pkg_system == "rpm" %}}
++  <linux:rpminfo_test check="all" check_existence="at_least_one_exists"
++  id="test_env_has_nss-pam-ldapd_installed" version="1"
++  comment="system has package nss-pam-ldapd installed">
+     <linux:object object_ref="obj_env_has_nss-pam-ldapd_installed" />
+   </linux:rpminfo_test>
+   <linux:rpminfo_object id="obj_env_has_nss-pam-ldapd_installed" version="1">
+     <linux:name>nss-pam-ldapd</linux:name>
+   </linux:rpminfo_object>
++{{% elif pkg_system == "dpkg" %}}
++  <linux:dpkginfo_test check="all" check_existence="all_exist"
++  id="test_env_has_nss-pam-ldapd_installed" version="1"
++  comment="system has package nss-pam-ldapd installed">
++    <linux:object object_ref="obj_env_has_nss-pam-ldapd_installed" />
++  </linux:dpkginfo_test>
++  <linux:dpkginfo_object id="obj_env_has_nss-pam-ldapd_installed" version="1">
++    <linux:name>nss-pam-ldapd</linux:name>
++  </linux:dpkginfo_object>
++{{% endif %}}
+ 
+ </def-group>
+diff --git a/shared/checks/oval/installed_env_has_pam_package.xml b/shared/checks/oval/installed_env_has_pam_package.xml
+index b6376575b2..dee3bcd26f 100644
+--- a/shared/checks/oval/installed_env_has_pam_package.xml
++++ b/shared/checks/oval/installed_env_has_pam_package.xml
+@@ -15,11 +15,24 @@
+     </criteria>
+   </definition>
+ 
+-  <linux:rpminfo_test check="all" check_existence="at_least_one_exists" comment="system has package pam installed" id="test_env_has_pam_installed" version="1">
++{{% if pkg_system == "rpm" %}}
++  <linux:rpminfo_test check="all" check_existence="at_least_one_exists"
++  id="test_env_has_pam_installed" version="1"
++  comment="system has package pam installed">
+     <linux:object object_ref="obj_env_has_pam_installed" />
+   </linux:rpminfo_test>
+   <linux:rpminfo_object id="obj_env_has_pam_installed" version="1">
+     <linux:name>pam</linux:name>
+   </linux:rpminfo_object>
++{{% elif pkg_system == "dpkg" %}}
++  <linux:dpkginfo_test check="all" check_existence="all_exist"
++  id="test_env_has_pam_installed" version="1"
++  comment="system has package pam installed">
++    <linux:object object_ref="obj_env_has_pam_installed" />
++  </linux:dpkginfo_test>
++  <linux:dpkginfo_object id="obj_env_has_pam_installed" version="1">
++    <linux:name>pam</linux:name>
++  </linux:dpkginfo_object>
++{{% endif %}}
+ 
+ </def-group>
+diff --git a/shared/checks/oval/installed_env_has_shadow-utils_package.xml b/shared/checks/oval/installed_env_has_shadow-utils_package.xml
+index 12dd5bd565..11f40a324f 100644
+--- a/shared/checks/oval/installed_env_has_shadow-utils_package.xml
++++ b/shared/checks/oval/installed_env_has_shadow-utils_package.xml
+@@ -14,11 +14,24 @@
+     </criteria>
+   </definition>
+ 
+-  <linux:rpminfo_test check="all" check_existence="at_least_one_exists" comment="system has package shadow-utils installed" id="test_env_has_shadow-utils_installed" version="1">
++{{% if pkg_system == "rpm" %}}
++  <linux:rpminfo_test check="all" check_existence="at_least_one_exists"
++  id="test_env_has_shadow-utils_installed" version="1"
++  comment="system has package shadow-utils installed">
+     <linux:object object_ref="obj_env_has_shadow-utils_installed" />
+   </linux:rpminfo_test>
+   <linux:rpminfo_object id="obj_env_has_shadow-utils_installed" version="1">
+     <linux:name>shadow-utils</linux:name>
+   </linux:rpminfo_object>
++{{% elif pkg_system == "dpkg" %}}
++  <linux:dpkginfo_test check="all" check_existence="all_exist"
++  id="test_env_has_shadow-utils_installed" version="1"
++  comment="system has package shadow-utils installed">
++    <linux:object object_ref="obj_env_has_shadow-utils_installed" />
++  </linux:dpkginfo_test>
++  <linux:dpkginfo_object id="obj_env_has_shadow-utils_installed" version="1">
++    <linux:name>shadow-utils</linux:name>
++  </linux:dpkginfo_object>
++{{% endif %}}
+ 
+ </def-group>
+diff --git a/shared/checks/oval/installed_env_has_systemd_package.xml b/shared/checks/oval/installed_env_has_systemd_package.xml
+index 99706ee1c6..2dfdff10cc 100644
+--- a/shared/checks/oval/installed_env_has_systemd_package.xml
++++ b/shared/checks/oval/installed_env_has_systemd_package.xml
+@@ -14,11 +14,24 @@
+     </criteria>
+   </definition>
+ 
+-  <linux:rpminfo_test check="all" check_existence="at_least_one_exists" comment="system has package systemd installed" id="test_env_has_systemd_installed" version="1">
++{{% if pkg_system == "rpm" %}}
++  <linux:rpminfo_test check="all" check_existence="at_least_one_exists"
++  id="test_env_has_systemd_installed" version="1"
++  comment="system has package systemd installed">
+     <linux:object object_ref="obj_env_has_systemd_installed" />
+   </linux:rpminfo_test>
+   <linux:rpminfo_object id="obj_env_has_systemd_installed" version="1">
+     <linux:name>systemd</linux:name>
+   </linux:rpminfo_object>
++{{% elif pkg_system == "dpkg" %}}
++  <linux:dpkginfo_test check="all" check_existence="all_exist"
++  id="test_env_has_systemd_installed" version="1"
++  comment="system has package systemd installed">
++    <linux:object object_ref="obj_env_has_systemd_installed" />
++  </linux:dpkginfo_test>
++  <linux:dpkginfo_object id="obj_env_has_systemd_installed" version="1">
++    <linux:name>systemd</linux:name>
++  </linux:dpkginfo_object>
++{{% endif %}}
+ 
+ </def-group>
+
+From d8dfd5c10412bc3ecd180325c4a1cc997e6e2b8f Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Mon, 8 Apr 2019 16:25:27 +0200
+Subject: [PATCH 10/11] Add yum CPE and update rules plaforms
+
+---
+ .../clean_components_post_updating.rule   |  2 +
+ ....rule                                  |  2 +
+ .../ensure_gpgcheck_local_packages.rule   |  2 +
+ .../ensure_gpgcheck_repo_metadata.rule    |  2 +
+ .../oval/installed_env_has_yum_package.xml    | 37 +++++++++++++++++++
+ ssg/constants.py                              |  1 +
+ 6 files changed, 46 insertions(+)
+ create mode 100644 shared/checks/oval/installed_env_has_yum_package.xml
+
+diff --git a/linux_os/guide/system/software/updating/clean_components_post_updating.rule b/linux_os/guide/system/software/updating/clean_components_post_updating.rule
+index d5f0756c2a..9bbcadea11 100644
+--- a/linux_os/guide/system/software/updating/clean_components_post_updating.rule
++++ b/linux_os/guide/system/software/updating/clean_components_post_updating.rule
+@@ -40,3 +40,5 @@ ocil: |-
+     <pre>$ grep clean_requirements_on_remove /etc/yum.conf</pre>
+     The output should return something similar to:
+     <pre>clean_requirements_on_remove=1</pre>
++
++platform: yum
+diff --git a/linux_os/guide/system/software/updating/ensure_gpgcheck_globally_activated.rule b/linux_os/guide/system/software/updating/ensure_gpgcheck_globally_activated.rule
+index 73e29ae1a5..b19e178026 100644
+--- a/linux_os/guide/system/software/updating/ensure_gpgcheck_globally_activated.rule
++++ b/linux_os/guide/system/software/updating/ensure_gpgcheck_globally_activated.rule
+@@ -67,3 +67,5 @@ ocil: |-
+     A value of <tt>1</tt> indicates that <tt>gpgcheck</tt> is enabled. Absence of a
+     <tt>gpgcheck</tt> line or a setting of <tt>0</tt> indicates that it is
+     disabled.
++
++platform: yum
+diff --git a/linux_os/guide/system/software/updating/ensure_gpgcheck_local_packages.rule b/linux_os/guide/system/software/updating/ensure_gpgcheck_local_packages.rule
+index 7d94688af4..d1ffba4d4e 100644
+--- a/linux_os/guide/system/software/updating/ensure_gpgcheck_local_packages.rule
++++ b/linux_os/guide/system/software/updating/ensure_gpgcheck_local_packages.rule
+@@ -47,3 +47,5 @@ ocil: |-
+     <pre>$ grep localpkg_gpgcheck /etc/yum.conf</pre>
+     The output should return something similar to:
+     <pre>localpkg_gpgcheck=1</pre>
++
++platform: yum
+diff --git a/linux_os/guide/system/software/updating/ensure_gpgcheck_repo_metadata.rule b/linux_os/guide/system/software/updating/ensure_gpgcheck_repo_metadata.rule
+index aa3aa83f70..4f8a76652c 100644
+--- a/linux_os/guide/system/software/updating/ensure_gpgcheck_repo_metadata.rule
++++ b/linux_os/guide/system/software/updating/ensure_gpgcheck_repo_metadata.rule
+@@ -55,3 +55,5 @@ ocil: |-
+     <pre>$ grep repo_gpgcheck /etc/yum.conf</pre>
+     The output should return something similar to:
+     <pre>repo_gpgcheck=1</pre>
++
++platform: yum
+diff --git a/shared/checks/oval/installed_env_has_yum_package.xml b/shared/checks/oval/installed_env_has_yum_package.xml
+new file mode 100644
+index 0000000000..916d568062
+--- /dev/null
++++ b/shared/checks/oval/installed_env_has_yum_package.xml
+@@ -0,0 +1,37 @@
++<def-group>
++  <definition class="inventory"
++  id="installed_env_has_yum_package" version="1">
++    <metadata>
++      <title>Package yum is installed</title>
++      <affected family="unix">
++        <platform>multi_platform_all</platform>
++      </affected>
++      <description>Checks if package yum is installed.</description>
++      <reference ref_id="cpe:/a:yum" source="CPE" />
++    </metadata>
++    <criteria>
++      <criterion comment="Package yum is installed" test_ref="test_env_has_yum_installed" />
++    </criteria>
++  </definition>
++
++{{% if pkg_system == "rpm" %}}
++  <linux:rpminfo_test check="all" check_existence="at_least_one_exists"
++  id="test_env_has_yum_installed" version="1"
++  comment="system has package yum installed">
++    <linux:object object_ref="obj_env_has_yum_installed" />
++  </linux:rpminfo_test>
++  <linux:rpminfo_object id="obj_env_has_yum_installed" version="1">
++    <linux:name>yum</linux:name>
++  </linux:rpminfo_object>
++{{% elif pkg_system == "dpkg" %}}
++  <linux:dpkginfo_test check="all" check_existence="all_exist"
++  id="test_env_has_yum_installed" version="1"
++  comment="system has package yum installed">
++    <linux:object object_ref="obj_env_has_yum_installed" />
++  </linux:dpkginfo_test>
++  <linux:dpkginfo_object id="obj_env_has_yum_installed" version="1">
++    <linux:name>yum</linux:name>
++  </linux:dpkginfo_object>
++{{% endif %}}
++
++</def-group>
+diff --git a/ssg/constants.py b/ssg/constants.py
+index 8d7a4cc290..94d9d8c180 100644
+--- a/ssg/constants.py
++++ b/ssg/constants.py
+@@ -381,6 +381,7 @@
+     "pam": "cpe:/a:pam",
+     "shadow-utils": "cpe:/a:shadow-utils",
+     "systemd": "cpe:/a:systemd",
++    "yum": "cpe:/a:yum",
+ }
+ 
+ # Application constants
+
+From b7250b641c3d533d10a8e633094cf6421b0c34dc Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Mon, 8 Apr 2019 18:00:19 +0200
+Subject: [PATCH 11/11] Update rhel7 cpe-dictionary
+
+---
+ rhel7/cpe/rhel7-cpe-dictionary.xml | 25 +++++++++++++++++++++++++
+ 1 file changed, 25 insertions(+)
+
+diff --git a/rhel7/cpe/rhel7-cpe-dictionary.xml b/rhel7/cpe/rhel7-cpe-dictionary.xml
+index 44fe06f103..d64c18e846 100644
+--- a/rhel7/cpe/rhel7-cpe-dictionary.xml
++++ b/rhel7/cpe/rhel7-cpe-dictionary.xml
+@@ -47,9 +47,34 @@
+             <!-- the check references an OVAL file that contains an inventory definition -->
+             <check system="http://oval.mitre.org/XMLSchema/oval-definitions-5" href="filename">installed_env_is_a_machine</check>
+       </cpe-item>
++      <cpe-item name="cpe:/a:libuser">
++            <title xml:lang="en-us">Package libuser is installed</title>
++            <!-- the check references an OVAL file that contains an inventory definition -->
++            <check system="http://oval.mitre.org/XMLSchema/oval-definitions-5" href="filename">installed_env_has_libuser_package</check>
++      </cpe-item>
++      <cpe-item name="cpe:/a:nss-pam-ldapd">
++            <title xml:lang="en-us">Package nss-pam-ldapd is installed</title>
++            <!-- the check references an OVAL file that contains an inventory definition -->
++            <check system="http://oval.mitre.org/XMLSchema/oval-definitions-5" href="filename">installed_env_has_nss-pam-ldapd_package</check>
++      </cpe-item>
++      <cpe-item name="cpe:/a:pam">
++            <title xml:lang="en-us">Package pam is installed</title>
++            <!-- the check references an OVAL file that contains an inventory definition -->
++            <check system="http://oval.mitre.org/XMLSchema/oval-definitions-5" href="filename">installed_env_has_pam_package</check>
++      </cpe-item>
+       <cpe-item name="cpe:/a:shadow-utils">
+             <title xml:lang="en-us">Package shadow-utils is installed</title>
+             <!-- the check references an OVAL file that contains an inventory definition -->
+             <check system="http://oval.mitre.org/XMLSchema/oval-definitions-5" href="filename">installed_env_has_shadow-utils_package</check>
+       </cpe-item>
++      <cpe-item name="cpe:/a:systemd">
++            <title xml:lang="en-us">Package systemd is installed</title>
++            <!-- the check references an OVAL file that contains an inventory definition -->
++            <check system="http://oval.mitre.org/XMLSchema/oval-definitions-5" href="filename">installed_env_has_systemd_package</check>
++      </cpe-item>
++      <cpe-item name="cpe:/a:yum">
++            <title xml:lang="en-us">Package yum is installed</title>
++            <!-- the check references an OVAL file that contains an inventory definition -->
++            <check system="http://oval.mitre.org/XMLSchema/oval-definitions-5" href="filename">installed_env_has_yum_package</check>
++      </cpe-item>
+ </cpe-list>

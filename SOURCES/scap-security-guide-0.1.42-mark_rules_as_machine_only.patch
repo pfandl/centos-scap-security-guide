@@ -1,0 +1,2196 @@
+commit 724676573314ec7537015db800ea9edc08bdeafe
+Author: Gabriel Becker <ggasparb@redhat.com>
+Date:   Fri Apr 5 14:49:41 2019 +0200
+
+    Mark rules that are not applicable in containers. Backport of 8a858d0c and 313b634c.
+
+diff --git a/linux_os/guide/services/base/service_irqbalance_enabled.rule b/linux_os/guide/services/base/service_irqbalance_enabled.rule
+index a94a60d..d74e543 100644
+--- a/linux_os/guide/services/base/service_irqbalance_enabled.rule
++++ b/linux_os/guide/services/base/service_irqbalance_enabled.rule
+@@ -24,3 +24,5 @@ references:
+     nist: CM-7
+ 
+ ocil: '{{{ ocil_service_disabled(service="irqbalance") }}}'
++
++platform: machine
+diff --git a/linux_os/guide/services/cron_and_at/group.yml b/linux_os/guide/services/cron_and_at/group.yml
+index 30f07e0..745ed46 100644
+--- a/linux_os/guide/services/cron_and_at/group.yml
++++ b/linux_os/guide/services/cron_and_at/group.yml
+@@ -8,3 +8,5 @@ description: |-
+     all systems to perform necessary maintenance tasks, while at may or
+     may not be required on a given system. Both daemons should be
+     configured defensively.
++
++platform: machine
+diff --git a/linux_os/guide/services/docker/docker_storage_configured.rule b/linux_os/guide/services/docker/docker_storage_configured.rule
+index c675292..a1c90e6 100644
+--- a/linux_os/guide/services/docker/docker_storage_configured.rule
++++ b/linux_os/guide/services/docker/docker_storage_configured.rule
+@@ -20,3 +20,5 @@ severity: low
+ 
+ identifiers:
+     cce@rhel7: 80441-9
++
++platform: machine
+diff --git a/linux_os/guide/services/docker/service_docker_enabled.rule b/linux_os/guide/services/docker/service_docker_enabled.rule
+index 6cd9df4..309771b 100644
+--- a/linux_os/guide/services/docker/service_docker_enabled.rule
++++ b/linux_os/guide/services/docker/service_docker_enabled.rule
+@@ -20,3 +20,5 @@ identifiers:
+     cce@rhel7: 80440-1
+ 
+ ocil: '{{{ ocil_service_enabled(service="docker") }}}'
++
++platform: machine
+diff --git a/linux_os/guide/services/mail/group.yml b/linux_os/guide/services/mail/group.yml
+index 97ddf50..13f9730 100644
+--- a/linux_os/guide/services/mail/group.yml
++++ b/linux_os/guide/services/mail/group.yml
+@@ -23,3 +23,5 @@ description: |-
+     Postfix was coded with security in mind and can also be more effectively contained by
+     SELinux as its modular design has resulted in separate processes performing specific actions.
+     More information is available on its website, {{{ weblink(link="http://www.postfix.org") }}}.
++
++platform: machine
+diff --git a/linux_os/guide/services/ntp/group.yml b/linux_os/guide/services/ntp/group.yml
+index c85ac8c..737b7f4 100644
+--- a/linux_os/guide/services/ntp/group.yml
++++ b/linux_os/guide/services/ntp/group.yml
+@@ -55,3 +55,5 @@ description: |-
+     The upstream manual pages at {{{ weblink(link="http://chrony.tuxfamily.org/manual.html") }}} for
+     <tt>chronyd</tt> and {{{ weblink(link="http://www.ntp.org") }}} for <tt>ntpd</tt> provide additional
+     information on the capabilities and configuration of each of the NTP daemons.
++
++platform: machine
+diff --git a/linux_os/guide/services/ssh/group.yml b/linux_os/guide/services/ssh/group.yml
+index 8919c8c..feb65ee 100644
+--- a/linux_os/guide/services/ssh/group.yml
++++ b/linux_os/guide/services/ssh/group.yml
+@@ -12,3 +12,5 @@ description: |-
+     {{{ weblink(link="http://www.openssh.org") }}}. Its server program
+     is called <tt>sshd</tt> and provided by the RPM package
+     <tt>openssh-server</tt>.
++
++platform: machine
+diff --git a/linux_os/guide/services/sssd/group.yml b/linux_os/guide/services/sssd/group.yml
+index 49bfab9..ce74b3a 100644
+--- a/linux_os/guide/services/sssd/group.yml
++++ b/linux_os/guide/services/sssd/group.yml
+@@ -17,3 +17,5 @@ description: |-
+     {{%- elif product == "rhel6" -%}}
+         {{{ weblink(link="https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/6/html/Deployment_Guide/SSSD-Introduction.html") }}}
+     {{%- endif %}}
++
++platform: machine
+diff --git a/linux_os/guide/services/sssd/sssd-ldap/group.yml b/linux_os/guide/services/sssd/sssd-ldap/group.yml
+index a7c4c7d..0428dd1 100644
+--- a/linux_os/guide/services/sssd/sssd-ldap/group.yml
++++ b/linux_os/guide/services/sssd/sssd-ldap/group.yml
+@@ -13,3 +13,5 @@ description: |-
+     <br /><br />
+     SSSD can support many backends including LDAP. The <tt>sssd-ldap</tt> backend
+     allows SSSD to fetch identity information from an LDAP server.
++
++platform: machine
+diff --git a/linux_os/guide/system/accounts/accounts-physical/disable_ctrlaltdel_reboot.rule b/linux_os/guide/system/accounts/accounts-physical/disable_ctrlaltdel_reboot.rule
+index beb9a4d..52e6a26 100644
+--- a/linux_os/guide/system/accounts/accounts-physical/disable_ctrlaltdel_reboot.rule
++++ b/linux_os/guide/system/accounts/accounts-physical/disable_ctrlaltdel_reboot.rule
+@@ -82,3 +82,5 @@ warnings:
+         key sequence if running in <tt>runlevel 6</tt> (e.g. in GNOME, KDE, etc.)! The
+         <tt>Ctrl-Alt-Del</tt> key sequence will only be disabled if running in
+         the non-graphical <tt>runlevel 3</tt>.
++
++platform: machine
+diff --git a/linux_os/guide/system/accounts/accounts-physical/grub2_disable_interactive_boot.rule b/linux_os/guide/system/accounts/accounts-physical/grub2_disable_interactive_boot.rule
+index 165bf92..d8d9116 100644
+--- a/linux_os/guide/system/accounts/accounts-physical/grub2_disable_interactive_boot.rule
++++ b/linux_os/guide/system/accounts/accounts-physical/grub2_disable_interactive_boot.rule
+@@ -36,3 +36,5 @@ ocil: |-
+     <tt>systemd.confirm_spawn=(1|yes|true|on)</tt> in the kernel boot arguments.
+     Presence of a <tt>systemd.confirm_spawn=(1|yes|true|on)</tt> indicates
+     that interactive boot is enabled at boot time.
++
++platform: machine
+diff --git a/linux_os/guide/system/accounts/accounts-physical/require_singleuser_auth.rule b/linux_os/guide/system/accounts/accounts-physical/require_singleuser_auth.rule
+index 3d752e2..12d547d 100644
+--- a/linux_os/guide/system/accounts/accounts-physical/require_singleuser_auth.rule
++++ b/linux_os/guide/system/accounts/accounts-physical/require_singleuser_auth.rule
+@@ -66,3 +66,5 @@ ocil: |-
+     ExecStart and /sbin/sulogin:
+     <pre>ExecStart=-/sbin/sulogin</pre>
+ {{% endif %}}
++
++platform: machine
+diff --git a/linux_os/guide/system/accounts/accounts-physical/screen_locking/console_screen_locking/package_screen_installed.rule b/linux_os/guide/system/accounts/accounts-physical/screen_locking/console_screen_locking/package_screen_installed.rule
+index 56c2464..d721694 100644
+--- a/linux_os/guide/system/accounts/accounts-physical/screen_locking/console_screen_locking/package_screen_installed.rule
++++ b/linux_os/guide/system/accounts/accounts-physical/screen_locking/console_screen_locking/package_screen_installed.rule
+@@ -41,3 +41,5 @@ references:
+ ocil_clause: 'the package is not installed'
+ 
+ ocil: '{{{ ocil_package(package="screen") }}}'
++
++platform: machine
+diff --git a/linux_os/guide/system/accounts/accounts-physical/screen_locking/smart_card_login/install_smartcard_packages.rule b/linux_os/guide/system/accounts/accounts-physical/screen_locking/smart_card_login/install_smartcard_packages.rule
+index 815097b..5c58455 100644
+--- a/linux_os/guide/system/accounts/accounts-physical/screen_locking/smart_card_login/install_smartcard_packages.rule
++++ b/linux_os/guide/system/accounts/accounts-physical/screen_locking/smart_card_login/install_smartcard_packages.rule
+@@ -37,3 +37,5 @@ ocil: |-
+     To verify the operating system has the packages required for multifactor
+     authentication installed, run the following command:
+     <pre>$ sudo yum list installed esc pam_pkcs11 authconfig-gtk</pre>
++
++platform: machine
+diff --git a/linux_os/guide/system/accounts/accounts-physical/screen_locking/smart_card_login/smartcard_auth.rule b/linux_os/guide/system/accounts/accounts-physical/screen_locking/smart_card_login/smartcard_auth.rule
+index 5b01b62..e4c0870 100644
+--- a/linux_os/guide/system/accounts/accounts-physical/screen_locking/smart_card_login/smartcard_auth.rule
++++ b/linux_os/guide/system/accounts/accounts-physical/screen_locking/smart_card_login/smartcard_auth.rule
+@@ -41,3 +41,5 @@ references:
+ ocil_clause: 'non-exempt accounts are not using CAC authentication'
+ 
+ ocil: "Interview the SA to determine if all accounts not exempted by policy are\nusing CAC authentication.\nFor DoD systems, the following systems and accounts are exempt from using\nsmart card (CAC) authentication:\n<ul>\n<li>SIPRNET systems</li> \n<li>Standalone systems</li>\n<li>Application accounts</li>\n<li>Temporary employee accounts, such as students or interns, who cannot easily receive a CAC or PIV</li>\n<li>Operational tactical locations that are not collocated with RAPIDS workstations to issue CAC or ALT</li>\n<li>Test systems, such as those with an Interim Approval to Test (IATT) and use a separate VPN, firewall, or security measure preventing access to network and system components from outside the protection boundary documented in the IATT.</li>\n</ul>"
++
++platform: machine
+diff --git a/linux_os/guide/system/accounts/accounts-physical/screen_locking/smart_card_login/smartcard_configure_cert_checking.rule b/linux_os/guide/system/accounts/accounts-physical/screen_locking/smart_card_login/smartcard_configure_cert_checking.rule
+index 9af1126..c68db6d 100644
+--- a/linux_os/guide/system/accounts/accounts-physical/screen_locking/smart_card_login/smartcard_configure_cert_checking.rule
++++ b/linux_os/guide/system/accounts/accounts-physical/screen_locking/smart_card_login/smartcard_configure_cert_checking.rule
+@@ -42,3 +42,5 @@ ocil: |-
+     <pre>cert_policy = ca, ocsp_on, signature;
+     cert_policy = ca, ocsp_on, signature;
+     cert_policy = ca, ocsp_on, signature;</pre>
++
++platform: machine
+diff --git a/linux_os/guide/system/accounts/accounts-physical/service_debug-shell_disabled.rule b/linux_os/guide/system/accounts/accounts-physical/service_debug-shell_disabled.rule
+index a2be942..184571c 100644
+--- a/linux_os/guide/system/accounts/accounts-physical/service_debug-shell_disabled.rule
++++ b/linux_os/guide/system/accounts/accounts-physical/service_debug-shell_disabled.rule
+@@ -31,3 +31,5 @@ references:
+     ospp@rhel7: FIA_AFL.1
+ 
+ ocil: '{{{ ocil_service_disabled(service="debug-shell") }}}'
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_chmod.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_chmod.rule
+index f1cd259..98fb3f8 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_chmod.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_chmod.rule
+@@ -57,3 +57,5 @@ warnings:
+         number of ways while still achieving the desired effect.  Here the system calls
+         have been placed independent of other system calls.  Grouping these system
+         calls with others as identifying earlier in this guide is more efficient.
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_chown.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_chown.rule
+index bc765d3..77be3c4 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_chown.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_chown.rule
+@@ -55,3 +55,5 @@ warnings:
+         number of ways while still achieving the desired effect.  Here the system calls
+         have been placed independent of other system calls.  Grouping these system
+         calls with others as identifying earlier in this guide is more efficient.
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fchmod.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fchmod.rule
+index 62f9d31..e530ea9 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fchmod.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fchmod.rule
+@@ -55,3 +55,5 @@ warnings:
+         number of ways while still achieving the desired effect. Here the system calls
+         have been placed independent of other system calls. Grouping these system
+         calls with others as identifying earlier in this guide is more efficient.
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fchmodat.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fchmodat.rule
+index 6a3db98..2410fc9 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fchmodat.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fchmodat.rule
+@@ -55,3 +55,5 @@ warnings:
+         number of ways while still achieving the desired effect. Here the system calls
+         have been placed independent of other system calls. Grouping these system
+         calls with others as identifying earlier in this guide is more efficient.
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fchown.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fchown.rule
+index b4ffe52..4f0c7e7 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fchown.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fchown.rule
+@@ -55,3 +55,5 @@ warnings:
+         number of ways while still achieving the desired effect. Here the system calls
+         have been placed independent of other system calls. Grouping these system
+         calls with others as identifying earlier in this guide is more efficient.
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fchownat.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fchownat.rule
+index 5a3435d..12d51f8 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fchownat.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fchownat.rule
+@@ -55,3 +55,5 @@ warnings:
+         number of ways while still achieving the desired effect. Here the system calls
+         have been placed independent of other system calls. Grouping these system
+         calls with others as identifying earlier in this guide is more efficient.
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fremovexattr.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fremovexattr.rule
+index ad029f1..b0ff227 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fremovexattr.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fremovexattr.rule
+@@ -61,3 +61,5 @@ warnings:
+         number of ways while still achieving the desired effect. Here the system calls
+         have been placed independent of other system calls. Grouping these system
+         calls with others as identifying earlier in this guide is more efficient.
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fsetxattr.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fsetxattr.rule
+index e9cd1f9..4e19015 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fsetxattr.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_fsetxattr.rule
+@@ -55,3 +55,5 @@ warnings:
+         number of ways while still achieving the desired effect. Here the system calls
+         have been placed independent of other system calls. Grouping these system
+         calls with others as identifying earlier in this guide is more efficient.
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_lchown.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_lchown.rule
+index 5cfd606..39fb8bd 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_lchown.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_lchown.rule
+@@ -55,3 +55,5 @@ warnings:
+         number of ways while still achieving the desired effect. Here the system calls
+         have been placed independent of other system calls. Grouping these system
+         calls with others as identifying earlier in this guide is more efficient.
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_lremovexattr.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_lremovexattr.rule
+index 72311d8..52d0c85 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_lremovexattr.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_lremovexattr.rule
+@@ -61,3 +61,5 @@ warnings:
+         number of ways while still achieving the desired effect. Here the system calls
+         have been placed independent of other system calls. Grouping these system
+         calls with others as identifying earlier in this guide is more efficient.
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_lsetxattr.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_lsetxattr.rule
+index f84b153..f7ffae4 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_lsetxattr.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_lsetxattr.rule
+@@ -55,3 +55,5 @@ warnings:
+         number of ways while still achieving the desired effect. Here the system calls
+         have been placed independent of other system calls. Grouping these system
+         calls with others as identifying earlier in this guide is more efficient.
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_removexattr.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_removexattr.rule
+index 6bd3dfc..3ff38cf 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_removexattr.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_removexattr.rule
+@@ -60,3 +60,5 @@ warnings:
+         number of ways while still achieving the desired effect. Here the system calls
+         have been placed independent of other system calls. Grouping these system
+         calls with others as identifying earlier in this guide is more efficient.
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_setxattr.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_setxattr.rule
+index eaec4c5..da633bd 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_setxattr.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/audit_rules_dac_modification_setxattr.rule
+@@ -55,3 +55,5 @@ warnings:
+         number of ways while still achieving the desired effect. Here the system calls
+         have been placed independent of other system calls. Grouping these system
+         calls with others as identifying earlier in this guide is more efficient.
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/group.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/group.yml
+index 0de3ac0..0be694d 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/group.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_dac_actions/group.yml
+@@ -19,3 +19,5 @@ description: |-
+     <pre>-a always,exit -F arch=b64 -S chmod,fchmod,fchmodat -F auid&gt;=1000 -F auid!=4294967295 -F key=perm_mod
+         -a always,exit -F arch=b64 -S chown,fchown,fchownat,lchown -F auid&gt;=1000 -F auid!=4294967295 -F key=perm_mod
+         -a always,exit -F arch=b64 -S setxattr,lsetxattr,fsetxattr,removexattr,lremovexattr,fremovexattr -F auid&gt;=1000 -F auid!=4294967295 -F key=perm_mod</pre>
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_execution_selinux_commands/audit_rules_execution_chcon.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_execution_selinux_commands/audit_rules_execution_chcon.rule
+index 8e40014..f2c7891 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_execution_selinux_commands/audit_rules_execution_chcon.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_execution_selinux_commands/audit_rules_execution_chcon.rule
+@@ -47,3 +47,5 @@ ocil: |-
+     <pre>$ sudo grep "path=/usr/bin/chcon" /etc/audit/audit.rules /etc/audit/rules.d/*</pre>
+     The output should return something similar to:
+     <pre>-a always,exit -F path=/usr/bin/chcon -F perm=x -F auid&gt;=1000 -F auid!=4294967295 -F key=privileged-priv_change</pre>
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_execution_selinux_commands/audit_rules_execution_restorecon.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_execution_selinux_commands/audit_rules_execution_restorecon.rule
+index 2a97b84..ea42555 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_execution_selinux_commands/audit_rules_execution_restorecon.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_execution_selinux_commands/audit_rules_execution_restorecon.rule
+@@ -46,3 +46,5 @@ ocil: |-
+     <pre>$ sudo grep "path=/usr/sbin/restorecon" /etc/audit/audit.rules /etc/audit/rules.d/*</pre>
+     The output should return something similar to:
+     <pre>-a always,exit -F path=/usr/sbin/restorecon -F perm=x -F auid&gt;=1000 -F auid!=4294967295 -F key=privileged-priv_change</pre>
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_execution_selinux_commands/audit_rules_execution_semanage.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_execution_selinux_commands/audit_rules_execution_semanage.rule
+index c2aedce..dd62afa 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_execution_selinux_commands/audit_rules_execution_semanage.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_execution_selinux_commands/audit_rules_execution_semanage.rule
+@@ -47,3 +47,5 @@ ocil: |-
+     <pre>$ sudo grep "path=/usr/sbin/semanage" /etc/audit/audit.rules /etc/audit/rules.d/*</pre>
+     The output should return something similar to:
+     <pre>-a always,exit -F path=/usr/sbin/semanage -F perm=x -F auid&gt;=1000 -F auid!=4294967295 -F key=privileged-priv_change</pre>
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_execution_selinux_commands/audit_rules_execution_setsebool.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_execution_selinux_commands/audit_rules_execution_setsebool.rule
+index 247453e..2804b8d 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_execution_selinux_commands/audit_rules_execution_setsebool.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_execution_selinux_commands/audit_rules_execution_setsebool.rule
+@@ -47,3 +47,5 @@ ocil: |-
+     <pre>$ sudo grep "path=/usr/sbin/setsebool" /etc/audit/audit.rules /etc/audit/rules.d/*</pre>
+     The output should return something similar to:
+     <pre>-a always,exit -F path=/usr/sbin/setsebool -F perm=x -F auid&gt;=1000 -F auid!=4294967295 -F key=privileged-priv_change</pre>
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_deletion_events/audit_rules_file_deletion_events.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_deletion_events/audit_rules_file_deletion_events.rule
+index 346cd5a..d110f8a 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_deletion_events/audit_rules_file_deletion_events.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_deletion_events/audit_rules_file_deletion_events.rule
+@@ -65,3 +65,5 @@ warnings:
+         <li><tt>audit_rules_file_deletion_events_unlink</tt></li>
+         <li><tt>audit_rules_file_deletion_events_unlinkat</tt></li>
+         </ul>
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_deletion_events/audit_rules_file_deletion_events_rename.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_deletion_events/audit_rules_file_deletion_events_rename.rule
+index e9948eb..51b1d54 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_deletion_events/audit_rules_file_deletion_events_rename.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_deletion_events/audit_rules_file_deletion_events_rename.rule
+@@ -40,3 +40,5 @@ references:
+     stigid@rhel7: "030880"
+ 
+ {{{ complete_ocil_entry_audit_syscall(syscall="rename") }}}
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_deletion_events/audit_rules_file_deletion_events_renameat.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_deletion_events/audit_rules_file_deletion_events_renameat.rule
+index 82c93a2..96133fc 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_deletion_events/audit_rules_file_deletion_events_renameat.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_deletion_events/audit_rules_file_deletion_events_renameat.rule
+@@ -40,3 +40,5 @@ references:
+     stigid@rhel7: "030890"
+ 
+ {{{ complete_ocil_entry_audit_syscall(syscall="renameat") }}}
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_deletion_events/audit_rules_file_deletion_events_rmdir.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_deletion_events/audit_rules_file_deletion_events_rmdir.rule
+index 419cb05..21abd3a 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_deletion_events/audit_rules_file_deletion_events_rmdir.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_deletion_events/audit_rules_file_deletion_events_rmdir.rule
+@@ -40,3 +40,5 @@ references:
+     stigid@rhel7: "030900"
+ 
+ {{{ complete_ocil_entry_audit_syscall(syscall="rmdir") }}}
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_deletion_events/audit_rules_file_deletion_events_unlink.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_deletion_events/audit_rules_file_deletion_events_unlink.rule
+index cfd3553..25c2ec2 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_deletion_events/audit_rules_file_deletion_events_unlink.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_deletion_events/audit_rules_file_deletion_events_unlink.rule
+@@ -40,3 +40,5 @@ references:
+     stigid@rhel7: "030910"
+ 
+ {{{ complete_ocil_entry_audit_syscall(syscall="unlink") }}}
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_deletion_events/audit_rules_file_deletion_events_unlinkat.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_deletion_events/audit_rules_file_deletion_events_unlinkat.rule
+index 217a3cb..390a4e5 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_deletion_events/audit_rules_file_deletion_events_unlinkat.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_deletion_events/audit_rules_file_deletion_events_unlinkat.rule
+@@ -40,3 +40,5 @@ references:
+     stigid@rhel7: "030920"
+ 
+ {{{ complete_ocil_entry_audit_syscall(syscall="unlinkat") }}}
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_delete.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_delete.rule
+index f6a5e3e..370fbab 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_delete.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_delete.rule
+@@ -38,3 +38,5 @@ references:
+     stigid@rhel7: "030830"
+ 
+ {{{ complete_ocil_entry_audit_syscall(syscall="delete_module") }}}
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_finit.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_finit.rule
+index 4ce4f24..d86680d 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_finit.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_finit.rule
+@@ -36,3 +36,5 @@ references:
+     stigid@rhel7: "030821"
+ 
+ {{{ complete_ocil_entry_audit_syscall(syscall="finit_module") }}}
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_init.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_init.rule
+index 8b73da7..01de6c8 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_init.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_init.rule
+@@ -37,3 +37,5 @@ references:
+     stigid@rhel7: "030820"
+ 
+ {{{ complete_ocil_entry_audit_syscall(syscall="init_module") }}}
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_insmod.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_insmod.rule
+index 3c4e05f..9610d30 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_insmod.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_insmod.rule
+@@ -41,3 +41,5 @@ ocil_clause: 'there is not output'
+ ocil: |-
+     To verify that auditing is configured for system administrator actions, run the following command:
+     <pre>$ sudo auditctl -l | grep "watch=/usr/sbin/insmod"</pre>
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_modprobe.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_modprobe.rule
+index 8ce37aa..bd266b8 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_modprobe.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_modprobe.rule
+@@ -41,3 +41,5 @@ ocil_clause: 'there is not output'
+ ocil: |-
+     To verify that auditing is configured for system administrator actions, run the following command:
+     <pre>$ sudo auditctl -l | grep "watch=/usr/sbin/modprobe"</pre>
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_rmmod.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_rmmod.rule
+index 7ab7824..b913129 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_rmmod.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_rmmod.rule
+@@ -41,3 +41,5 @@ ocil_clause: 'there is not output'
+ ocil: |-
+     To verify that auditing is configured for system administrator actions, run the following command:
+     <pre>$ sudo auditctl -l | grep "watch=/usr/sbin/rmmod"</pre>
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_login_events/audit_rules_login_events.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_login_events/audit_rules_login_events.rule
+index a2bd65f..11d187d 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_login_events/audit_rules_login_events.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_login_events/audit_rules_login_events.rule
+@@ -53,3 +53,5 @@ warnings:
+         <li><tt>audit_rules_login_events_faillock</tt></li>
+         <li><tt>audit_rules_login_events_lastlog</tt></li>
+         </ul>
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_login_events/audit_rules_login_events_faillock.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_login_events/audit_rules_login_events_faillock.rule
+index 78f9d91..b730fdd 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_login_events/audit_rules_login_events_faillock.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_login_events/audit_rules_login_events_faillock.rule
+@@ -43,3 +43,5 @@ ocil_clause: 'there is not output'
+ ocil: |-
+     To verify that auditing is configured for system administrator actions, run the following command:
+     <pre>$ sudo auditctl -l | grep "watch=/var/log/faillock"</pre>
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_login_events/audit_rules_login_events_lastlog.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_login_events/audit_rules_login_events_lastlog.rule
+index 6c1919d..83c5cb7 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_login_events/audit_rules_login_events_lastlog.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_login_events/audit_rules_login_events_lastlog.rule
+@@ -43,3 +43,5 @@ ocil_clause: 'there is not output'
+ ocil: |-
+     To verify that auditing is configured for system administrator actions, run the following command:
+     <pre>$ sudo auditctl -l | grep "watch=/var/log/lastlog"</pre>
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_login_events/audit_rules_login_events_tallylog.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_login_events/audit_rules_login_events_tallylog.rule
+index b0eed40..9a9770a 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_login_events/audit_rules_login_events_tallylog.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_login_events/audit_rules_login_events_tallylog.rule
+@@ -43,3 +43,5 @@ ocil_clause: 'there is not output'
+ ocil: |-
+     To verify that auditing is configured for system administrator actions, run the following command:
+     <pre>$ sudo auditctl -l | grep "watch=/var/log/tallylog"</pre>
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands.rule
+index a1408e9..3815429 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands.rule
+@@ -81,3 +81,5 @@ warnings:
+         <li><tt>audit_rules_privileged_commands_umount</tt></li>
+         <li><tt>audit_rules_privileged_commands_passwd</tt></li>
+         </ul>
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_chage.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_chage.rule
+index c2d56b1..9d6c828 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_chage.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_chage.rule
+@@ -48,3 +48,5 @@ ocil: |-
+     following command:
+     <pre>$ sudo grep chage /etc/audit/audit.rules /etc/audit/rules.d/*</pre>
+     It should return a relevant line in the audit rules.
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_chsh.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_chsh.rule
+index 4c81432..ac5c38a 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_chsh.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_chsh.rule
+@@ -48,3 +48,5 @@ ocil: |-
+     following command:
+     <pre>$ sudo grep chsh /etc/audit/audit.rules /etc/audit/rules.d/*</pre>
+     It should return a relevant line in the audit rules.
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_crontab.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_crontab.rule
+index 5baa248..03bcb6c 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_crontab.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_crontab.rule
+@@ -48,3 +48,5 @@ ocil: |-
+     following command:
+     <pre>$ sudo grep crontab /etc/audit/audit.rules /etc/audit/rules.d/*</pre>
+     It should return a relevant line in the audit rules.
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_gpasswd.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_gpasswd.rule
+index cb856fa..5c8c407 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_gpasswd.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_gpasswd.rule
+@@ -49,3 +49,5 @@ ocil: |-
+     following command:
+     <pre>$ sudo grep gpasswd /etc/audit/audit.rules /etc/audit/rules.d/*</pre>
+     It should return a relevant line in the audit rules.
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_newgrp.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_newgrp.rule
+index 32f0182..b8f8e5c 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_newgrp.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_newgrp.rule
+@@ -49,3 +49,5 @@ ocil: |-
+     following command:
+     <pre>$ sudo grep newgrp /etc/audit/audit.rules /etc/audit/rules.d/*</pre>
+     It should return a relevant line in the audit rules.
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_pam_timestamp_check.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_pam_timestamp_check.rule
+index 7219c00..fda2e0c 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_pam_timestamp_check.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_pam_timestamp_check.rule
+@@ -48,3 +48,5 @@ ocil: |-
+     following command:
+     <pre>$ sudo grep pam_timestamp_check /etc/audit/audit.rules /etc/audit/rules.d/*</pre>
+     It should return a relevant line in the audit rules.
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_passwd.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_passwd.rule
+index 8466855..cb41772 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_passwd.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_passwd.rule
+@@ -49,3 +49,5 @@ ocil: |-
+     following command:
+     <pre>$ sudo grep passwd /etc/audit/audit.rules /etc/audit/rules.d/*</pre>
+     It should return a relevant line in the audit rules.
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_postdrop.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_postdrop.rule
+index b648c05..6f3f787 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_postdrop.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_postdrop.rule
+@@ -48,3 +48,5 @@ ocil: |-
+     following command:
+     <pre>$ sudo grep postdrop /etc/audit/audit.rules /etc/audit/rules.d/*</pre>
+     It should return a relevant line in the audit rules.
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_postqueue.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_postqueue.rule
+index eadb5f9..d6f4eeb 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_postqueue.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_postqueue.rule
+@@ -48,3 +48,5 @@ ocil: |-
+     following command:
+     <pre>$ sudo grep postqueue /etc/audit/audit.rules /etc/audit/rules.d/*</pre>
+     It should return a relevant line in the audit rules.
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_pt_chown.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_pt_chown.rule
+index 600608b..21e0a11 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_pt_chown.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_pt_chown.rule
+@@ -46,3 +46,5 @@ ocil: |-
+     following command:
+     <pre>$ sudo grep pt_chown /etc/audit/audit.rules /etc/audit/rules.d/*</pre>
+     It should return a relevant line in the audit rules.
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_ssh_keysign.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_ssh_keysign.rule
+index 07b6ecc..fa7ff2b 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_ssh_keysign.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_ssh_keysign.rule
+@@ -49,3 +49,5 @@ ocil: |-
+     following command:
+     <pre>$ sudo grep ssh-keysign /etc/audit/audit.rules /etc/audit/rules.d/*</pre>
+     It should return a relevant line in the audit rules.
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_su.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_su.rule
+index 5e7c3fc..d791805 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_su.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_su.rule
+@@ -49,3 +49,5 @@ ocil: |-
+     following command:
+     <pre>$ sudo grep su /etc/audit/audit.rules /etc/audit/rules.d/*</pre>
+     It should return a relevant line in the audit rules.
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_sudo.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_sudo.rule
+index b9c1c7a..e8b3585 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_sudo.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_sudo.rule
+@@ -49,3 +49,5 @@ ocil: |-
+     following command:
+     <pre>$ sudo grep sudo /etc/audit/audit.rules /etc/audit/rules.d/*</pre>
+     It should return a relevant line in the audit rules.
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_sudoedit.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_sudoedit.rule
+index 176de59..8984a84 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_sudoedit.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_sudoedit.rule
+@@ -49,3 +49,5 @@ ocil: |-
+     following command:
+     <pre>$ sudo grep sudoedit /etc/audit/audit.rules /etc/audit/rules.d/*</pre>
+     It should return a relevant line in the audit rules.
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_umount.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_umount.rule
+index d0fe096..5b636ea 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_umount.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_umount.rule
+@@ -48,3 +48,5 @@ ocil: |-
+     following command:
+     <pre>$ sudo grep umount /etc/audit/audit.rules /etc/audit/rules.d/*</pre>
+     It should return a relevant line in the audit rules.
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_unix_chkpwd.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_unix_chkpwd.rule
+index 61e6cc6..205bf97 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_unix_chkpwd.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_unix_chkpwd.rule
+@@ -49,3 +49,5 @@ ocil: |-
+     following command:
+     <pre>$ sudo grep unix_chkpwd /etc/audit/audit.rules /etc/audit/rules.d/*</pre>
+     It should return a relevant line in the audit rules.
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_userhelper.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_userhelper.rule
+index 83bec28..91f31f3 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_userhelper.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_userhelper.rule
+@@ -49,3 +49,5 @@ ocil: |-
+     following command:
+     <pre>$ sudo grep userhelper /etc/audit/audit.rules /etc/audit/rules.d/*</pre>
+     It should return a relevant line in the audit rules.
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_immutable.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_immutable.rule
+index 991abcf..2c42c74 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_immutable.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_immutable.rule
+@@ -37,3 +37,5 @@ references:
+     hipaa: 164.308(a)(1)(ii)(D),164.308(a)(3)(ii)(A),164.308(a)(5)(ii)(C),164.312(a)(2)(i),164.310(a)(2)(iv),164.312(d),164.310(d)(2)(iii),164.312(b),164.312(e)
+     nist: AC-6,AU-1(b),AU-2(a),AU-2(c),AU-2(d),IR-5
+     pcidss: Req-10.5.2
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_mac_modification.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_mac_modification.rule
+index 7c4018b..5952dbb 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_mac_modification.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_mac_modification.rule
+@@ -47,3 +47,5 @@ ocil: |-
+     If the system is configured to watch for changes to its SELinux
+     configuration, a line should be returned (including
+     <tt>perm=wa</tt> indicating permissions that are watched).
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_media_export.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_media_export.rule
+index f1d9d6c..28c64ca 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_media_export.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_media_export.rule
+@@ -50,3 +50,5 @@ ocil_clause: 'there is not output'
+ ocil: |-
+     To verify that auditing is configured for all media exportation events, run the following command:
+     <pre>$ sudo auditctl -l | grep syscall | grep mount</pre>
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_networkconfig_modification.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_networkconfig_modification.rule
+index 3bda57f..55e1893 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_networkconfig_modification.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_networkconfig_modification.rule
+@@ -55,3 +55,5 @@ ocil: |-
+     <pre>auditctl -l | egrep '(/etc/issue|/etc/issue.net|/etc/hosts|/etc/sysconfig/network)'</pre>
+     If the system is configured to watch for network configuration changes, a line should be returned for
+     each file specified (and <tt>perm=wa</tt> should be indicated for each).
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_session_events.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_session_events.rule
+index e63f61a..017a053 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_session_events.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_session_events.rule
+@@ -41,3 +41,5 @@ references:
+     nist: AC-17(7),AU-1(b),AU-2(a),AU-2(c),AU-2(d),AU-12(a),AU-12(c),IR-5
+     ospp@rhel7: FAU_GEN.1.1.c
+     pcidss: Req-10.2.3
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_sysadmin_actions.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_sysadmin_actions.rule
+index 15c33a2..3be1932 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_sysadmin_actions.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_sysadmin_actions.rule
+@@ -47,3 +47,5 @@ ocil_clause: 'there is not output'
+ ocil: |-
+     To verify that auditing is configured for system administrator actions, run the following command:
+     <pre>$ sudo auditctl -l | grep "watch=/etc/sudoers\|watch=/etc/sudoers.d"</pre>
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_system_shutdown.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_system_shutdown.rule
+index a01adea..d40c9df 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_system_shutdown.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_system_shutdown.rule
+@@ -46,3 +46,5 @@ ocil: |-
+     <pre>$ sudo grep "\-f 2" /etc/audit/audit.rules</pre>
+     The output should contain:
+     <pre>-f 2</pre>
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification.rule
+index b8716ef..2838470 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification.rule
+@@ -68,3 +68,5 @@ warnings:
+         <li><tt>audit_rules_usergroup_modification_gshadow</tt></li>
+         <li><tt>audit_rules_usergroup_modification_passwd</tt></li>
+         </ul>
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_group.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_group.rule
+index f161b14..143e63b 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_group.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_group.rule
+@@ -52,3 +52,5 @@ ocil: |-
+     <br /><br />
+     If the system is configured to watch for account changes, lines should be returned for
+     each file specified (and with <tt>perm=wa</tt> for each).
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_gshadow.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_gshadow.rule
+index f9ae466..5e14989 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_gshadow.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_gshadow.rule
+@@ -52,3 +52,5 @@ ocil: |-
+     <br /><br />
+     If the system is configured to watch for account changes, lines should be returned for
+     each file specified (and with <tt>perm=wa</tt> for each).
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_opasswd.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_opasswd.rule
+index 4b02de3..9e7ce3d 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_opasswd.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_opasswd.rule
+@@ -52,3 +52,5 @@ ocil: |-
+     <br /><br />
+     If the system is configured to watch for account changes, lines should be returned for
+     each file specified (and with <tt>perm=wa</tt> for each).
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_passwd.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_passwd.rule
+index 2940549..76bce57 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_passwd.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_passwd.rule
+@@ -52,3 +52,5 @@ ocil: |-
+     <br /><br />
+     If the system is configured to watch for account changes, lines should be returned for
+     each file specified (and with <tt>perm=wa</tt> for each).
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_shadow.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_shadow.rule
+index 0925d21..74819f5 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_shadow.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_usergroup_modification_shadow.rule
+@@ -52,3 +52,5 @@ ocil: |-
+     <br /><br />
+     If the system is configured to watch for account changes, lines should be returned for
+     each file specified (and with <tt>perm=wa</tt> for each).
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_time_rules/audit_rules_time_adjtimex.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_time_rules/audit_rules_time_adjtimex.rule
+index 67ce61f..9dc2ceb 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_time_rules/audit_rules_time_adjtimex.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_time_rules/audit_rules_time_adjtimex.rule
+@@ -51,3 +51,5 @@ references:
+ ocil_clause: 'the system is not configured to audit time changes'
+ 
+ {{{ complete_ocil_entry_audit_syscall(syscall="adjtimex") }}}
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_time_rules/audit_rules_time_clock_settime.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_time_rules/audit_rules_time_clock_settime.rule
+index 136c6ef..436f5f0 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_time_rules/audit_rules_time_clock_settime.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_time_rules/audit_rules_time_clock_settime.rule
+@@ -51,3 +51,5 @@ references:
+ ocil_clause: 'the system is not configured to audit time changes'
+ 
+ {{{ complete_ocil_entry_audit_syscall(syscall="clock_settime") }}}
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_time_rules/audit_rules_time_settimeofday.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_time_rules/audit_rules_time_settimeofday.rule
+index 4003f25..22ec976 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_time_rules/audit_rules_time_settimeofday.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_time_rules/audit_rules_time_settimeofday.rule
+@@ -51,3 +51,5 @@ references:
+ ocil_clause: 'the system is not configured to audit time changes'
+ 
+ {{{ complete_ocil_entry_audit_syscall(syscall="settimeofday") }}}
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_time_rules/audit_rules_time_stime.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_time_rules/audit_rules_time_stime.rule
+index d55c9a4..0572156 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_time_rules/audit_rules_time_stime.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_time_rules/audit_rules_time_stime.rule
+@@ -57,3 +57,5 @@ ocil: |-
+     If the system is not configured to audit time changes, this is a finding.
+     If the system is 64-bit only, this is not applicable<br />
+     {{{ complete_ocil_entry_audit_syscall(syscall="stime") }}}
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_time_rules/audit_rules_time_watch_localtime.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_time_rules/audit_rules_time_watch_localtime.rule
+index 70ce059..2fb8f7d 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_time_rules/audit_rules_time_watch_localtime.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_time_rules/audit_rules_time_watch_localtime.rule
+@@ -50,3 +50,5 @@ ocil: |-
+     command:
+     <pre>$ sudo auditctl -l | grep "watch=/etc/localtime"</pre>
+     If the system is configured to audit this activity, it will return a line.
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification.rule
+index 0151c6e..ea42793 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification.rule
+@@ -69,3 +69,5 @@ warnings:
+         <li><tt>audit_rules_unsuccessful_file_modification_ftruncate</tt></li>
+         <li><tt>audit_rules_unsuccessful_file_modification_creat</tt></li>
+         </ul>
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_creat.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_creat.rule
+index f04df40..a328ff9 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_creat.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_creat.rule
+@@ -54,3 +54,5 @@ warnings:
+         number of ways while still achieving the desired effect. Here the system calls
+         have been placed independent of other system calls. Grouping these system
+         calls with others as identifying earlier in this guide is more efficient.
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_ftruncate.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_ftruncate.rule
+index ba75654..6229398 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_ftruncate.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_ftruncate.rule
+@@ -54,3 +54,5 @@ warnings:
+         number of ways while still achieving the desired effect. Here the system calls
+         have been placed independent of other system calls. Grouping these system
+         calls with others as identifying earlier in this guide is more efficient.
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open.rule
+index 6f07e27..13f12fe 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open.rule
+@@ -54,3 +54,5 @@ warnings:
+         number of ways while still achieving the desired effect. Here the system calls
+         have been placed independent of other system calls. Grouping these system
+         calls with others as identifying earlier in this guide is more efficient.
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open_by_handle_at.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open_by_handle_at.rule
+index c5adccc..ce4193a 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open_by_handle_at.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open_by_handle_at.rule
+@@ -54,3 +54,5 @@ warnings:
+         number of ways while still achieving the desired effect. Here the system calls
+         have been placed independent of other system calls. Grouping these system
+         calls with others as identifying earlier in this guide is more efficient.
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_openat.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_openat.rule
+index 4281e37..6f3c38a 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_openat.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_openat.rule
+@@ -54,3 +54,5 @@ warnings:
+         number of ways while still achieving the desired effect. Here the system calls
+         have been placed independent of other system calls. Grouping these system
+         calls with others as identifying earlier in this guide is more efficient.
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_truncate.rule b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_truncate.rule
+index 97d81f5..f6e0263 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_truncate.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_truncate.rule
+@@ -54,3 +54,5 @@ warnings:
+         number of ways while still achieving the desired effect. Here the system calls
+         have been placed independent of other system calls. Grouping these system
+         calls with others as identifying earlier in this guide is more efficient.
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/file_ownership_var_log_audit.rule b/linux_os/guide/system/auditing/auditd_configure_rules/file_ownership_var_log_audit.rule
+index c3f6674..14d41d0 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/file_ownership_var_log_audit.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/file_ownership_var_log_audit.rule
+@@ -33,3 +33,5 @@ references:
+ ocil: |-
+     {{{ describe_file_owner(file="/var/log/audit", owner="root") }}}
+     {{{ describe_file_owner(file="/var/log/audit/*", owner="root") }}}
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/file_permissions_var_log_audit.rule b/linux_os/guide/system/auditing/auditd_configure_rules/file_permissions_var_log_audit.rule
+index f9dc5f1..319b1bb 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/file_permissions_var_log_audit.rule
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/file_permissions_var_log_audit.rule
+@@ -35,3 +35,5 @@ ocil: |-
+     Run the following command to check the mode of the system audit logs:
+     <pre>$ sudo ls -l /var/log/audit</pre>
+     Audit logs must be mode 0640 or less permissive.
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_configure_remote_server.rule b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_configure_remote_server.rule
+index a2c1e28..94af473 100644
+--- a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_configure_remote_server.rule
++++ b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_configure_remote_server.rule
+@@ -37,3 +37,5 @@ ocil: |-
+     The output should return something similar to where <i>REMOTE_SYSTEM</i>
+     is an IP address or hostname:
+     <pre>remote_server = <i>REMOTE_SYSTEM</i></pre>
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_disk_full_action.rule b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_disk_full_action.rule
+index fafa442..502843d 100644
+--- a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_disk_full_action.rule
++++ b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_disk_full_action.rule
+@@ -40,3 +40,5 @@ ocil: |-
+     <pre>disk_full_action = single</pre>
+     Acceptable values also include <tt>syslog</tt> and
+     <tt>halt</tt>.
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_encrypt_sent_records.rule b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_encrypt_sent_records.rule
+index 94292ff..07d36df 100644
+--- a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_encrypt_sent_records.rule
++++ b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_encrypt_sent_records.rule
+@@ -34,3 +34,5 @@ ocil: |-
+     <pre>$ sudo grep -i enable_krb5 /etc/audisp/audisp-remote.conf</pre>
+     The output should return the following:
+     <pre>enable_krb5 = yes</pre>
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_network_failure_action.rule b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_network_failure_action.rule
+index 65cb5c2..7fc5566 100644
+--- a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_network_failure_action.rule
++++ b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_network_failure_action.rule
+@@ -40,3 +40,5 @@ ocil: |-
+     <pre>network_failure_action = single</pre>
+     Acceptable values also include <tt>syslog</tt> and
+     <tt>halt</tt>.
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_syslog_plugin_activated.rule b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_syslog_plugin_activated.rule
+index 75edf6a..c2891ab 100644
+--- a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_syslog_plugin_activated.rule
++++ b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_audispd_syslog_plugin_activated.rule
+@@ -40,3 +40,5 @@ ocil: |-
+     To verify the audispd's syslog plugin is active, run the following command:
+     <pre>$ sudo grep active /etc/audisp/plugins.d/syslog.conf</pre>
+     If the plugin is active, the output will show <tt>yes</tt>.
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_action_mail_acct.rule b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_action_mail_acct.rule
+index 692f804..cabdc03 100644
+--- a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_action_mail_acct.rule
++++ b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_action_mail_acct.rule
+@@ -43,3 +43,5 @@ ocil: |-
+     determine if the system is configured to send email to an
+     account when it needs to notify an administrator:
+     <pre>action_mail_acct = root</pre>
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_admin_space_left_action.rule b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_admin_space_left_action.rule
+index bf07cff..7bad632 100644
+--- a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_admin_space_left_action.rule
++++ b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_admin_space_left_action.rule
+@@ -48,3 +48,5 @@ ocil: |-
+     determine if the system is configured to either suspend, switch to single user mode,
+     or halt when disk space has run low:
+     <pre>admin_space_left_action single</pre>
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_flush.rule b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_flush.rule
+index 3a5b3ce..5475a85 100644
+--- a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_flush.rule
++++ b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_flush.rule
+@@ -37,3 +37,5 @@ ocil: |-
+     <pre>flush = DATA</pre>
+     Acceptable values are <tt>DATA</tt>, and <tt>SYNC</tt>. The setting is
+     case-insensitive.
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_max_log_file.rule b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_max_log_file.rule
+index faa46bf..06ec11d 100644
+--- a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_max_log_file.rule
++++ b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_max_log_file.rule
+@@ -40,3 +40,5 @@ ocil: |-
+     determine how much data the system will retain in each audit log file:
+     <tt>$ sudo grep max_log_file /etc/audit/auditd.conf</tt>
+     <pre>max_log_file = 6</pre>
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_max_log_file_action.rule b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_max_log_file_action.rule
+index a6b6277..609ca46 100644
+--- a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_max_log_file_action.rule
++++ b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_max_log_file_action.rule
+@@ -51,3 +51,5 @@ ocil: |-
+     maximum size:
+     <tt>$ sudo grep max_log_file_action /etc/audit/auditd.conf</tt>
+     <pre>max_log_file_action <tt>rotate</tt></pre>
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_num_logs.rule b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_num_logs.rule
+index bf61ee0..5b1debc 100644
+--- a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_num_logs.rule
++++ b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_num_logs.rule
+@@ -39,3 +39,5 @@ ocil: |-
+     determine how many logs the system is configured to retain after rotation:
+     <tt>$ sudo grep num_logs /etc/audit/auditd.conf</tt>
+     <pre>num_logs = 5</pre>
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_space_left.rule b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_space_left.rule
+index ac6bed0..d86ae02 100644
+--- a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_space_left.rule
++++ b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_space_left.rule
+@@ -39,3 +39,5 @@ ocil: |-
+     Inspect <tt>/etc/audit/auditd.conf</tt> and locate the following line to
+     determine if the system is configured correctly:
+     <pre>space_left <i>SIZE_in_MB</i></pre>
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_space_left_action.rule b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_space_left_action.rule
+index eb70dd0..7b4360f 100644
+--- a/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_space_left_action.rule
++++ b/linux_os/guide/system/auditing/configure_auditd_data_retention/auditd_data_retention_space_left_action.rule
+@@ -57,3 +57,5 @@ ocil: |-
+     <tt>$ sudo grep space_left_action /etc/audit/auditd.conf</tt>
+     <pre>space_left_action</pre>
+     Acceptable values are <tt>email</tt>, <tt>suspend</tt>, <tt>single</tt>, and <tt>halt</tt>.
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/grub2_audit_argument.rule b/linux_os/guide/system/auditing/grub2_audit_argument.rule
+index 68d4f49..29c451c 100644
+--- a/linux_os/guide/system/auditing/grub2_audit_argument.rule
++++ b/linux_os/guide/system/auditing/grub2_audit_argument.rule
+@@ -57,3 +57,5 @@ warnings:
+         <li>On UEFI-based machines, issue the following command as <tt>root</tt>:
+         <pre>~]# grub2-mkconfig -o /boot/efi/EFI/redhat/grub.cfg</pre></li>
+         </ul>
++
++platform: machine
+diff --git a/linux_os/guide/system/auditing/service_auditd_enabled.rule b/linux_os/guide/system/auditing/service_auditd_enabled.rule
+index b2dd85f..ce32390 100644
+--- a/linux_os/guide/system/auditing/service_auditd_enabled.rule
++++ b/linux_os/guide/system/auditing/service_auditd_enabled.rule
+@@ -41,3 +41,5 @@ references:
+     stigid@rhel7: "030000"
+ 
+ ocil: '{{{ ocil_service_enabled(service="auditd") }}}'
++
++platform: machine
+diff --git a/linux_os/guide/system/bootloader-grub2/file_permissions_efi_grub2_cfg.rule b/linux_os/guide/system/bootloader-grub2/file_permissions_efi_grub2_cfg.rule
+index 95c4589..02ee38d 100644
+--- a/linux_os/guide/system/bootloader-grub2/file_permissions_efi_grub2_cfg.rule
++++ b/linux_os/guide/system/bootloader-grub2/file_permissions_efi_grub2_cfg.rule
+@@ -27,3 +27,5 @@ ocil: |-
+     <pre>$ sudo ls -lL /boot/efi/EFI/redhat/grub.cfg</pre>
+     If properly configured, the output should indicate the following
+     permissions: <tt>-rwx------</tt>
++
++platform: machine
+diff --git a/linux_os/guide/system/bootloader-grub2/file_permissions_grub2_cfg.rule b/linux_os/guide/system/bootloader-grub2/file_permissions_grub2_cfg.rule
+index 306a6c5..02e2515 100644
+--- a/linux_os/guide/system/bootloader-grub2/file_permissions_grub2_cfg.rule
++++ b/linux_os/guide/system/bootloader-grub2/file_permissions_grub2_cfg.rule
+@@ -31,3 +31,5 @@ ocil: |-
+     <pre>$ sudo ls -lL /boot/grub2/grub.cfg</pre>
+     If properly configured, the output should indicate the following
+     permissions: <tt>-rw-------</tt>
++
++platform: machine
+diff --git a/linux_os/guide/system/bootloader-grub2/group.yml b/linux_os/guide/system/bootloader-grub2/group.yml
+index 81807fc..fe35833 100644
+--- a/linux_os/guide/system/bootloader-grub2/group.yml
++++ b/linux_os/guide/system/bootloader-grub2/group.yml
+@@ -14,3 +14,5 @@ description: |-
+     parameters and endangering security, protect the boot loader configuration
+     with a password and ensure its configuration file's permissions
+     are set properly.
++
++platform: machine
+diff --git a/linux_os/guide/system/logging/group.yml b/linux_os/guide/system/logging/group.yml
+index f089e86..345043e 100644
+--- a/linux_os/guide/system/logging/group.yml
++++ b/linux_os/guide/system/logging/group.yml
+@@ -19,3 +19,5 @@ description: |-
+     This section discusses how to configure rsyslog for
+     best effect, and how to use tools provided with the system to maintain and
+     monitor logs.
++
++platform: machine
+diff --git a/linux_os/guide/system/network/network-firewalld/group.yml b/linux_os/guide/system/network/network-firewalld/group.yml
+index 9512aa9..78bd398 100644
+--- a/linux_os/guide/system/network/network-firewalld/group.yml
++++ b/linux_os/guide/system/network/network-firewalld/group.yml
+@@ -20,3 +20,5 @@ description: |-
+     immediately implemented. There is no need to save or apply the changes. No
+     unintended disruption of existing network connections occurs as no part of
+     the firewall has to be reloaded.
++
++platform: machine
+diff --git a/linux_os/guide/system/network/network-ipv6/configuring_ipv6/disabling_ipv6_autoconfig/sysctl_net_ipv6_conf_all_accept_ra.rule b/linux_os/guide/system/network/network-ipv6/configuring_ipv6/disabling_ipv6_autoconfig/sysctl_net_ipv6_conf_all_accept_ra.rule
+index b49d841..eed98e2 100644
+--- a/linux_os/guide/system/network/network-ipv6/configuring_ipv6/disabling_ipv6_autoconfig/sysctl_net_ipv6_conf_all_accept_ra.rule
++++ b/linux_os/guide/system/network/network-ipv6/configuring_ipv6/disabling_ipv6_autoconfig/sysctl_net_ipv6_conf_all_accept_ra.rule
+@@ -20,3 +20,5 @@ references:
+     nist: CM-7
+ 
+ {{{ complete_ocil_entry_sysctl_option_value(sysctl="net.ipv6.conf.all.accept_ra", value="0") }}}
++
++platform: machine
+diff --git a/linux_os/guide/system/network/network-ipv6/configuring_ipv6/disabling_ipv6_autoconfig/sysctl_net_ipv6_conf_all_accept_redirects.rule b/linux_os/guide/system/network/network-ipv6/configuring_ipv6/disabling_ipv6_autoconfig/sysctl_net_ipv6_conf_all_accept_redirects.rule
+index 03e5540..fd66ec6 100644
+--- a/linux_os/guide/system/network/network-ipv6/configuring_ipv6/disabling_ipv6_autoconfig/sysctl_net_ipv6_conf_all_accept_redirects.rule
++++ b/linux_os/guide/system/network/network-ipv6/configuring_ipv6/disabling_ipv6_autoconfig/sysctl_net_ipv6_conf_all_accept_redirects.rule
+@@ -21,3 +21,5 @@ references:
+     nist: CM-7
+ 
+ {{{ complete_ocil_entry_sysctl_option_value(sysctl="net.ipv6.conf.all.accept_redirects", value="0") }}}
++
++platform: machine
+diff --git a/linux_os/guide/system/network/network-ipv6/configuring_ipv6/disabling_ipv6_autoconfig/sysctl_net_ipv6_conf_all_accept_source_route.rule b/linux_os/guide/system/network/network-ipv6/configuring_ipv6/disabling_ipv6_autoconfig/sysctl_net_ipv6_conf_all_accept_source_route.rule
+index 23cc26a..e643932 100644
+--- a/linux_os/guide/system/network/network-ipv6/configuring_ipv6/disabling_ipv6_autoconfig/sysctl_net_ipv6_conf_all_accept_source_route.rule
++++ b/linux_os/guide/system/network/network-ipv6/configuring_ipv6/disabling_ipv6_autoconfig/sysctl_net_ipv6_conf_all_accept_source_route.rule
+@@ -29,3 +29,5 @@ references:
+     stigid@rhel7: "040830"
+ 
+ {{{ complete_ocil_entry_sysctl_option_value(sysctl="net.ipv6.conf.all.accept_source_route", value="0") }}}
++
++platform: machine
+diff --git a/linux_os/guide/system/network/network-ipv6/configuring_ipv6/disabling_ipv6_autoconfig/sysctl_net_ipv6_conf_all_forwarding.rule b/linux_os/guide/system/network/network-ipv6/configuring_ipv6/disabling_ipv6_autoconfig/sysctl_net_ipv6_conf_all_forwarding.rule
+index a3a7e91..48c7ba3 100644
+--- a/linux_os/guide/system/network/network-ipv6/configuring_ipv6/disabling_ipv6_autoconfig/sysctl_net_ipv6_conf_all_forwarding.rule
++++ b/linux_os/guide/system/network/network-ipv6/configuring_ipv6/disabling_ipv6_autoconfig/sysctl_net_ipv6_conf_all_forwarding.rule
+@@ -24,3 +24,5 @@ references:
+ ocil: |-
+     {{{ ocil_sysctl_option_value(sysctl="net.ipv6.conf.all.forwarding", value="0") }}}
+     The ability to forward packets is only appropriate for routers.
++
++platform: machine
+diff --git a/linux_os/guide/system/network/network-ipv6/configuring_ipv6/disabling_ipv6_autoconfig/sysctl_net_ipv6_conf_default_accept_ra.rule b/linux_os/guide/system/network/network-ipv6/configuring_ipv6/disabling_ipv6_autoconfig/sysctl_net_ipv6_conf_default_accept_ra.rule
+index 449519d..58305d9 100644
+--- a/linux_os/guide/system/network/network-ipv6/configuring_ipv6/disabling_ipv6_autoconfig/sysctl_net_ipv6_conf_default_accept_ra.rule
++++ b/linux_os/guide/system/network/network-ipv6/configuring_ipv6/disabling_ipv6_autoconfig/sysctl_net_ipv6_conf_default_accept_ra.rule
+@@ -21,3 +21,5 @@ references:
+     nist: CM-7
+ 
+ {{{ complete_ocil_entry_sysctl_option_value(sysctl="net.ipv6.conf.default.accept_ra", value="0") }}}
++
++platform: machine
+diff --git a/linux_os/guide/system/network/network-ipv6/configuring_ipv6/disabling_ipv6_autoconfig/sysctl_net_ipv6_conf_default_accept_redirects.rule b/linux_os/guide/system/network/network-ipv6/configuring_ipv6/disabling_ipv6_autoconfig/sysctl_net_ipv6_conf_default_accept_redirects.rule
+index 706f8c1..294fe2a 100644
+--- a/linux_os/guide/system/network/network-ipv6/configuring_ipv6/disabling_ipv6_autoconfig/sysctl_net_ipv6_conf_default_accept_redirects.rule
++++ b/linux_os/guide/system/network/network-ipv6/configuring_ipv6/disabling_ipv6_autoconfig/sysctl_net_ipv6_conf_default_accept_redirects.rule
+@@ -24,3 +24,5 @@ references:
+     nist: CM-7
+ 
+ {{{ complete_ocil_entry_sysctl_option_value(sysctl="net.ipv6.conf.default.accept_redirects", value="0") }}}
++
++platform: machine
+diff --git a/linux_os/guide/system/network/network-ipv6/configuring_ipv6/disabling_ipv6_autoconfig/sysctl_net_ipv6_conf_default_accept_source_route.rule b/linux_os/guide/system/network/network-ipv6/configuring_ipv6/disabling_ipv6_autoconfig/sysctl_net_ipv6_conf_default_accept_source_route.rule
+index b2dc1b8..7942d50 100644
+--- a/linux_os/guide/system/network/network-ipv6/configuring_ipv6/disabling_ipv6_autoconfig/sysctl_net_ipv6_conf_default_accept_source_route.rule
++++ b/linux_os/guide/system/network/network-ipv6/configuring_ipv6/disabling_ipv6_autoconfig/sysctl_net_ipv6_conf_default_accept_source_route.rule
+@@ -27,3 +27,5 @@ references:
+     nist: AC-4
+ 
+ {{{ complete_ocil_entry_sysctl_option_value(sysctl="net.ipv6.conf.default.accept_source_route", value="0") }}}
++
++platform: machine
+diff --git a/linux_os/guide/system/network/network-ipv6/disabling_ipv6/sysctl_net_ipv6_conf_all_disable_ipv6.rule b/linux_os/guide/system/network/network-ipv6/disabling_ipv6/sysctl_net_ipv6_conf_all_disable_ipv6.rule
+index 9c46fae..9d86019 100644
+--- a/linux_os/guide/system/network/network-ipv6/disabling_ipv6/sysctl_net_ipv6_conf_all_disable_ipv6.rule
++++ b/linux_os/guide/system/network/network-ipv6/disabling_ipv6/sysctl_net_ipv6_conf_all_disable_ipv6.rule
+@@ -30,3 +30,5 @@ references:
+ ocil_clause: 'the ipv6 support is disabled on network interfaces'
+ 
+ ocil: "If the system uses IPv6, this is not applicable.\n<br /><br />\nIf the system is configured to prevent the usage of the\n<tt>ipv6</tt> on network interfaces, it will contain a line\nof the form:\n<pre>net.ipv6.conf.all.disable_ipv6 = 1</pre>\nSuch lines may be inside any file in the <tt>/etc/sysctl.d</tt> directory. \nThis permits insertion of the IPv6 kernel module (which other parts of \nthe system expect to be present), but otherwise keeps all network interfaces\nfrom using IPv6.\nRun the following command to search for such\nlines in all files in <tt>/etc/sysctl.d</tt>:\n<pre xml:space=\"preserve\">$ grep -r ipv6 /etc/sysctl.d</pre>"
++
++platform: machine
+diff --git a/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_conf_all_accept_redirects.rule b/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_conf_all_accept_redirects.rule
+index 7287608..89e9074 100644
+--- a/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_conf_all_accept_redirects.rule
++++ b/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_conf_all_accept_redirects.rule
+@@ -26,3 +26,5 @@ references:
+     stigid@rhel7: "040641"
+ 
+ {{{ complete_ocil_entry_sysctl_option_value(sysctl="net.ipv4.conf.all.accept_redirects", value="0") }}}
++
++platform: machine
+diff --git a/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_conf_all_accept_source_route.rule b/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_conf_all_accept_source_route.rule
+index 5b66202..30aa26e 100644
+--- a/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_conf_all_accept_source_route.rule
++++ b/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_conf_all_accept_source_route.rule
+@@ -26,3 +26,5 @@ references:
+     stigid@rhel7: "040610"
+ 
+ {{{ complete_ocil_entry_sysctl_option_value(sysctl="net.ipv4.conf.all.accept_source_route", value="0") }}}
++
++platform: machine
+diff --git a/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_conf_all_log_martians.rule b/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_conf_all_log_martians.rule
+index 4b08783..44b2eda 100644
+--- a/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_conf_all_log_martians.rule
++++ b/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_conf_all_log_martians.rule
+@@ -28,3 +28,5 @@ references:
+     nist: AC-17(7),CM-7,SC-5(3)
+ 
+ {{{ complete_ocil_entry_sysctl_option_value(sysctl="net.ipv4.conf.all.log_martians", value="1") }}}
++
++platform: machine
+diff --git a/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_conf_all_rp_filter.rule b/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_conf_all_rp_filter.rule
+index 296f675..f71cd86 100644
+--- a/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_conf_all_rp_filter.rule
++++ b/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_conf_all_rp_filter.rule
+@@ -28,3 +28,5 @@ references:
+     nist: AC-4,SC-5,SC-7
+ 
+ {{{ complete_ocil_entry_sysctl_option_value(sysctl="net.ipv4.conf.all.rp_filter", value="1") }}}
++
++platform: machine
+diff --git a/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_conf_all_secure_redirects.rule b/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_conf_all_secure_redirects.rule
+index f23a5a9..7163301 100644
+--- a/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_conf_all_secure_redirects.rule
++++ b/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_conf_all_secure_redirects.rule
+@@ -26,3 +26,5 @@ references:
+     nist: AC-4,CM-7,SC-5
+ 
+ {{{ complete_ocil_entry_sysctl_option_value(sysctl="net.ipv4.conf.all.secure_redirects", value="0") }}}
++
++platform: machine
+diff --git a/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_conf_default_accept_redirects.rule b/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_conf_default_accept_redirects.rule
+index f12a39b..c61122b 100644
+--- a/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_conf_default_accept_redirects.rule
++++ b/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_conf_default_accept_redirects.rule
+@@ -26,3 +26,5 @@ references:
+     stigid@rhel7: "040640"
+ 
+ {{{ complete_ocil_entry_sysctl_option_value(sysctl="net.ipv4.conf.default.accept_redirects", value="0") }}}
++
++platform: machine
+diff --git a/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_conf_default_accept_source_route.rule b/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_conf_default_accept_source_route.rule
+index 8d1ea9e..ca97a79 100644
+--- a/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_conf_default_accept_source_route.rule
++++ b/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_conf_default_accept_source_route.rule
+@@ -26,3 +26,5 @@ references:
+     stigid@rhel7: "040620"
+ 
+ {{{ complete_ocil_entry_sysctl_option_value(sysctl="net.ipv4.conf.default.accept_source_route", value="0") }}}
++
++platform: machine
+diff --git a/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_conf_default_log_martians.rule b/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_conf_default_log_martians.rule
+index b52b71f..6fc91a5 100644
+--- a/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_conf_default_log_martians.rule
++++ b/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_conf_default_log_martians.rule
+@@ -24,3 +24,5 @@ references:
+     nist: AC-17(7),CM-7,SC-5(3)
+ 
+ {{{ complete_ocil_entry_sysctl_option_value(sysctl="net.ipv4.conf.default.log_martians", value="1") }}}
++
++platform: machine
+diff --git a/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_conf_default_rp_filter.rule b/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_conf_default_rp_filter.rule
+index 536963b..146d1e9 100644
+--- a/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_conf_default_rp_filter.rule
++++ b/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_conf_default_rp_filter.rule
+@@ -27,3 +27,5 @@ references:
+     nist: AC-4,SC-5,SC-7
+ 
+ {{{ complete_ocil_entry_sysctl_option_value(sysctl="net.ipv4.conf.default.rp_filter", value="1") }}}
++
++platform: machine
+diff --git a/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_conf_default_secure_redirects.rule b/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_conf_default_secure_redirects.rule
+index 3f5d6ff..ef394a0 100644
+--- a/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_conf_default_secure_redirects.rule
++++ b/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_conf_default_secure_redirects.rule
+@@ -26,3 +26,5 @@ references:
+     nist: AC-4,CM-7,SC-5,SC-7
+ 
+ {{{ complete_ocil_entry_sysctl_option_value(sysctl="net.ipv4.conf.default.secure_redirects", value="0") }}}
++
++platform: machine
+diff --git a/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_icmp_echo_ignore_broadcasts.rule b/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_icmp_echo_ignore_broadcasts.rule
+index 33b55da..9cd2206 100644
+--- a/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_icmp_echo_ignore_broadcasts.rule
++++ b/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_icmp_echo_ignore_broadcasts.rule
+@@ -32,3 +32,5 @@ references:
+     stigid@rhel7: "040630"
+ 
+ {{{ complete_ocil_entry_sysctl_option_value(sysctl="net.ipv4.icmp_echo_ignore_broadcasts", value="1") }}}
++
++platform: machine
+diff --git a/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_icmp_ignore_bogus_error_responses.rule b/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_icmp_ignore_bogus_error_responses.rule
+index 6a19f10..d1b6671 100644
+--- a/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_icmp_ignore_bogus_error_responses.rule
++++ b/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_icmp_ignore_bogus_error_responses.rule
+@@ -24,3 +24,5 @@ references:
+     nist: CM-7,SC-5
+ 
+ {{{ complete_ocil_entry_sysctl_option_value(sysctl="net.ipv4.icmp_ignore_bogus_error_responses", value="1") }}}
++
++platform: machine
+diff --git a/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_tcp_syncookies.rule b/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_tcp_syncookies.rule
+index 68dfe68..bce344d 100644
+--- a/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_tcp_syncookies.rule
++++ b/linux_os/guide/system/network/network-kernel/network_host_and_router_parameters/sysctl_net_ipv4_tcp_syncookies.rule
+@@ -32,3 +32,5 @@ references:
+     srg: SRG-OS-000480-GPOS-00227
+ 
+ {{{ complete_ocil_entry_sysctl_option_value(sysctl="net.ipv4.tcp_syncookies", value="1") }}}
++
++platform: machine
+diff --git a/linux_os/guide/system/network/network-kernel/network_host_parameters/sysctl_net_ipv4_conf_all_send_redirects.rule b/linux_os/guide/system/network/network-kernel/network_host_parameters/sysctl_net_ipv4_conf_all_send_redirects.rule
+index fcd4e0a..1b75c45 100644
+--- a/linux_os/guide/system/network/network-kernel/network_host_parameters/sysctl_net_ipv4_conf_all_send_redirects.rule
++++ b/linux_os/guide/system/network/network-kernel/network_host_parameters/sysctl_net_ipv4_conf_all_send_redirects.rule
+@@ -32,3 +32,5 @@ references:
+     stigid@rhel7: "040660"
+ 
+ {{{ complete_ocil_entry_sysctl_option_value(sysctl="net.ipv4.conf.all.send_redirects", value="0") }}}
++
++platform: machine
+diff --git a/linux_os/guide/system/network/network-kernel/network_host_parameters/sysctl_net_ipv4_conf_default_send_redirects.rule b/linux_os/guide/system/network/network-kernel/network_host_parameters/sysctl_net_ipv4_conf_default_send_redirects.rule
+index 76752ad..98a2df7 100644
+--- a/linux_os/guide/system/network/network-kernel/network_host_parameters/sysctl_net_ipv4_conf_default_send_redirects.rule
++++ b/linux_os/guide/system/network/network-kernel/network_host_parameters/sysctl_net_ipv4_conf_default_send_redirects.rule
+@@ -32,3 +32,5 @@ references:
+     stigid@rhel7: "040650"
+ 
+ {{{ complete_ocil_entry_sysctl_option_value(sysctl="net.ipv4.conf.default.send_redirects", value="0") }}}
++
++platform: machine
+diff --git a/linux_os/guide/system/network/network-kernel/network_host_parameters/sysctl_net_ipv4_ip_forward.rule b/linux_os/guide/system/network/network-kernel/network_host_parameters/sysctl_net_ipv4_ip_forward.rule
+index 068c595..1935645 100644
+--- a/linux_os/guide/system/network/network-kernel/network_host_parameters/sysctl_net_ipv4_ip_forward.rule
++++ b/linux_os/guide/system/network/network-kernel/network_host_parameters/sysctl_net_ipv4_ip_forward.rule
+@@ -31,3 +31,5 @@ references:
+ ocil: |-
+     {{{ ocil_sysctl_option_value(sysctl="net.ipv4.ip_forward", value="0") }}}
+     The ability to forward packets is only appropriate for routers.
++
++platform: machine
+diff --git a/linux_os/guide/system/network/network-uncommon/kernel_module_dccp_disabled.rule b/linux_os/guide/system/network/network-uncommon/kernel_module_dccp_disabled.rule
+index 5fa9b2b..7c8f938 100644
+--- a/linux_os/guide/system/network/network-uncommon/kernel_module_dccp_disabled.rule
++++ b/linux_os/guide/system/network/network-uncommon/kernel_module_dccp_disabled.rule
+@@ -32,3 +32,5 @@ references:
+     stigid: "020101"
+ 
+ {{{ complete_ocil_entry_module_disable(module="dccp") }}}
++
++platform: machine
+diff --git a/linux_os/guide/system/network/network-uncommon/kernel_module_sctp_disabled.rule b/linux_os/guide/system/network/network-uncommon/kernel_module_sctp_disabled.rule
+index 07452ee..e739b7c 100644
+--- a/linux_os/guide/system/network/network-uncommon/kernel_module_sctp_disabled.rule
++++ b/linux_os/guide/system/network/network-uncommon/kernel_module_sctp_disabled.rule
+@@ -31,3 +31,5 @@ references:
+     nist: CM-7
+ 
+ {{{ complete_ocil_entry_module_disable(module="sctp") }}}
++
++platform: machine
+diff --git a/linux_os/guide/system/network/network-wireless/wireless_software/kernel_module_bluetooth_disabled.rule b/linux_os/guide/system/network/network-wireless/wireless_software/kernel_module_bluetooth_disabled.rule
+index fc3a8cb..2b25185 100644
+--- a/linux_os/guide/system/network/network-wireless/wireless_software/kernel_module_bluetooth_disabled.rule
++++ b/linux_os/guide/system/network/network-wireless/wireless_software/kernel_module_bluetooth_disabled.rule
+@@ -31,3 +31,5 @@ references:
+     nist: AC-17(8),AC-18(a),AC-18(d),AC-18(3),CM-7
+ 
+ {{{ complete_ocil_entry_module_disable(module="bluetooth") }}}
++
++platform: machine
+diff --git a/linux_os/guide/system/network/network-wireless/wireless_software/wireless_disable_in_bios.rule b/linux_os/guide/system/network/network-wireless/wireless_software/wireless_disable_in_bios.rule
+index 302b329..4080993 100644
+--- a/linux_os/guide/system/network/network-wireless/wireless_software/wireless_disable_in_bios.rule
++++ b/linux_os/guide/system/network/network-wireless/wireless_software/wireless_disable_in_bios.rule
+@@ -24,3 +24,5 @@ identifiers:
+ references:
+     disa: "85"
+     nist: AC-17(8),AC-18(a),AC-18(d),AC-18(3),CM-7
++
++platform: machine
+diff --git a/linux_os/guide/system/permissions/mounting/bios_assign_password.rule b/linux_os/guide/system/permissions/mounting/bios_assign_password.rule
+index 4d226ba..e0d0137 100644
+--- a/linux_os/guide/system/permissions/mounting/bios_assign_password.rule
++++ b/linux_os/guide/system/permissions/mounting/bios_assign_password.rule
+@@ -22,3 +22,5 @@ severity: unknown
+ identifiers:
+     cce@rhel6: 27131-2
+     cce@rhel7: 27194-0
++
++platform: machine
+diff --git a/linux_os/guide/system/permissions/mounting/bios_disable_usb_boot.rule b/linux_os/guide/system/permissions/mounting/bios_disable_usb_boot.rule
+index 6f67dc5..7dcf2b7 100644
+--- a/linux_os/guide/system/permissions/mounting/bios_disable_usb_boot.rule
++++ b/linux_os/guide/system/permissions/mounting/bios_disable_usb_boot.rule
+@@ -22,3 +22,5 @@ identifiers:
+ references:
+     disa: "1250"
+     nist: AC-19(a),AC-19(d),AC-19(e)
++
++platform: machine
+diff --git a/linux_os/guide/system/permissions/mounting/kernel_module_cramfs_disabled.rule b/linux_os/guide/system/permissions/mounting/kernel_module_cramfs_disabled.rule
+index 25d6507..bb9c4ba 100644
+--- a/linux_os/guide/system/permissions/mounting/kernel_module_cramfs_disabled.rule
++++ b/linux_os/guide/system/permissions/mounting/kernel_module_cramfs_disabled.rule
+@@ -22,3 +22,5 @@ references:
+     cis: 1.1.1.1
+     cui: 3.4.6
+     nist: CM-7
++
++platform: machine
+diff --git a/linux_os/guide/system/permissions/mounting/kernel_module_freevxfs_disabled.rule b/linux_os/guide/system/permissions/mounting/kernel_module_freevxfs_disabled.rule
+index 2b6718e..b4bbe6a 100644
+--- a/linux_os/guide/system/permissions/mounting/kernel_module_freevxfs_disabled.rule
++++ b/linux_os/guide/system/permissions/mounting/kernel_module_freevxfs_disabled.rule
+@@ -22,3 +22,5 @@ references:
+     cis: 1.1.1.2
+     cui: 3.4.6
+     nist: CM-7
++
++platform: machine
+diff --git a/linux_os/guide/system/permissions/mounting/kernel_module_hfs_disabled.rule b/linux_os/guide/system/permissions/mounting/kernel_module_hfs_disabled.rule
+index 7bd3047..39cd1f9 100644
+--- a/linux_os/guide/system/permissions/mounting/kernel_module_hfs_disabled.rule
++++ b/linux_os/guide/system/permissions/mounting/kernel_module_hfs_disabled.rule
+@@ -22,3 +22,5 @@ references:
+     cis: 1.1.1.4
+     cui: 3.4.6
+     nist: CM-7
++
++platform: machine
+diff --git a/linux_os/guide/system/permissions/mounting/kernel_module_hfsplus_disabled.rule b/linux_os/guide/system/permissions/mounting/kernel_module_hfsplus_disabled.rule
+index 313e5f9..a22bb32 100644
+--- a/linux_os/guide/system/permissions/mounting/kernel_module_hfsplus_disabled.rule
++++ b/linux_os/guide/system/permissions/mounting/kernel_module_hfsplus_disabled.rule
+@@ -22,3 +22,5 @@ references:
+     cis: 1.1.1.5
+     cui: 3.4.6
+     nist: CM-7
++
++platform: machine
+diff --git a/linux_os/guide/system/permissions/mounting/kernel_module_jffs2_disabled.rule b/linux_os/guide/system/permissions/mounting/kernel_module_jffs2_disabled.rule
+index fdf7fb0..591acf1 100644
+--- a/linux_os/guide/system/permissions/mounting/kernel_module_jffs2_disabled.rule
++++ b/linux_os/guide/system/permissions/mounting/kernel_module_jffs2_disabled.rule
+@@ -22,3 +22,5 @@ references:
+     cis: 1.1.1.3
+     cui: 3.4.6
+     nist: CM-7
++
++platform: machine
+diff --git a/linux_os/guide/system/permissions/mounting/kernel_module_squashfs_disabled.rule b/linux_os/guide/system/permissions/mounting/kernel_module_squashfs_disabled.rule
+index e9ddc44..6d83e36 100644
+--- a/linux_os/guide/system/permissions/mounting/kernel_module_squashfs_disabled.rule
++++ b/linux_os/guide/system/permissions/mounting/kernel_module_squashfs_disabled.rule
+@@ -22,3 +22,5 @@ references:
+     cis: 1.1.1.6
+     cui: 3.4.6
+     nist: CM-7
++
++platform: machine
+diff --git a/linux_os/guide/system/permissions/mounting/kernel_module_udf_disabled.rule b/linux_os/guide/system/permissions/mounting/kernel_module_udf_disabled.rule
+index 6eb0d21..11c15e6 100644
+--- a/linux_os/guide/system/permissions/mounting/kernel_module_udf_disabled.rule
++++ b/linux_os/guide/system/permissions/mounting/kernel_module_udf_disabled.rule
+@@ -22,3 +22,5 @@ references:
+     cis: 1.1.1.7
+     cui: 3.4.6
+     nist: CM-7
++
++platform: machine
+diff --git a/linux_os/guide/system/permissions/mounting/kernel_module_usb-storage_disabled.rule b/linux_os/guide/system/permissions/mounting/kernel_module_usb-storage_disabled.rule
+index 9a8431a..6db6855 100644
+--- a/linux_os/guide/system/permissions/mounting/kernel_module_usb-storage_disabled.rule
++++ b/linux_os/guide/system/permissions/mounting/kernel_module_usb-storage_disabled.rule
+@@ -34,3 +34,5 @@ references:
+     stigid@rhel7: "020100"
+ 
+ {{{ complete_ocil_entry_module_disable(module="usb-storage") }}}
++
++platform: machine
+diff --git a/linux_os/guide/system/permissions/partitions/mount_option_dev_shm_nodev.rule b/linux_os/guide/system/permissions/partitions/mount_option_dev_shm_nodev.rule
+index 154c678..3094251 100644
+--- a/linux_os/guide/system/permissions/partitions/mount_option_dev_shm_nodev.rule
++++ b/linux_os/guide/system/permissions/partitions/mount_option_dev_shm_nodev.rule
+@@ -19,3 +19,5 @@ identifiers:
+ references:
+     cis: 1.1.15
+     nist: CM-7,MP-2
++
++platform: machine
+diff --git a/linux_os/guide/system/permissions/partitions/mount_option_dev_shm_noexec.rule b/linux_os/guide/system/permissions/partitions/mount_option_dev_shm_noexec.rule
+index 4b2cde4..9cfa2cd 100644
+--- a/linux_os/guide/system/permissions/partitions/mount_option_dev_shm_noexec.rule
++++ b/linux_os/guide/system/permissions/partitions/mount_option_dev_shm_noexec.rule
+@@ -24,3 +24,5 @@ identifiers:
+ references:
+     cis: 1.1.17
+     nist: CM-7,MP-2
++
++platform: machine
+diff --git a/linux_os/guide/system/permissions/partitions/mount_option_dev_shm_nosuid.rule b/linux_os/guide/system/permissions/partitions/mount_option_dev_shm_nosuid.rule
+index 91e10cb..9becb14 100644
+--- a/linux_os/guide/system/permissions/partitions/mount_option_dev_shm_nosuid.rule
++++ b/linux_os/guide/system/permissions/partitions/mount_option_dev_shm_nosuid.rule
+@@ -23,3 +23,5 @@ identifiers:
+ references:
+     cis: 1.1.16
+     nist: CM-7,MP-2
++
++platform: machine
+diff --git a/linux_os/guide/system/permissions/partitions/mount_option_home_nodev.rule b/linux_os/guide/system/permissions/partitions/mount_option_home_nodev.rule
+index 6af13e5..055d5bc 100644
+--- a/linux_os/guide/system/permissions/partitions/mount_option_home_nodev.rule
++++ b/linux_os/guide/system/permissions/partitions/mount_option_home_nodev.rule
+@@ -20,3 +20,5 @@ severity: unknown
+ 
+ references:
+     cis: 1.1.14
++
++platform: machine
+diff --git a/linux_os/guide/system/permissions/partitions/mount_option_home_nosuid.rule b/linux_os/guide/system/permissions/partitions/mount_option_home_nosuid.rule
+index 120f8c5..ee858ee 100644
+--- a/linux_os/guide/system/permissions/partitions/mount_option_home_nosuid.rule
++++ b/linux_os/guide/system/permissions/partitions/mount_option_home_nosuid.rule
+@@ -23,3 +23,5 @@ references:
+     cis: 1.1.3
+     nist: CM-7,MP-2
+     stigid@rhel7: "021000"
++
++platform: machine
+diff --git a/linux_os/guide/system/permissions/partitions/mount_option_nodev_nonroot_local_partitions.rule b/linux_os/guide/system/permissions/partitions/mount_option_nodev_nonroot_local_partitions.rule
+index 1766fce..b7f9c2b 100644
+--- a/linux_os/guide/system/permissions/partitions/mount_option_nodev_nonroot_local_partitions.rule
++++ b/linux_os/guide/system/permissions/partitions/mount_option_nodev_nonroot_local_partitions.rule
+@@ -22,3 +22,5 @@ identifiers:
+ references:
+     cis: 1.1.11
+     nist: CM-7
++
++platform: machine
+diff --git a/linux_os/guide/system/permissions/partitions/mount_option_nodev_removable_partitions.rule b/linux_os/guide/system/permissions/partitions/mount_option_nodev_removable_partitions.rule
+index f7ebfdb..71569a2 100644
+--- a/linux_os/guide/system/permissions/partitions/mount_option_nodev_removable_partitions.rule
++++ b/linux_os/guide/system/permissions/partitions/mount_option_nodev_removable_partitions.rule
+@@ -27,3 +27,5 @@ identifiers:
+ references:
+     cis: 1.1.18
+     nist: AC-19(a),AC-19(d),AC-19(e),CM-7,MP-2
++
++platform: machine
+diff --git a/linux_os/guide/system/permissions/partitions/mount_option_noexec_removable_partitions.rule b/linux_os/guide/system/permissions/partitions/mount_option_noexec_removable_partitions.rule
+index 81724d0..0a8bcaf 100644
+--- a/linux_os/guide/system/permissions/partitions/mount_option_noexec_removable_partitions.rule
++++ b/linux_os/guide/system/permissions/partitions/mount_option_noexec_removable_partitions.rule
+@@ -30,3 +30,5 @@ ocil: |-
+     <pre>$ grep -v noexec /etc/fstab</pre>
+     The resulting output will show partitions which do not have the <tt>noexec</tt> flag. Verify all partitions
+     in the output are not removable media.
++
++platform: machine
+diff --git a/linux_os/guide/system/permissions/partitions/mount_option_nosuid_removable_partitions.rule b/linux_os/guide/system/permissions/partitions/mount_option_nosuid_removable_partitions.rule
+index 9b1a00b..72e2091 100644
+--- a/linux_os/guide/system/permissions/partitions/mount_option_nosuid_removable_partitions.rule
++++ b/linux_os/guide/system/permissions/partitions/mount_option_nosuid_removable_partitions.rule
+@@ -29,3 +29,5 @@ references:
+     nist: AC-6,AC-19(a),AC-19(d),AC-19(e),CM-7,MP-2
+     srg: SRG-OS-000480-GPOS-00227
+     stigid@rhel7: "021010"
++
++platform: machine
+diff --git a/linux_os/guide/system/permissions/partitions/mount_option_tmp_nodev.rule b/linux_os/guide/system/permissions/partitions/mount_option_tmp_nodev.rule
+index 783756f..8c84d15 100644
+--- a/linux_os/guide/system/permissions/partitions/mount_option_tmp_nodev.rule
++++ b/linux_os/guide/system/permissions/partitions/mount_option_tmp_nodev.rule
+@@ -19,3 +19,5 @@ identifiers:
+ references:
+     cis: 1.1.3
+     nist: CM-7,MP-2
++
++platform: machine
+diff --git a/linux_os/guide/system/permissions/partitions/mount_option_tmp_noexec.rule b/linux_os/guide/system/permissions/partitions/mount_option_tmp_noexec.rule
+index 2a55a62..28160a9 100644
+--- a/linux_os/guide/system/permissions/partitions/mount_option_tmp_noexec.rule
++++ b/linux_os/guide/system/permissions/partitions/mount_option_tmp_noexec.rule
+@@ -26,3 +26,5 @@ references:
+     disa@rhel6: '381'
+     cis: 1.1.5
+     nist: CM-7,MP-2
++
++platform: machine
+diff --git a/linux_os/guide/system/permissions/partitions/mount_option_tmp_nosuid.rule b/linux_os/guide/system/permissions/partitions/mount_option_tmp_nosuid.rule
+index c01746c..44248fa 100644
+--- a/linux_os/guide/system/permissions/partitions/mount_option_tmp_nosuid.rule
++++ b/linux_os/guide/system/permissions/partitions/mount_option_tmp_nosuid.rule
+@@ -23,3 +23,5 @@ identifiers:
+ references:
+     cis: 1.1.4
+     nist: CM-7,MP-2
++
++platform: machine
+diff --git a/linux_os/guide/system/permissions/partitions/mount_option_var_tmp_bind.rule b/linux_os/guide/system/permissions/partitions/mount_option_var_tmp_bind.rule
+index 3281e0d..5d33657 100644
+--- a/linux_os/guide/system/permissions/partitions/mount_option_var_tmp_bind.rule
++++ b/linux_os/guide/system/permissions/partitions/mount_option_var_tmp_bind.rule
+@@ -20,3 +20,5 @@ identifiers:
+ references:
+     cis: 1.1.6
+     nist: CM-7
++
++platform: machine
+diff --git a/linux_os/guide/system/permissions/partitions/mount_option_var_tmp_nodev.rule b/linux_os/guide/system/permissions/partitions/mount_option_var_tmp_nodev.rule
+index 4900ca1..33f6ffe 100644
+--- a/linux_os/guide/system/permissions/partitions/mount_option_var_tmp_nodev.rule
++++ b/linux_os/guide/system/permissions/partitions/mount_option_var_tmp_nodev.rule
+@@ -14,3 +14,5 @@ severity: unknown
+ 
+ references:
+     cis: 1.1.8
++
++platform: machine
+diff --git a/linux_os/guide/system/permissions/partitions/mount_option_var_tmp_noexec.rule b/linux_os/guide/system/permissions/partitions/mount_option_var_tmp_noexec.rule
+index 2653ab6..c5a1fef 100644
+--- a/linux_os/guide/system/permissions/partitions/mount_option_var_tmp_noexec.rule
++++ b/linux_os/guide/system/permissions/partitions/mount_option_var_tmp_noexec.rule
+@@ -18,3 +18,5 @@ severity: unknown
+ 
+ references:
+     cis: 1.1.10
++
++platform: machine
+diff --git a/linux_os/guide/system/permissions/partitions/mount_option_var_tmp_nosuid.rule b/linux_os/guide/system/permissions/partitions/mount_option_var_tmp_nosuid.rule
+index 72d59c4..8ec2761 100644
+--- a/linux_os/guide/system/permissions/partitions/mount_option_var_tmp_nosuid.rule
++++ b/linux_os/guide/system/permissions/partitions/mount_option_var_tmp_nosuid.rule
+@@ -18,3 +18,5 @@ severity: unknown
+ 
+ references:
+     cis: 1.1.9
++
++platform: machine
+diff --git a/linux_os/guide/system/permissions/restrictions/coredumps/sysctl_fs_suid_dumpable.rule b/linux_os/guide/system/permissions/restrictions/coredumps/sysctl_fs_suid_dumpable.rule
+index 0454e0d..ed99f96 100644
+--- a/linux_os/guide/system/permissions/restrictions/coredumps/sysctl_fs_suid_dumpable.rule
++++ b/linux_os/guide/system/permissions/restrictions/coredumps/sysctl_fs_suid_dumpable.rule
+@@ -25,3 +25,5 @@ references:
+     nist: SI-11
+ 
+ {{{ complete_ocil_entry_sysctl_option_value(sysctl="fs.suid_dumpable", value="0") }}}
++
++platform: machine
+diff --git a/linux_os/guide/system/permissions/restrictions/enable_execshield_settings/sysctl_kernel_exec_shield.rule b/linux_os/guide/system/permissions/restrictions/enable_execshield_settings/sysctl_kernel_exec_shield.rule
+index 3d3b169..9632025 100644
+--- a/linux_os/guide/system/permissions/restrictions/enable_execshield_settings/sysctl_kernel_exec_shield.rule
++++ b/linux_os/guide/system/permissions/restrictions/enable_execshield_settings/sysctl_kernel_exec_shield.rule
+@@ -38,3 +38,5 @@ ocil: |-
+     <pre>$ sysctl kernel.exec-shield</pre>
+     The output should be:
+     {{{ describe_sysctl_option_value(sysctl="kernel.exec-shield", value="1") }}}
++
++platform: machine
+diff --git a/linux_os/guide/system/permissions/restrictions/enable_execshield_settings/sysctl_kernel_randomize_va_space.rule b/linux_os/guide/system/permissions/restrictions/enable_execshield_settings/sysctl_kernel_randomize_va_space.rule
+index 6aba5c9..94ef5df 100644
+--- a/linux_os/guide/system/permissions/restrictions/enable_execshield_settings/sysctl_kernel_randomize_va_space.rule
++++ b/linux_os/guide/system/permissions/restrictions/enable_execshield_settings/sysctl_kernel_randomize_va_space.rule
+@@ -26,3 +26,5 @@ references:
+     stigid: "040201"
+ 
+ {{{ complete_ocil_entry_sysctl_option_value(sysctl="kernel.randomize_va_space", value="2") }}}
++
++platform: machine
+diff --git a/linux_os/guide/system/permissions/restrictions/enable_nx/bios_enable_execution_restrictions.rule b/linux_os/guide/system/permissions/restrictions/enable_nx/bios_enable_execution_restrictions.rule
+index 318f6b3..778d455 100644
+--- a/linux_os/guide/system/permissions/restrictions/enable_nx/bios_enable_execution_restrictions.rule
++++ b/linux_os/guide/system/permissions/restrictions/enable_nx/bios_enable_execution_restrictions.rule
+@@ -23,3 +23,5 @@ identifiers:
+ references:
+     cui: 3.1.7
+     nist: CM-6(b)
++
++platform: machine
+diff --git a/linux_os/guide/system/permissions/restrictions/enable_nx/install_PAE_kernel_on_x86-32.rule b/linux_os/guide/system/permissions/restrictions/enable_nx/install_PAE_kernel_on_x86-32.rule
+index 938b0c8..773f66f 100644
+--- a/linux_os/guide/system/permissions/restrictions/enable_nx/install_PAE_kernel_on_x86-32.rule
++++ b/linux_os/guide/system/permissions/restrictions/enable_nx/install_PAE_kernel_on_x86-32.rule
+@@ -39,3 +39,5 @@ warnings:
+         The kernel-PAE package should not be
+         installed on older systems that do not support the XD or NX bit, as
+         8this may prevent them from booting.8
++
++platform: machine
+diff --git a/linux_os/guide/system/permissions/restrictions/sysctl_kernel_dmesg_restrict.rule b/linux_os/guide/system/permissions/restrictions/sysctl_kernel_dmesg_restrict.rule
+index eab021a..1574cc4 100644
+--- a/linux_os/guide/system/permissions/restrictions/sysctl_kernel_dmesg_restrict.rule
++++ b/linux_os/guide/system/permissions/restrictions/sysctl_kernel_dmesg_restrict.rule
+@@ -21,3 +21,5 @@ references:
+     nist: SI-11
+ 
+ {{{ complete_ocil_entry_sysctl_option_value(sysctl="kernel.dmesg_restrict", value="1") }}}
++
++platform: machine
+diff --git a/linux_os/guide/system/selinux/docker_selinux_enabled.rule b/linux_os/guide/system/selinux/docker_selinux_enabled.rule
+index 400d66c..4cf537b 100644
+--- a/linux_os/guide/system/selinux/docker_selinux_enabled.rule
++++ b/linux_os/guide/system/selinux/docker_selinux_enabled.rule
+@@ -23,3 +23,5 @@ severity: high
+ 
+ identifiers:
+     cce@rhel7: 80442-7
++
++platform: machine
+diff --git a/linux_os/guide/system/selinux/selinux_confinement_of_daemons.rule b/linux_os/guide/system/selinux/selinux_confinement_of_daemons.rule
+index 179955d..226d4bf 100644
+--- a/linux_os/guide/system/selinux/selinux_confinement_of_daemons.rule
++++ b/linux_os/guide/system/selinux/selinux_confinement_of_daemons.rule
+@@ -29,3 +29,5 @@ references:
+     cui: 3.1.2,3.1.5,3.7.2
+     hipaa: 164.308(a)(1)(ii)(D),164.308(a)(3),164.308(a)(4),164.310(b),164.310(c),164.312(a),164.312(e)
+     nist: AC-6,AU-9,CM-7
++
++platform: machine
+diff --git a/linux_os/guide/system/selinux/selinux_policytype.rule b/linux_os/guide/system/selinux/selinux_policytype.rule
+index 08b0fe0..c5048b5 100644
+--- a/linux_os/guide/system/selinux/selinux_policytype.rule
++++ b/linux_os/guide/system/selinux/selinux_policytype.rule
+@@ -48,3 +48,5 @@ ocil_clause: 'it does not'
+ ocil: |-
+     Check the file <tt>/etc/selinux/config</tt> and ensure the following line appears:
+     <pre>SELINUXTYPE=<sub idref="var_selinux_policy_name" /></pre>
++
++platform: machine
+diff --git a/linux_os/guide/system/selinux/selinux_state.rule b/linux_os/guide/system/selinux/selinux_state.rule
+index 2f4f1c5..3612c21 100644
+--- a/linux_os/guide/system/selinux/selinux_state.rule
++++ b/linux_os/guide/system/selinux/selinux_state.rule
+@@ -39,3 +39,5 @@ ocil_clause: 'SELINUX is not set to enforcing'
+ ocil: |-
+     Check the file <tt>/etc/selinux/config</tt> and ensure the following line appears:
+     <pre>SELINUX=<sub idref="var_selinux_state" /></pre>
++
++platform: machine
+diff --git a/linux_os/guide/system/software/disk_partitioning/encrypt_partitions.rule b/linux_os/guide/system/software/disk_partitioning/encrypt_partitions.rule
+index 1caa1e2..f4c47f6 100644
+--- a/linux_os/guide/system/software/disk_partitioning/encrypt_partitions.rule
++++ b/linux_os/guide/system/software/disk_partitioning/encrypt_partitions.rule
+@@ -67,3 +67,5 @@ ocil: |-
+     " TYPE="crypto_LUKS"</pre>
+     <br /><br />
+     Pseudo-file systems, such as /proc, /sys, and tmpfs, are not required to use disk encryption and are not a finding.
++
++platform: machine
+diff --git a/linux_os/guide/system/software/disk_partitioning/partition_for_home.rule b/linux_os/guide/system/software/disk_partitioning/partition_for_home.rule
+index d3c01f1..77d204a 100644
+--- a/linux_os/guide/system/software/disk_partitioning/partition_for_home.rule
++++ b/linux_os/guide/system/software/disk_partitioning/partition_for_home.rule
+@@ -33,3 +33,5 @@ references:
+     stigid@rhel7: "021310"
+ 
+ {{{ complete_ocil_entry_separate_partition(part="/home") }}}
++
++platform: machine
+diff --git a/linux_os/guide/system/software/disk_partitioning/partition_for_tmp.rule b/linux_os/guide/system/software/disk_partitioning/partition_for_tmp.rule
+index 0c2c3d4..0297192 100644
+--- a/linux_os/guide/system/software/disk_partitioning/partition_for_tmp.rule
++++ b/linux_os/guide/system/software/disk_partitioning/partition_for_tmp.rule
+@@ -32,3 +32,5 @@ references:
+     stigid@rhel7: "021340"
+ 
+ {{{ complete_ocil_entry_separate_partition(part="/tmp") }}}
++
++platform: machine
+diff --git a/linux_os/guide/system/software/disk_partitioning/partition_for_var.rule b/linux_os/guide/system/software/disk_partitioning/partition_for_var.rule
+index 5b57cec..234d08a 100644
+--- a/linux_os/guide/system/software/disk_partitioning/partition_for_var.rule
++++ b/linux_os/guide/system/software/disk_partitioning/partition_for_var.rule
+@@ -34,3 +34,5 @@ references:
+     stigid@rhel7: "021320"
+ 
+ {{{ complete_ocil_entry_separate_partition(part="/var") }}}
++
++platform: machine
+diff --git a/linux_os/guide/system/software/disk_partitioning/partition_for_var_log.rule b/linux_os/guide/system/software/disk_partitioning/partition_for_var_log.rule
+index 451daa6..70ced03 100644
+--- a/linux_os/guide/system/software/disk_partitioning/partition_for_var_log.rule
++++ b/linux_os/guide/system/software/disk_partitioning/partition_for_var_log.rule
+@@ -28,3 +28,5 @@ references:
+     nist: AU-9,SC-32
+ 
+ {{{ complete_ocil_entry_separate_partition(part="/var/log") }}}
++
++platform: machine
+diff --git a/linux_os/guide/system/software/disk_partitioning/partition_for_var_log_audit.rule b/linux_os/guide/system/software/disk_partitioning/partition_for_var_log_audit.rule
+index e3b9238..632b1ff 100644
+--- a/linux_os/guide/system/software/disk_partitioning/partition_for_var_log_audit.rule
++++ b/linux_os/guide/system/software/disk_partitioning/partition_for_var_log_audit.rule
+@@ -37,3 +37,5 @@ references:
+     stigid@rhel7: "021330"
+ 
+ {{{ complete_ocil_entry_separate_partition(part="/var/log/audit") }}}
++
++platform: machine
+diff --git a/linux_os/guide/system/software/disk_partitioning/partition_for_var_tmp.rule b/linux_os/guide/system/software/disk_partitioning/partition_for_var_tmp.rule
+index 1beb3ff..ec180e2 100644
+--- a/linux_os/guide/system/software/disk_partitioning/partition_for_var_tmp.rule
++++ b/linux_os/guide/system/software/disk_partitioning/partition_for_var_tmp.rule
+@@ -20,3 +20,5 @@ references:
+     cis: 1.1.7
+ 
+ {{{ complete_ocil_entry_separate_partition(part="/var/tmp") }}}
++
++platform: machine
+diff --git a/linux_os/guide/system/software/gnome/enable_dconf_user_profile.rule b/linux_os/guide/system/software/gnome/enable_dconf_user_profile.rule
+index 9bd6a0b..604a8c6 100644
+--- a/linux_os/guide/system/software/gnome/enable_dconf_user_profile.rule
++++ b/linux_os/guide/system/software/gnome/enable_dconf_user_profile.rule
+@@ -26,3 +26,5 @@ ocil: |-
+     system-db:local
+     system-db:site
+     system-db:distro</pre>
++
++platform: machine
+diff --git a/linux_os/guide/system/software/gnome/gnome_login_screen/dconf_gnome_disable_restart_shutdown.rule b/linux_os/guide/system/software/gnome/gnome_login_screen/dconf_gnome_disable_restart_shutdown.rule
+index 860a2c9..4bea499 100644
+--- a/linux_os/guide/system/software/gnome/gnome_login_screen/dconf_gnome_disable_restart_shutdown.rule
++++ b/linux_os/guide/system/software/gnome/gnome_login_screen/dconf_gnome_disable_restart_shutdown.rule
+@@ -32,3 +32,5 @@ ocil: |-
+     To ensure that users cannot enable disable and restart on the login screen, run the following:
+     <pre>$ grep disable-restart-buttons /etc/dconf/db/gdm.d/locks/*</pre>
+     If properly configured, the output should be <tt>/org/gnome/login-screen/disable-restart-buttons</tt>
++
++platform: machine
+diff --git a/linux_os/guide/system/software/gnome/gnome_login_screen/dconf_gnome_disable_user_list.rule b/linux_os/guide/system/software/gnome/gnome_login_screen/dconf_gnome_disable_user_list.rule
+index 504c187..450c9b5 100644
+--- a/linux_os/guide/system/software/gnome/gnome_login_screen/dconf_gnome_disable_user_list.rule
++++ b/linux_os/guide/system/software/gnome/gnome_login_screen/dconf_gnome_disable_user_list.rule
+@@ -28,3 +28,5 @@ ocil: |-
+     To ensure that users cannot enable displaying the user list, run the following:
+     <pre>$ grep disable-user-list /etc/dconf/db/gdm.d/locks/*</pre>
+     If properly configured, the output should be <tt>/org/gnome/login-screen/disable-user-list</tt>
++
++platform: machine
+diff --git a/linux_os/guide/system/software/gnome/gnome_login_screen/dconf_gnome_enable_smartcard_auth.rule b/linux_os/guide/system/software/gnome/gnome_login_screen/dconf_gnome_enable_smartcard_auth.rule
+index 176b811..690f330 100644
+--- a/linux_os/guide/system/software/gnome/gnome_login_screen/dconf_gnome_enable_smartcard_auth.rule
++++ b/linux_os/guide/system/software/gnome/gnome_login_screen/dconf_gnome_enable_smartcard_auth.rule
+@@ -44,3 +44,5 @@ ocil: |-
+     To ensure that users cannot disable smart card authentication on the login screen, run the following:
+     <pre>$ grep enable-smartcard-authentication /etc/dconf/db/gdm.d/locks/*</pre>
+     If properly configured, the output should be <tt>/org/gnome/login-screen/enable-smartcard-authentication</tt>
++
++platform: machine
+diff --git a/linux_os/guide/system/software/gnome/gnome_login_screen/dconf_gnome_login_retries.rule b/linux_os/guide/system/software/gnome/gnome_login_screen/dconf_gnome_login_retries.rule
+index 8297e04..4631a4e 100644
+--- a/linux_os/guide/system/software/gnome/gnome_login_screen/dconf_gnome_login_retries.rule
++++ b/linux_os/guide/system/software/gnome/gnome_login_screen/dconf_gnome_login_retries.rule
+@@ -31,3 +31,5 @@ ocil: |-
+     number of failures on the login screen, run the following:
+     <pre>$ grep allowed-failures /etc/dconf/db/gdm.d/locks/*</pre>
+     If properly configured, the output should be <tt>/org/gnome/login-screen/allowed-failures</tt>
++
++platform: machine
+diff --git a/linux_os/guide/system/software/gnome/gnome_login_screen/gnome_gdm_disable_automatic_login.rule b/linux_os/guide/system/software/gnome/gnome_login_screen/gnome_gdm_disable_automatic_login.rule
+index 7170686..62e6d7e 100644
+--- a/linux_os/guide/system/software/gnome/gnome_login_screen/gnome_gdm_disable_automatic_login.rule
++++ b/linux_os/guide/system/software/gnome/gnome_login_screen/gnome_gdm_disable_automatic_login.rule
+@@ -38,3 +38,5 @@ ocil: |-
+     The output should show the following:
+     <pre>[daemon]
+     AutomaticLoginEnable=false</pre>
++
++platform: machine
+diff --git a/linux_os/guide/system/software/gnome/gnome_login_screen/gnome_gdm_disable_guest_login.rule b/linux_os/guide/system/software/gnome/gnome_login_screen/gnome_gdm_disable_guest_login.rule
+index 6390e10..dd13252 100644
+--- a/linux_os/guide/system/software/gnome/gnome_login_screen/gnome_gdm_disable_guest_login.rule
++++ b/linux_os/guide/system/software/gnome/gnome_login_screen/gnome_gdm_disable_guest_login.rule
+@@ -38,3 +38,5 @@ ocil: |-
+     The output should show the following:
+     <pre>[daemon]
+     TimedLoginEnable=false</pre>
++
++platform: machine
+diff --git a/linux_os/guide/system/software/gnome/gnome_media_settings/dconf_gnome_disable_automount.rule b/linux_os/guide/system/software/gnome/gnome_media_settings/dconf_gnome_disable_automount.rule
+index b3cfbcd..75422b0 100644
+--- a/linux_os/guide/system/software/gnome/gnome_media_settings/dconf_gnome_disable_automount.rule
++++ b/linux_os/guide/system/software/gnome/gnome_media_settings/dconf_gnome_disable_automount.rule
+@@ -53,3 +53,5 @@ ocil: |-
+     If properly configured, the output for <tt>automount</tt> should be <tt>/org/gnome/desktop/media-handling/automount</tt>
+     If properly configured, the output for <tt>automount-open</tt> should be <tt>/org/gnome/desktop/media-handling/auto-open</tt>
+     If properly configured, the output for <tt>autorun-never</tt> should be <tt>/org/gnome/desktop/media-handling/autorun-never</tt>
++
++platform: machine
+diff --git a/linux_os/guide/system/software/gnome/gnome_media_settings/dconf_gnome_disable_thumbnailers.rule b/linux_os/guide/system/software/gnome/gnome_media_settings/dconf_gnome_disable_thumbnailers.rule
+index 6b1fd19..bfbfe01 100644
+--- a/linux_os/guide/system/software/gnome/gnome_media_settings/dconf_gnome_disable_thumbnailers.rule
++++ b/linux_os/guide/system/software/gnome/gnome_media_settings/dconf_gnome_disable_thumbnailers.rule
+@@ -45,3 +45,5 @@ ocil: |-
+     To ensure that users cannot how long until the the screensaver locks, run the following:
+     <pre>$ grep disable-all /etc/dconf/db/local.d/locks/*</pre>
+     If properly configured, the output should be <tt>/org/gnome/desktop/thumbnailers/disable-all</tt>
++
++platform: machine
+diff --git a/linux_os/guide/system/software/gnome/gnome_network_settings/dconf_gnome_disable_wifi_create.rule b/linux_os/guide/system/software/gnome/gnome_network_settings/dconf_gnome_disable_wifi_create.rule
+index 0478e57..37ed712 100644
+--- a/linux_os/guide/system/software/gnome/gnome_network_settings/dconf_gnome_disable_wifi_create.rule
++++ b/linux_os/guide/system/software/gnome/gnome_network_settings/dconf_gnome_disable_wifi_create.rule
+@@ -40,3 +40,5 @@ ocil: |-
+     <pre>$ grep wifi-create /etc/dconf/db/local.d/locks/*</pre>
+     If properly configured, the output should be
+     <tt>/org/gnome/nm-applet/disable-wifi-create</tt>
++
++platform: machine
+diff --git a/linux_os/guide/system/software/gnome/gnome_network_settings/dconf_gnome_disable_wifi_notification.rule b/linux_os/guide/system/software/gnome/gnome_network_settings/dconf_gnome_disable_wifi_notification.rule
+index 04867c8..e704c6e 100644
+--- a/linux_os/guide/system/software/gnome/gnome_network_settings/dconf_gnome_disable_wifi_notification.rule
++++ b/linux_os/guide/system/software/gnome/gnome_network_settings/dconf_gnome_disable_wifi_notification.rule
+@@ -42,3 +42,5 @@ ocil: |-
+     <pre>$ grep wireless-networks-available /etc/dconf/db/local.d/locks/*</pre>
+     If properly configured, the output should be
+     <tt>/org/gnome/nm-applet/suppress-wireless-networks-available</tt>
++
++platform: machine
+diff --git a/linux_os/guide/system/software/gnome/gnome_remote_access_settings/dconf_gnome_remote_access_credential_prompt.rule b/linux_os/guide/system/software/gnome/gnome_remote_access_settings/dconf_gnome_remote_access_credential_prompt.rule
+index f2603b6..9891ea5 100644
+--- a/linux_os/guide/system/software/gnome/gnome_remote_access_settings/dconf_gnome_remote_access_credential_prompt.rule
++++ b/linux_os/guide/system/software/gnome/gnome_remote_access_settings/dconf_gnome_remote_access_credential_prompt.rule
+@@ -41,3 +41,5 @@ ocil: |-
+     <pre>$ grep authentication-methods /etc/dconf/db/local.d/locks/*</pre>
+     If properly configured, the output should be
+     <tt>/org/gnome/Vino/authentication-methods</tt>
++
++platform: machine
+diff --git a/linux_os/guide/system/software/gnome/gnome_remote_access_settings/dconf_gnome_remote_access_encryption.rule b/linux_os/guide/system/software/gnome/gnome_remote_access_settings/dconf_gnome_remote_access_encryption.rule
+index e9a8b35..bda2f5c 100644
+--- a/linux_os/guide/system/software/gnome/gnome_remote_access_settings/dconf_gnome_remote_access_encryption.rule
++++ b/linux_os/guide/system/software/gnome/gnome_remote_access_settings/dconf_gnome_remote_access_encryption.rule
+@@ -45,3 +45,5 @@ ocil: |-
+     <pre>$ grep require-encryption /etc/dconf/db/local.d/locks/*</pre>
+     If properly configured, the output should be
+     <tt>/org/gnome/Vino/require-encryption</tt>
++
++platform: machine
+diff --git a/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_idle_activation_enabled.rule b/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_idle_activation_enabled.rule
+index 736bca4..ac5a8cb 100644
+--- a/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_idle_activation_enabled.rule
++++ b/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_idle_activation_enabled.rule
+@@ -43,3 +43,5 @@ ocil: |-
+     To ensure that users cannot disable the screensaver idle inactivity setting, run the following:
+     <pre>$ grep idle-activation-enabled /etc/dconf/db/local.d/locks/*</pre>
+     If properly configured, the output should be <tt>/org/gnome/desktop/screensaver/idle-activation-enabled</tt>
++
++platform: machine
+diff --git a/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_idle_delay.rule b/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_idle_delay.rule
+index fb02c5b..21d6261 100644
+--- a/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_idle_delay.rule
++++ b/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_idle_delay.rule
+@@ -50,3 +50,5 @@ ocil: |-
+     To ensure that users cannot change the screensaver inactivity timeout setting, run the following:
+     <pre>$ grep idle-delay /etc/dconf/db/local.d/locks/*</pre>
+     If properly configured, the output should be <tt>/org/gnome/desktop/session/idle-delay</tt>
++
++platform: machine
+diff --git a/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_lock_delay.rule b/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_lock_delay.rule
+index dd8f391..aa55f86 100644
+--- a/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_lock_delay.rule
++++ b/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_lock_delay.rule
+@@ -34,3 +34,5 @@ ocil: |-
+     To ensure that users cannot change how long until the the screensaver locks, run the following:
+     <pre>$ grep lock-delay /etc/dconf/db/local.d/locks/*</pre>
+     If properly configured, the output for <tt>lock-delay</tt> should be <tt>/org/gnome/desktop/screensaver/lock-delay</tt>
++
++platform: machine
+diff --git a/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_lock_enabled.rule b/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_lock_enabled.rule
+index b337b44..ba2f4e9 100644
+--- a/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_lock_enabled.rule
++++ b/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_lock_enabled.rule
+@@ -45,3 +45,5 @@ ocil: |-
+     To ensure that users cannot change how long until the the screensaver locks, run the following:
+     <pre>$ grep lock-enabled /etc/dconf/db/local.d/locks/*</pre>
+     If properly configured, the output for <tt>lock-enabled</tt> should be <tt>/org/gnome/desktop/screensaver/lock-enabled</tt>
++
++platform: machine
+diff --git a/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_mode_blank.rule b/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_mode_blank.rule
+index f75dd46..a7e32c9 100644
+--- a/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_mode_blank.rule
++++ b/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_mode_blank.rule
+@@ -44,3 +44,5 @@ ocil: |-
+     To ensure that users cannot set the screensaver background, run the following:
+     <pre>$ grep picture-uri /etc/dconf/db/local.d/locks/*</pre>
+     If properly configured, the output should be <tt>/org/gnome/desktop/screensaver/picture-uri</tt>
++
++platform: machine
+diff --git a/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_user_info.rule b/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_user_info.rule
+index acf6d64..80fd5e1 100644
+--- a/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_user_info.rule
++++ b/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_user_info.rule
+@@ -40,3 +40,5 @@ ocil: |-
+     To ensure that users cannot enable user name on the lock screen, run the following:
+     <pre>$ grep show-full-name-in-top-bar /etc/dconf/db/local.d/locks/*</pre>
+     If properly configured, the output should be <tt>/org/gnome/desktop/screensaver/show-full-name-in-top-bar</tt>
++
++platform: machine
+diff --git a/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_user_locks.rule b/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_user_locks.rule
+index 1459ef1..1d0c897 100644
+--- a/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_user_locks.rule
++++ b/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_user_locks.rule
+@@ -39,3 +39,5 @@ ocil: |-
+     <pre>$ grep 'lock-delay' /etc/dconf/db/local.d/locks/*</pre>
+     If properly configured, the output should return:
+     <tt>/org/gnome/desktop/screensaver/lock-delay</tt>
++
++platform: machine
+diff --git a/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_session_idle_user_locks.rule b/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_session_idle_user_locks.rule
+index b467e33..895cfc4 100644
+--- a/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_session_idle_user_locks.rule
++++ b/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_session_idle_user_locks.rule
+@@ -39,3 +39,5 @@ ocil: |-
+     <pre>$ grep 'idle-delay' /etc/dconf/db/local.d/locks/*</pre>
+     If properly configured, the output should return:
+     <tt>/org/gnome/desktop/session/idle-delay</tt>
++
++platform: machine
+diff --git a/linux_os/guide/system/software/gnome/gnome_system_settings/dconf_gnome_disable_ctrlaltdel_reboot.rule b/linux_os/guide/system/software/gnome/gnome_system_settings/dconf_gnome_disable_ctrlaltdel_reboot.rule
+index a6eac82..557d1d5 100644
+--- a/linux_os/guide/system/software/gnome/gnome_system_settings/dconf_gnome_disable_ctrlaltdel_reboot.rule
++++ b/linux_os/guide/system/software/gnome/gnome_system_settings/dconf_gnome_disable_ctrlaltdel_reboot.rule
+@@ -35,3 +35,5 @@ ocil: |-
+     <pre>$ grep logout /etc/dconf/db/local.d/locks/*</pre>
+     If properly configured, the output should be
+     <tt>/org/gnome/settings-daemon/plugins/media-keys/logout</tt>
++
++platform: machine
+diff --git a/linux_os/guide/system/software/gnome/gnome_system_settings/dconf_gnome_disable_geolocation.rule b/linux_os/guide/system/software/gnome/gnome_system_settings/dconf_gnome_disable_geolocation.rule
+index 29287df..e7d1377 100644
+--- a/linux_os/guide/system/software/gnome/gnome_system_settings/dconf_gnome_disable_geolocation.rule
++++ b/linux_os/guide/system/software/gnome/gnome_system_settings/dconf_gnome_disable_geolocation.rule
+@@ -27,3 +27,5 @@ ocil: |-
+     <pre>$ grep location /etc/dconf/db/local.d/locks/*</pre>
+     If properly configured, the output should be
+     <tt>/org/gnome/system/location/enabled</tt> and <tt>/org/gnome/clocks/geolocation</tt>.
++
++platform: machine
+diff --git a/linux_os/guide/system/software/gnome/gnome_system_settings/dconf_gnome_disable_power_settings.rule b/linux_os/guide/system/software/gnome/gnome_system_settings/dconf_gnome_disable_power_settings.rule
+index 45732fc..bed548f 100644
+--- a/linux_os/guide/system/software/gnome/gnome_system_settings/dconf_gnome_disable_power_settings.rule
++++ b/linux_os/guide/system/software/gnome/gnome_system_settings/dconf_gnome_disable_power_settings.rule
+@@ -39,3 +39,5 @@ ocil: |-
+     <pre>$ grep power /etc/dconf/db/local.d/locks/*</pre>
+     If properly configured, the output should be
+     <tt>/org/gnome/settings-daemon/plugins/power/active</tt>
++
++platform: machine
+diff --git a/linux_os/guide/system/software/gnome/gnome_system_settings/dconf_gnome_disable_user_admin.rule b/linux_os/guide/system/software/gnome/gnome_system_settings/dconf_gnome_disable_user_admin.rule
+index a152d85..0ab59df 100644
+--- a/linux_os/guide/system/software/gnome/gnome_system_settings/dconf_gnome_disable_user_admin.rule
++++ b/linux_os/guide/system/software/gnome/gnome_system_settings/dconf_gnome_disable_user_admin.rule
+@@ -45,3 +45,5 @@ ocil: |-
+     <pre>$ grep user-administration /etc/dconf/db/local.d/locks/*</pre>
+     If properly configured, the output should be
+     <tt>/org/gnome/desktop/lockdown/user-administration-disabled</tt>
++
++platform: machine
+diff --git a/linux_os/guide/system/software/integrity/endpoint_security_software/install_antivirus.rule b/linux_os/guide/system/software/integrity/endpoint_security_software/install_antivirus.rule
+index 95e9e56..8258357 100644
+--- a/linux_os/guide/system/software/integrity/endpoint_security_software/install_antivirus.rule
++++ b/linux_os/guide/system/software/integrity/endpoint_security_software/install_antivirus.rule
+@@ -49,3 +49,5 @@ ocil: |-
+     To check on the age of uvscan virus definition files, run the following command:
+     <pre>$ sudo cd /opt/NAI/LinuxShield/engine/dat
+     $ sudo ls -la avvscan.dat avvnames.dat avvclean.dat</pre>
++
++platform: machine
+diff --git a/linux_os/guide/system/software/integrity/endpoint_security_software/install_hids.rule b/linux_os/guide/system/software/integrity/endpoint_security_software/install_hids.rule
+index 86b4b02..c46e88e 100644
+--- a/linux_os/guide/system/software/integrity/endpoint_security_software/install_hids.rule
++++ b/linux_os/guide/system/software/integrity/endpoint_security_software/install_hids.rule
+@@ -43,3 +43,5 @@ warnings:
+         detection tools, such as the McAfee Host-based Security System, are available
+         to integrate with existing infrastructure. When these supplemental tools
+         interfere with proper functioning of SELinux, SELinux takes precedence.
++
++platform: machine
+diff --git a/linux_os/guide/system/software/integrity/endpoint_security_software/mcafee_security_software/install_mcafee_antivirus.rule b/linux_os/guide/system/software/integrity/endpoint_security_software/mcafee_security_software/install_mcafee_antivirus.rule
+index 189e338..0c65b39 100644
+--- a/linux_os/guide/system/software/integrity/endpoint_security_software/mcafee_security_software/install_mcafee_antivirus.rule
++++ b/linux_os/guide/system/software/integrity/endpoint_security_software/mcafee_security_software/install_mcafee_antivirus.rule
+@@ -36,3 +36,5 @@ warnings:
+     - general: |-
+         Due to McAfee HIPS being 3rd party software, automated
+         remediation is not available for this configuration check.
++
++platform: machine
+diff --git a/linux_os/guide/system/software/integrity/endpoint_security_software/mcafee_security_software/mcafee_antivirus_definitions_updated.rule b/linux_os/guide/system/software/integrity/endpoint_security_software/mcafee_security_software/mcafee_antivirus_definitions_updated.rule
+index a88c025..bc7dfc7 100644
+--- a/linux_os/guide/system/software/integrity/endpoint_security_software/mcafee_security_software/mcafee_antivirus_definitions_updated.rule
++++ b/linux_os/guide/system/software/integrity/endpoint_security_software/mcafee_security_software/mcafee_antivirus_definitions_updated.rule
+@@ -27,3 +27,5 @@ ocil: |-
+     To check on the age of McAfee virus definition files, run the following command:
+     <pre>$ sudo cd /opt/NAI/LinuxShield/engine/dat
+     $ sudo ls -la avvscan.dat avvnames.dat avvclean.dat</pre>
++
++platform: machine
+diff --git a/linux_os/guide/system/software/integrity/endpoint_security_software/mcafee_security_software/service_nails_enabled.rule b/linux_os/guide/system/software/integrity/endpoint_security_software/mcafee_security_software/service_nails_enabled.rule
+index ee96935..f68e59e 100644
+--- a/linux_os/guide/system/software/integrity/endpoint_security_software/mcafee_security_software/service_nails_enabled.rule
++++ b/linux_os/guide/system/software/integrity/endpoint_security_software/mcafee_security_software/service_nails_enabled.rule
+@@ -24,3 +24,5 @@ references:
+     srg: SRG-OS-000480-GPOS-00227
+ 
+ ocil: '{{{ ocil_service_enabled(service="nails") }}}'
++
++platform: machine
+diff --git a/linux_os/guide/system/software/integrity/fips/grub2_enable_fips_mode.rule b/linux_os/guide/system/software/integrity/fips/grub2_enable_fips_mode.rule
+index 4f70107..c1223d6 100644
+--- a/linux_os/guide/system/software/integrity/fips/grub2_enable_fips_mode.rule
++++ b/linux_os/guide/system/software/integrity/fips/grub2_enable_fips_mode.rule
+@@ -60,3 +60,5 @@ warnings:
+         <br /><br />
+         See <b>{{{ weblink(link="http://csrc.nist.gov/groups/STM/cmvp/documents/140-1/1401vend.htm") }}}</b>
+         for a list of FIPS certified vendors.
++
++platform: machine
+diff --git a/linux_os/guide/system/software/integrity/software-integrity/aide/aide_periodic_cron_checking.rule b/linux_os/guide/system/software/integrity/software-integrity/aide/aide_periodic_cron_checking.rule
+index 5573351..1a29bac 100644
+--- a/linux_os/guide/system/software/integrity/software-integrity/aide/aide_periodic_cron_checking.rule
++++ b/linux_os/guide/system/software/integrity/software-integrity/aide/aide_periodic_cron_checking.rule
+@@ -56,3 +56,5 @@ ocil: |-
+     <pre>05 4 * * * root /usr/sbin/aide --check</pre>
+ 
+     NOTE: The usage of special cron times, such as @daily or @weekly, is acceptable.
++
++platform: machine

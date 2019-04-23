@@ -6,7 +6,7 @@
 
 Name:		scap-security-guide
 Version:	0.1.%{redhatssgversion}
-Release:	12%{?dist}
+Release:	13%{?dist}
 Summary:	Security guidance and baselines in SCAP formats
 
 Group:		System Environment/Base
@@ -47,6 +47,15 @@ Patch31:		scap-security-guide-0.1.41-sysctl_kernel.patch
 Patch32:		scap-security-guide-0.1.41-kptr_restrict.patch
 Patch33:		scap-security-guide-0.1.41-grub2_bootloader_arguments.patch
 Patch34:		scap-security-guide-0.1.41-profile_title_rename_etc.patch
+Patch35:		scap-security-guide-0.1.42-rule_yml_platform_tag_support.patch
+Patch36:		scap-security-guide-0.1.42-mark_rules_as_machine_only.patch
+Patch37:		scap-security-guide-0.1.45-mark_rules_as_machine_only_v2.patch
+Patch38:		scap-security-guide-0.1.44-cpe-shadow-utils.patch
+Patch39:		scap-security-guide-0.1.44-cpe-pam-systemd-yum.patch
+Patch40:		scap-security-guide-0.1.44-cpe-gdm.patch
+Patch41:		scap-security-guide-0.1.44-cpe-remaining.patch
+Patch42:		scap-security-guide-0.1.44-update-cpe-dictionary.patch
+
 BuildArch:	noarch
 
 BuildRequires:	libxslt, expat, python, openscap-scanner >= 1.2.16, python-jinja2, cmake >= 2.8, PyYAML
@@ -110,6 +119,14 @@ mkdir build
 %patch32 -p1
 %patch33 -p1
 %patch34 -p1
+%patch35 -p1
+%patch36 -p1
+%patch37 -p1
+%patch38 -p1
+%patch39 -p1
+%patch40 -p1
+%patch41 -p1
+%patch42 -p1
 
 %build
 mkdir -p build && cd build
@@ -159,6 +176,10 @@ cd build
 %doc build/guides/ssg-*-guide-*.html
 
 %changelog
+* Thu Apr 11 2019 Gabriel Becker <ggasparb@redhat.com> - 0.1.40-13
+- Added support to platform tag and mark rules as machine only (RHBZ#1698752)
+- Fix content support for UBI-Minimal (RHBZ#1698751)
+
 * Tue Sep 25 2018 Watson Yuuma Sato <wsato@redhat.com> - 0.1.40-12
 - Fix malformed patch for removal of abrt and sendmail (RHBZ#1619689)
 
