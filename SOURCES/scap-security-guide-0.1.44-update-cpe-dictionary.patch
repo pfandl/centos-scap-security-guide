@@ -1,0 +1,53 @@
+From f984d1cee639ddc2d1249f07151687f552400e3a Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Thu, 11 Apr 2019 13:49:44 +0200
+Subject: [PATCH 1/5] Update rhel dictionaries
+
+---
+ rhel6/cpe/rhel6-cpe-dictionary.xml | 35 ++++++++++++++++++++++++++++++
+ 3 files changed, 105 insertions(+)
+
+diff --git a/rhel6/cpe/rhel6-cpe-dictionary.xml b/rhel6/cpe/rhel6-cpe-dictionary.xml
+index b5aa6f2b35..7e1f711459 100644
+--- a/rhel6/cpe/rhel6-cpe-dictionary.xml
++++ b/rhel6/cpe/rhel6-cpe-dictionary.xml
+@@ -37,4 +37,39 @@
+             <!-- the check references an OVAL file that contains an inventory definition -->
+             <check system="http://oval.mitre.org/XMLSchema/oval-definitions-5" href="filename">installed_env_is_a_machine</check>
+       </cpe-item>
++      <cpe-item name="cpe:/a:gdm">
++            <title xml:lang="en-us">Package gdm is installed</title>
++            <!-- the check references an OVAL file that contains an inventory definition -->
++            <check system="http://oval.mitre.org/XMLSchema/oval-definitions-5" href="filename">installed_env_has_gdm_package</check>
++      </cpe-item>
++      <cpe-item name="cpe:/a:libuser">
++            <title xml:lang="en-us">Package libuser is installed</title>
++            <!-- the check references an OVAL file that contains an inventory definition -->
++            <check system="http://oval.mitre.org/XMLSchema/oval-definitions-5" href="filename">installed_env_has_libuser_package</check>
++      </cpe-item>
++      <cpe-item name="cpe:/a:nss-pam-ldapd">
++            <title xml:lang="en-us">Package nss-pam-ldapd is installed</title>
++            <!-- the check references an OVAL file that contains an inventory definition -->
++            <check system="http://oval.mitre.org/XMLSchema/oval-definitions-5" href="filename">installed_env_has_nss-pam-ldapd_package</check>
++      </cpe-item>
++      <cpe-item name="cpe:/a:pam">
++            <title xml:lang="en-us">Package pam is installed</title>
++            <!-- the check references an OVAL file that contains an inventory definition -->
++            <check system="http://oval.mitre.org/XMLSchema/oval-definitions-5" href="filename">installed_env_has_pam_package</check>
++      </cpe-item>
++      <cpe-item name="cpe:/a:shadow-utils">
++            <title xml:lang="en-us">Package shadow-utils is installed</title>
++            <!-- the check references an OVAL file that contains an inventory definition -->
++            <check system="http://oval.mitre.org/XMLSchema/oval-definitions-5" href="filename">installed_env_has_shadow-utils_package</check>
++      </cpe-item>
++      <cpe-item name="cpe:/a:systemd">
++            <title xml:lang="en-us">Package systemd is installed</title>
++            <!-- the check references an OVAL file that contains an inventory definition -->
++            <check system="http://oval.mitre.org/XMLSchema/oval-definitions-5" href="filename">installed_env_has_systemd_package</check>
++      </cpe-item>
++      <cpe-item name="cpe:/a:yum">
++            <title xml:lang="en-us">Package yum is installed</title>
++            <!-- the check references an OVAL file that contains an inventory definition -->
++            <check system="http://oval.mitre.org/XMLSchema/oval-definitions-5" href="filename">installed_env_has_yum_package</check>
++      </cpe-item>
+ </cpe-list>

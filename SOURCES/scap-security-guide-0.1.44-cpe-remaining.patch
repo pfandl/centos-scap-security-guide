@@ -1,0 +1,41 @@
+From 51b6c4c3476608e298c65d402f6d897f1dd6b1aa Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Wed, 10 Apr 2019 17:57:39 +0200
+Subject: [PATCH] Set various platform package CPE
+
+---
+ .../accounts_password_pam_maxrepeat.rule                    | 2 ++
+ .../accounts-session/accounts_have_homedir_login_defs.rule  | 2 ++
+ .../restrictions/coredumps/disable_users_coredumps.rule     | 2 ++
+ 3 files changed, 6 insertions(+)
+
+diff --git a/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_maxrepeat.rule b/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_maxrepeat.rule
+index d23b1d99d0..925288b4f3 100644
+--- a/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_maxrepeat.rule
++++ b/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_maxrepeat.rule
+@@ -46,3 +46,5 @@ ocil: |-
+     <pre>$ grep maxrepeat /etc/security/pwquality.conf</pre>
+     Look for the value of the <tt>maxrepeat</tt> parameter. The DoD requirement is 3, which would appear as
+     <tt>maxrepeat=3</tt>.
++
++platform: pam
+diff --git a/linux_os/guide/system/accounts/accounts-session/accounts_have_homedir_login_defs.rule b/linux_os/guide/system/accounts/accounts-session/accounts_have_homedir_login_defs.rule
+index 300f409ca3..215565460c 100644
+--- a/linux_os/guide/system/accounts/accounts-session/accounts_have_homedir_login_defs.rule
++++ b/linux_os/guide/system/accounts/accounts-session/accounts_have_homedir_login_defs.rule
+@@ -32,3 +32,5 @@ ocil: |-
+     <br /><br />
+     <pre>$ sudo grep create_home /etc/login.defs</pre>
+     <br /><br />
++
++platform: shadow-utils
+diff --git a/linux_os/guide/system/permissions/restrictions/coredumps/disable_users_coredumps.rule b/linux_os/guide/system/permissions/restrictions/coredumps/disable_users_coredumps.rule
+index 99c2521afa..0e30d0d7ee 100644
+--- a/linux_os/guide/system/permissions/restrictions/coredumps/disable_users_coredumps.rule
++++ b/linux_os/guide/system/permissions/restrictions/coredumps/disable_users_coredumps.rule
+@@ -37,3 +37,5 @@ ocil: |-
+     <pre>$ grep core /etc/security/limits.conf</pre>
+     The output should be:
+     <pre>*     hard   core    0</pre>
++
++platform: pam
