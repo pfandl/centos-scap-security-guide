@@ -55,6 +55,7 @@ Patch39:		scap-security-guide-0.1.44-cpe-pam-systemd-yum.patch
 Patch40:		scap-security-guide-0.1.44-cpe-gdm.patch
 Patch41:		scap-security-guide-0.1.44-cpe-remaining.patch
 Patch42:		scap-security-guide-0.1.44-update-cpe-dictionary.patch
+Patch999:               centos-debranding.patch
 
 BuildArch:	noarch
 
@@ -127,6 +128,7 @@ mkdir build
 %patch40 -p1
 %patch41 -p1
 %patch42 -p1
+%patch999 -p1
 
 %build
 mkdir -p build && cd build
@@ -145,7 +147,7 @@ mkdir -p build && cd build
 -DSSG_PRODUCT_UBUNTU16:BOOL=OFF \
 -DSSG_PRODUCT_WRLINUX:BOOL=OFF \
 -DSSG_PRODUCT_OL7:BOOL=OFF \
--DSSG_CENTOS_DERIVATIVES_ENABLED:BOOL=OFF \
+-DSSG_CENTOS_DERIVATIVES_ENABLED:BOOL=ON \
 -DSSG_SCIENTIFIC_LINUX_DERIVATIVES_ENABLED:BOOL=OFF \
 ../
 make %{?_smp_mflags}
@@ -176,6 +178,9 @@ cd build
 %doc build/guides/ssg-*-guide-*.html
 
 %changelog
+* Tue Apr 23 2019 Johnny Hughes <johnny@centos.org>
+- Manual CentOS Debranding
+
 * Thu Apr 11 2019 Gabriel Becker <ggasparb@redhat.com> - 0.1.40-13
 - Added support to platform tag and mark rules as machine only (RHBZ#1698752)
 - Fix content support for UBI-Minimal (RHBZ#1698751)
