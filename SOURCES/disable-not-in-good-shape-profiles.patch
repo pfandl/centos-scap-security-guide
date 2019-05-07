@@ -1,0 +1,82 @@
+From c6c4eae7d085adb1571e5c45edb4bd982c242f4d Mon Sep 17 00:00:00 2001
+From: Gabriel Becker <ggasparb@redhat.com>
+Date: Mon, 17 Dec 2018 13:30:06 +0100
+Subject: [PATCH] Disable profiles that are not in good shape for RHEL8.
+
+They raise too many errors and fails.
+---
+ rhel8/CMakeLists.txt            | 3 ++-
+ rhel8/profiles/cjis.profile     | 2 +-
+ rhel8/profiles/cui.profile      | 2 +-
+ rhel8/profiles/hipaa.profile    | 2 +-
+ rhel8/profiles/rht-ccp.profile  | 2 +-
+ rhel8/profiles/standard.profile | 2 +-
+ 6 files changed, 7 insertions(+), 6 deletions(-)
+
+diff --git a/rhel8/CMakeLists.txt b/rhel8/CMakeLists.txt
+index 99bccbed7..77f8ccaec 100644
+--- a/rhel8/CMakeLists.txt
++++ b/rhel8/CMakeLists.txt
+@@ -14,7 +14,8 @@ ssg_build_html_table_by_ref(${PRODUCT} "cis")
+ ssg_build_html_table_by_ref(${PRODUCT} "pcidss")
+ ssg_build_html_table_by_ref(${PRODUCT} "anssi")
+ 
+-ssg_build_html_nistrefs_table(${PRODUCT} "standard")
++# Standard profile is disabled for RHEL8 as it is not in good shape
++#ssg_build_html_nistrefs_table(${PRODUCT} "standard")
+ ssg_build_html_nistrefs_table(${PRODUCT} "ospp")
+ 
+ # Uncomment when anssi profiles are marked documentation_complete: true
+diff --git a/rhel8/profiles/cjis.profile b/rhel8/profiles/cjis.profile
+index a7f8c0b16..c460793be 100644
+--- a/rhel8/profiles/cjis.profile
++++ b/rhel8/profiles/cjis.profile
+@@ -1,4 +1,4 @@
+-documentation_complete: true
++documentation_complete: false
+ 
+ title: 'Criminal Justice Information Services (CJIS) Security Policy'
+ 
+diff --git a/rhel8/profiles/cui.profile b/rhel8/profiles/cui.profile
+index eb62252a4..e8f369708 100644
+--- a/rhel8/profiles/cui.profile
++++ b/rhel8/profiles/cui.profile
+@@ -1,4 +1,4 @@
+-documentation_complete: true
++documentation_complete: false
+ 
+ title: 'Unclassified Information in Non-federal Information Systems and Organizations (NIST 800-171)'
+ 
+diff --git a/rhel8/profiles/hipaa.profile b/rhel8/profiles/hipaa.profile
+index feb98007c..0667f65ed 100644
+--- a/rhel8/profiles/hipaa.profile
++++ b/rhel8/profiles/hipaa.profile
+@@ -1,4 +1,4 @@
+-documentation_complete: True
++documentation_complete: false
+ 
+ title: 'Health Insurance Portability and Accountability Act (HIPAA)'
+ 
+diff --git a/rhel8/profiles/rht-ccp.profile b/rhel8/profiles/rht-ccp.profile
+index 023663b21..8b22bc711 100644
+--- a/rhel8/profiles/rht-ccp.profile
++++ b/rhel8/profiles/rht-ccp.profile
+@@ -1,4 +1,4 @@
+-documentation_complete: true
++documentation_complete: false
+ 
+ title: 'Red Hat Corporate Profile for Certified Cloud Providers (RH CCP)'
+ 
+diff --git a/rhel8/profiles/standard.profile b/rhel8/profiles/standard.profile
+index a63ae2cf3..da669bb84 100644
+--- a/rhel8/profiles/standard.profile
++++ b/rhel8/profiles/standard.profile
+@@ -1,4 +1,4 @@
+-documentation_complete: true
++documentation_complete: false
+ 
+ title: 'Standard System Security Profile for Red Hat Enterprise Linux 8'
+ 
+-- 
+2.19.2
+

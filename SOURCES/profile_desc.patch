@@ -1,0 +1,325 @@
+From 8e1b095971e92e7960f606bb43810102c6c77152 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Mat=C4=9Bj=20T=C3=BD=C4=8D?= <matyc@redhat.com>
+Date: Mon, 7 Jan 2019 14:36:06 +0100
+Subject: [PATCH] Reformatted profile descriptions.
+
+Went for the `description: |-` way, so there is no need for quoting
+or for using `\n` to introduce newlines.
+
+This makes descriptions easier to read and edit, and removes some cases when
+literal `\n` made it to the actual description.
+---
+ fedora/profiles/pci-dss.profile           |  4 ++--
+ ol7/profiles/sap.profile                  |  2 +-
+ rhel6/profiles/C2S.profile                | 15 +++++++++-----
+ rhel6/profiles/CSCF-RHEL6-MLS.profile     | 11 ++++++----
+ rhel6/profiles/desktop.profile            |  3 ++-
+ rhel6/profiles/nist-CL-IL-AL.profile      |  7 ++++---
+ rhel6/profiles/server.profile             |  3 +--
+ rhel6/profiles/usgcb-rhel6-server.profile |  3 +--
+ rhel7/profiles/docker-host.profile        | 11 +++++-----
+ rhel7/profiles/nist-800-171-cui.profile   | 25 ++++++++++++++++-------
+ rhel7/profiles/pci-dss.profile            |  4 ++--
+ rhel7/profiles/rht-ccp.profile            |  9 ++++----
+ rhel7/profiles/stig-rhel7-disa.profile    | 24 ++++++++++++----------
+ rhel7/profiles/stig-rhvh-upstream.profile |  7 ++++---
+ rhel8/profiles/pci-dss.profile            |  4 ++--
+ 15 files changed, 78 insertions(+), 54 deletions(-)
+
+diff --git a/fedora/profiles/pci-dss.profile b/fedora/profiles/pci-dss.profile
+index cfa48b6051..5e47534e81 100644
+--- a/fedora/profiles/pci-dss.profile
++++ b/fedora/profiles/pci-dss.profile
+@@ -2,8 +2,8 @@ documentation_complete: true
+ 
+ title: 'PCI-DSS v3 Control Baseline for Fedora'
+ 
+-description: 'Ensures PCI-DSS v3 related security configuration settings \n
+-    \ are applied.'
++description: |-
++    Ensures PCI-DSS v3 related security configuration settings are applied.
+ 
+ selections:
+     - var_password_pam_unix_remember=4
+diff --git a/ol7/profiles/sap.profile b/ol7/profiles/sap.profile
+index f2a017e389..199866b300 100644
+--- a/ol7/profiles/sap.profile
++++ b/ol7/profiles/sap.profile
+@@ -5,7 +5,7 @@ title: 'Security Profile of Oracle Linux 7 for SAP'
+ description: |-
+     This profile contains rules for Oracle Linux 7 Operating System in compliance with SAP note 2069760 and SAP Security Baseline Template version 1.9 Item I-8 and section 4.1.2.2.
+     Regardless of your system's workload all of these checks should pass.
+-    
++
+ selections:
+     - package_glibc_installed
+     - package_uuidd_installed
+diff --git a/rhel6/profiles/C2S.profile b/rhel6/profiles/C2S.profile
+index 3d26cb7b43..f3a3f82590 100644
+--- a/rhel6/profiles/C2S.profile
++++ b/rhel6/profiles/C2S.profile
+@@ -2,11 +2,16 @@ documentation_complete: true
+ 
+ title: 'C2S for Red Hat Enterprise Linux 6'
+ 
+-description: "This profile demonstrates compliance against the \nU.S. Government Commercial Cloud Services (C2S) baseline.\n\
+-    \nThis baseline was inspired by the Center for Internet Security\n(CIS) Red Hat Enterprise Linux 6 Benchmark, v1.2.0 -\
+-    \ 06-25-2013.\nFor the SCAP Security Guide project to remain in compliance with\nCIS' terms and conditions, specifically\
+-    \ Restrictions(8), note \nthere is no representation or claim that the C2S profile will\nensure a system is in compliance\
+-    \ or consistency with the CIS\nbaseline."
++description: |-
++    This profile demonstrates compliance against the
++    U.S. Government Commercial Cloud Services (C2S) baseline.
++    nThis baseline was inspired by the Center for Internet Security
++    (CIS) Red Hat Enterprise Linux 6 Benchmark, v1.2.0 - 06-25-2013.
++    For the SCAP Security Guide project to remain in compliance with
++    CIS' terms and conditions, specifically Restrictions(8), note
++    there is no representation or claim that the C2S profile will
++    ensure a system is in compliance or consistency with the CIS
++    baseline.
+ 
+ selections:
+     - var_selinux_state=enforcing
+diff --git a/rhel6/profiles/CSCF-RHEL6-MLS.profile b/rhel6/profiles/CSCF-RHEL6-MLS.profile
+index dbd3a4ee88..104ebeadca 100644
+--- a/rhel6/profiles/CSCF-RHEL6-MLS.profile
++++ b/rhel6/profiles/CSCF-RHEL6-MLS.profile
+@@ -2,10 +2,13 @@ documentation_complete: true
+ 
+ title: 'CSCF RHEL6 MLS Core Baseline'
+ 
+-description: "This profile reflects the Centralized Super Computing Facility \n(CSCF) baseline for Red Hat Enterprise Linux\
+-    \ 6. This baseline has received \ngovernment ATO through the ICD 503 process, utilizing the CNSSI 1253 cross \ndomain\
+-    \ overlay. This profile should be considered in active development. \nAdditional tailoring will be needed, such as the\
+-    \ creation of RBAC roles \nfor production deployment."
++description: |-
++    This profile reflects the Centralized Super Computing Facility
++    (CSCF) baseline for Red Hat Enterprise Linux 6. This baseline has received
++    government ATO through the ICD 503 process, utilizing the CNSSI 1253 cross
++    domain overlay. This profile should be considered in active development.
++    Additional tailoring will be needed, such as the creation of RBAC roles
++    for production deployment.
+ 
+ selections:
+     - var_auditd_max_log_file_action=keep_logs
+diff --git a/rhel6/profiles/desktop.profile b/rhel6/profiles/desktop.profile
+index 4c24a8e44c..f800f0ffe1 100644
+--- a/rhel6/profiles/desktop.profile
++++ b/rhel6/profiles/desktop.profile
+@@ -2,7 +2,8 @@ documentation_complete: true
+ 
+ title: 'Desktop Baseline'
+ 
+-description: "This profile is for a desktop installation of \nRed Hat Enterprise Linux 6."
++description: |-
++    This profile is for a desktop installation of Red Hat Enterprise Linux 6.
+ 
+ extends: standard
+ 
+diff --git a/rhel6/profiles/nist-CL-IL-AL.profile b/rhel6/profiles/nist-CL-IL-AL.profile
+index 3117952d56..9f8718329b 100644
+--- a/rhel6/profiles/nist-CL-IL-AL.profile
++++ b/rhel6/profiles/nist-CL-IL-AL.profile
+@@ -2,9 +2,10 @@ documentation_complete: true
+ 
+ title: "CNSSI 1253 Low/Low/Low Control Baseline"
+ 
+-description: "This profile follows the Committee on National \nSecurity Systems Instruction (CNSSI) No. 1253, \"Security Categorization\
+-    \ and \nControl Selection for National Security Systems\" on security controls to meet\nlow confidentiality, low integrity,\
+-    \ and low assurance.\""
++description: |-
++    This profile follows the Committee on National Security Systems Instruction (CNSSI) No. 1253, 
++    "Security Categorization and Control Selection for National Security Systems" 
++    on security controls to meet low confidentiality, low integrity, and low assurance.
+ 
+ extends: standard
+ 
+diff --git a/rhel6/profiles/server.profile b/rhel6/profiles/server.profile
+index bd38be4751..833a12f2e4 100644
+--- a/rhel6/profiles/server.profile
++++ b/rhel6/profiles/server.profile
+@@ -3,8 +3,7 @@ documentation_complete: true
+ title: 'Server Baseline'
+ 
+ description: |-
+-    This profile is for Red Hat Enterprise Linux 6
+-    acting as a server.
++    This profile is for Red Hat Enterprise Linux 6 acting as a server.
+ 
+ extends: standard
+ 
+diff --git a/rhel6/profiles/usgcb-rhel6-server.profile b/rhel6/profiles/usgcb-rhel6-server.profile
+index 5de5ece862..893de33b17 100644
+--- a/rhel6/profiles/usgcb-rhel6-server.profile
++++ b/rhel6/profiles/usgcb-rhel6-server.profile
+@@ -3,8 +3,7 @@ documentation_complete: true
+ title: 'United States Government Configuration Baseline (USGCB)'
+ 
+ description: |-
+-    This profile is a working draft for a USGCB submission against
+-    RHEL6 Server.
++    This profile is a working draft for a USGCB submission against RHEL6 Server.
+ 
+ selections:
+     - kernel_disable_entropy_contribution_for_solid_state_drives
+diff --git a/rhel7/profiles/docker-host.profile b/rhel7/profiles/docker-host.profile
+index b4de74743e..98fd5ecb51 100644
+--- a/rhel7/profiles/docker-host.profile
++++ b/rhel7/profiles/docker-host.profile
+@@ -2,11 +2,12 @@ documentation_complete: false
+ 
+ title: 'DRAFT - Standard Docker Host Security Profile'
+ 
+-description: "This profile contains rules to ensure standard security \n
+-    \ baseline of Red Hat Enterprise Linux 7 system running the docker \n
+-    \ \n
+-    \ This discussion is currently being held on open-scap-list@redhat.com \n
+-    \ and scap-security-guide@lists.fedorahosted.org."
++description: |-
++    This profile contains rules to ensure standard security
++    baseline of Red Hat Enterprise Linux 7 system running the docker
++
++    This discussion is currently being held on open-scap-list@redhat.com
++    and scap-security-guide@lists.fedorahosted.org.
+ 
+ selections:
+     - service_docker_enabled
+diff --git a/rhel7/profiles/nist-800-171-cui.profile b/rhel7/profiles/nist-800-171-cui.profile
+index 279d061bc9..966c2a2a75 100644
+--- a/rhel7/profiles/nist-800-171-cui.profile
++++ b/rhel7/profiles/nist-800-171-cui.profile
+@@ -2,13 +2,24 @@ documentation_complete: true
+ 
+ title: 'Unclassified Information in Non-federal Information Systems and Organizations (NIST 800-171)'
+ 
+-description: "From NIST 800-171, Section 2.2:\nSecurity requirements for protecting the confidentiality of CUI in nonfederal\
+-    \ \ninformation systems and organizations have a well-defined structure that \nconsists of:\n\n(i) a basic security requirements\
+-    \ section;\n(ii) a derived security requirements section.\n\nThe basic security requirements are obtained from FIPS Publication\
+-    \ 200, which\nprovides the high-level and fundamental security requirements for federal\ninformation and information systems.\
+-    \ The derived security requirements, which\nsupplement the basic security requirements, are taken from the security controls\n\
+-    in NIST Special Publication 800-53.\n\nThis profile configures Red Hat Enterprise Linux 7 to the NIST Special\nPublication\
+-    \ 800-53 controls identified for securing Controlled Unclassified\nInformation (CUI)."
++description: |-
++    From NIST 800-171, Section 2.2:
++    Security requirements for protecting the confidentiality of CUI in nonfederal
++    information systems and organizations have a well-defined structure that
++    consists of:
++
++    (i) a basic security requirements section;
++    (ii) a derived security requirements section.
++
++    The basic security requirements are obtained from FIPS Publication 200, which
++    provides the high-level and fundamental security requirements for federal
++    information and information systems. The derived security requirements, which
++    supplement the basic security requirements, are taken from the security controls
++    in NIST Special Publication 800-53.
++
++    This profile configures Red Hat Enterprise Linux 7 to the NIST Special
++    Publication 800-53 controls identified for securing Controlled Unclassified
++    Information (CUI).
+ 
+ extends: ospp
+ 
+diff --git a/rhel7/profiles/pci-dss.profile b/rhel7/profiles/pci-dss.profile
+index dca99e79d6..13cc6ac0d6 100644
+--- a/rhel7/profiles/pci-dss.profile
++++ b/rhel7/profiles/pci-dss.profile
+@@ -2,8 +2,8 @@ documentation_complete: true
+ 
+ title: 'PCI-DSS v3 Control Baseline for Red Hat Enterprise Linux 7'
+ 
+-description: 'Ensures PCI-DSS v3 related security configuration settings \n
+-    \ are applied.'
++description: |-
++    Ensures PCI-DSS v3 related security configuration settings are applied.
+ 
+ selections:
+     - var_password_pam_unix_remember=4
+diff --git a/rhel7/profiles/rht-ccp.profile b/rhel7/profiles/rht-ccp.profile
+index eb4d854807..0b44b55078 100644
+--- a/rhel7/profiles/rht-ccp.profile
++++ b/rhel7/profiles/rht-ccp.profile
+@@ -2,10 +2,11 @@ documentation_complete: true
+ 
+ title: 'Red Hat Corporate Profile for Certified Cloud Providers (RH CCP)'
+ 
+-description: 'This profile contains the minimum security relevant \n
+-    \ configuration settings recommended by Red Hat, Inc for \n
+-    \ Red Hat Enterprise Linux 7 instances deployed by Red Hat Certified \n
+-    \ Cloud Providers.'
++description: |-
++    This profile contains the minimum security relevant
++    configuration settings recommended by Red Hat, Inc for
++    Red Hat Enterprise Linux 7 instances deployed by Red Hat Certified
++    Cloud Providers.
+ 
+ selections:
+     - var_selinux_state=enforcing
+diff --git a/rhel7/profiles/stig-rhel7-disa.profile b/rhel7/profiles/stig-rhel7-disa.profile
+index 7200e9dc8a..f751bc0857 100644
+--- a/rhel7/profiles/stig-rhel7-disa.profile
++++ b/rhel7/profiles/stig-rhel7-disa.profile
+@@ -2,17 +2,19 @@ documentation_complete: true
+ 
+ title: 'DISA STIG for Red Hat Enterprise Linux 7'
+ 
+-description: "This profile contains configuration checks that align to the \n
+-    \ DISA STIG for Red Hat Enterprise Linux V1R4. \n
+-    \ \n
+-    \ In addition to being applicable to RHEL7, DISA recognizes this \n
+-    \ configuration baseline as applicable to the operating system tier of \n
+-    \ Red Hat technologies that are based off RHEL7, such as: \n
+-    \ - Red Hat Enterprise Linux Server \n
+-    \ - Red Hat Enterprise Linux Workstation and Desktop \n
+-    \ - Red Hat Virtualization Hypervisor (RHV-H) \n
+-    \ - Red Hat Enterprise Linux for HPC \n
+-    \ - Red Hat Storage"
++description: |-
++    This profile contains configuration checks that align to the \
++    DISA STIG for Red Hat Enterprise Linux V1R4.
++
++    In addition to being applicable to RHEL7, DISA recognizes this \
++    configuration baseline as applicable to the operating system tier of \
++    Red Hat technologies that are based off RHEL7, such as:
++
++    - Red Hat Enterprise Linux Server
++    - Red Hat Enterprise Linux Workstation and Desktop
++    - Red Hat Virtualization Hypervisor (RHV-H)
++    - Red Hat Enterprise Linux for HPC
++    - Red Hat Storage
+ 
+ selections:
+     - login_banner_text=dod_banners
+diff --git a/rhel7/profiles/stig-rhvh-upstream.profile b/rhel7/profiles/stig-rhvh-upstream.profile
+index 63180472c6..f764db6a6c 100644
+--- a/rhel7/profiles/stig-rhvh-upstream.profile
++++ b/rhel7/profiles/stig-rhvh-upstream.profile
+@@ -2,9 +2,10 @@ documentation_complete: false
+ 
+ title: 'DRAFT - STIG for Red Hat Virtualization Hypervisor'
+ 
+-description: "This is a *draft* profile for STIG. This profile is being \n
+-    \ developed under the DISA Vendor STIG model in coordination with \n
+-    \ DISA FSO."
++description: |-
++    This is a *draft* profile for STIG. This profile is being
++    developed under the DISA Vendor STIG model in coordination with
++    DISA FSO.
+ 
+ extends: stig-rhel7-disa
+ 
+diff --git a/rhel8/profiles/pci-dss.profile b/rhel8/profiles/pci-dss.profile
+index ec901d84cb..a81849ac41 100644
+--- a/rhel8/profiles/pci-dss.profile
++++ b/rhel8/profiles/pci-dss.profile
+@@ -2,8 +2,8 @@ documentation_complete: true
+ 
+ title: 'PCI-DSS v3 Control Baseline for Red Hat Enterprise Linux 8'
+ 
+-description: 'Ensures PCI-DSS v3 related security configuration settings \n
+-    \ are applied.'
++description: |-
++    Ensures PCI-DSS v3 related security configuration settings are applied.
+ 
+ selections:
+     - var_password_pam_unix_remember=4

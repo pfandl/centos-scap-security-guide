@@ -1,0 +1,30 @@
+From 95691c05ef43c7fe487b116d024d497fa9b91a95 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Jan=20=C4=8Cern=C3=BD?= <jcerny@redhat.com>
+Date: Wed, 2 Jan 2019 13:58:50 +0100
+Subject: [PATCH] Fix extended definition reference in enable_fips_mode OVAL
+
+There is a problem that the rule `enable_fips_mode` introduced in
+https://github.com/ComplianceAsCode/content/pull/3623 depends on
+`installed_OS_is_certified`. However, that rule which was removed by the
+https://github.com/ComplianceAsCode/content/pull/3643, which was
+unfortunately merged before updating the rule `enable_fips_mode`
+accordingly. As a result, the rule `enable_fips_mode` in the built
+datastream doesn't contain OVAL.
+---
+ .../software/integrity/fips/enable_fips_mode/oval/shared.xml    | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/linux_os/guide/system/software/integrity/fips/enable_fips_mode/oval/shared.xml b/linux_os/guide/system/software/integrity/fips/enable_fips_mode/oval/shared.xml
+index 2c1e52c831..a56f6812b4 100644
+--- a/linux_os/guide/system/software/integrity/fips/enable_fips_mode/oval/shared.xml
++++ b/linux_os/guide/system/software/integrity/fips/enable_fips_mode/oval/shared.xml
+@@ -13,7 +13,7 @@
+       <extend_definition comment="check sysctl crypto.fips_enabled = 1" definition_ref="sysctl_crypto_fips_enabled" />
+       <extend_definition comment="Dracut FIPS module is enabled" definition_ref="enable_dracut_fips_module" />
+       <extend_definition comment="system cryptography policy is configured" definition_ref="configure_crypto_policy" />
+-      <extend_definition comment="Installed OS is certified" definition_ref="installed_OS_is_certified" />
++      <extend_definition comment="Installed OS is FIPS certified" definition_ref="installed_OS_is_FIPS_certified" />
+       <criterion comment="check if system crypto policy selection in var_system_crypto_policy in the profile is set to FIPS" test_ref="test_system_crypto_policy_value" />
+     </criteria>
+   </definition>
+

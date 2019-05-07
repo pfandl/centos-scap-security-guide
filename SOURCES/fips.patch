@@ -1,0 +1,705 @@
+From 17844ccdf81a07244881949b7269adaef0328d16 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Jan=20=C4=8Cern=C3=BD?= <jcerny@redhat.com>
+Date: Mon, 26 Nov 2018 14:17:10 +0100
+Subject: [PATCH 1/7] New rule to enable FIPS mode on RHEL8 and Fedora
+
+On RHEL8, a different method is used to enable FIPS mode than on
+RHEL6/7.  Package `dracut-fips` doesn't exist anymore, GRUB config file
+doesn't need to be edited. Instead, a new utility `fips-mode-setup`
+should be used to setup and configure FIPS mode. To verify that FIPS
+mode is enabled, the following 2 conditions have to be fulfilled:
+  1. /etc/system-fips exists
+  2. /proc/sys/crypto/fips_enabled is set to 1
+We can also check if the Dracut FIPS module is configured to be loaded.
+In FIPS mode, the system-wide crypto policy is configured to to FIPS.
+The same facts apply also for Fedora 29.
+This commit adds a new rule `enable_fips_mode` for RHEL8 and Fedora,
+which replaces the old rule `grub2_enable_fips_mode` in RHEL8 and Fedora
+OSPP profiles. The platform in `grub2_enable_fips_mode` and dependent
+rule `package_dracut-fips_installed` in changed to exclude RHEL8 and
+Fedora. Currently it fails on both RHEL8 and Fedora because it depends
+on rule `installed_OS_is_certified` which allows only RHEL6 and RHEL7.
+---
+ fedora/profiles/ospp.profile                  |  3 +-
+ .../enable_dracut_fips_module/oval/shared.xml | 32 +++++++++++++++
+ .../fips/enable_dracut_fips_module/rule.yml   | 26 +++++++++++++
+ .../fips/enable_fips_mode/bash/shared.sh      |  3 ++
+ .../fips/enable_fips_mode/oval/shared.xml     | 19 +++++++++
+ .../integrity/fips/enable_fips_mode/rule.yml  | 39 +++++++++++++++++++
+ .../etc_system_fips_exists/oval/shared.xml    | 23 +++++++++++
+ .../fips/etc_system_fips_exists/rule.yml      | 28 +++++++++++++
+ .../anaconda/shared.anaconda                  |  2 +-
+ .../grub2_enable_fips_mode/bash/shared.sh     |  2 +-
+ .../grub2_enable_fips_mode/oval/shared.xml    |  2 -
+ .../fips/grub2_enable_fips_mode/rule.yml      |  2 +-
+ .../anaconda/shared.anaconda                  |  2 +-
+ .../ansible/shared.yml                        |  2 +-
+ .../bash/shared.sh                            |  2 +-
+ .../oval/shared.xml                           |  4 +-
+ .../package_dracut-fips_installed/rule.yml    |  2 +-
+ .../oval/shared.xml                           | 28 +++++++++++++
+ .../fips/sysctl_crypto_fips_enabled/rule.yml  | 30 ++++++++++++++
+ rhel8/profiles/ospp.profile                   |  2 +-
+ 20 files changed, 240 insertions(+), 13 deletions(-)
+ create mode 100644 linux_os/guide/system/software/integrity/fips/enable_dracut_fips_module/oval/shared.xml
+ create mode 100644 linux_os/guide/system/software/integrity/fips/enable_dracut_fips_module/rule.yml
+ create mode 100644 linux_os/guide/system/software/integrity/fips/enable_fips_mode/bash/shared.sh
+ create mode 100644 linux_os/guide/system/software/integrity/fips/enable_fips_mode/oval/shared.xml
+ create mode 100644 linux_os/guide/system/software/integrity/fips/enable_fips_mode/rule.yml
+ create mode 100644 linux_os/guide/system/software/integrity/fips/etc_system_fips_exists/oval/shared.xml
+ create mode 100644 linux_os/guide/system/software/integrity/fips/etc_system_fips_exists/rule.yml
+ create mode 100644 linux_os/guide/system/software/integrity/fips/sysctl_crypto_fips_enabled/oval/shared.xml
+ create mode 100644 linux_os/guide/system/software/integrity/fips/sysctl_crypto_fips_enabled/rule.yml
+
+diff --git a/fedora/profiles/ospp.profile b/fedora/profiles/ospp.profile
+index c115ab6bce..0eb3b8ec63 100644
+--- a/fedora/profiles/ospp.profile
++++ b/fedora/profiles/ospp.profile
+@@ -17,7 +17,8 @@ selections:
+     - grub2_audit_argument
+     - grub2_audit_backlog_limit_argument
+     - service_auditd_enabled
+-    - grub2_enable_fips_mode
++    - enable_fips_mode
++    - var_system_crypto_policy=fips
+     - rpm_verify_hashes
+     - selinux_all_devicefiles_labeled
+     - selinux_confinement_of_daemons
+diff --git a/linux_os/guide/system/software/integrity/fips/enable_dracut_fips_module/oval/shared.xml b/linux_os/guide/system/software/integrity/fips/enable_dracut_fips_module/oval/shared.xml
+new file mode 100644
+index 0000000000..03ff256da2
+--- /dev/null
++++ b/linux_os/guide/system/software/integrity/fips/enable_dracut_fips_module/oval/shared.xml
+@@ -0,0 +1,32 @@
++<def-group>
++  <definition class="compliance" id="enable_dracut_fips_module" version="1">
++    <metadata>
++      <title>Enable Dracut FIPS Module</title>
++      <affected family="unix">
++        <platform>Red Hat Enterprise Linux 8</platform>
++        <platform>multi_platform_fedora</platform>
++      </affected>
++      <description>fips module should be enabled in Dracut configuration</description>
++    </metadata>
++    <criteria operator="AND">
++      <criterion comment="dracut fips module is enabled" test_ref="test_enable_dracut_fips_module" />
++    </criteria>
++  </definition>
++
++  <ind:textfilecontent54_test check="all" check_existence="all_exist"
++  comment="add_dracutmodules contains fips" id="test_enable_dracut_fips_module" version="1">
++    <ind:object object_ref="object_enable_dracut_fips_module" />
++    <ind:state state_ref="state_enable_dracut_fips_module" />
++  </ind:textfilecontent54_test>
++
++  <ind:textfilecontent54_object id="object_enable_dracut_fips_module" version="1">
++    <ind:filepath>/etc/dracut.conf.d/40-fips.conf</ind:filepath>
++    <ind:pattern operation="pattern match">^\s*add_dracutmodules\+="\s*(\w*)\s*"\s*(?:|(?:#.*))?$</ind:pattern>
++    <ind:instance datatype="int">1</ind:instance>
++  </ind:textfilecontent54_object>
++
++  <ind:textfilecontent54_state id="state_enable_dracut_fips_module" version="1">
++    <ind:subexpression datatype="string" operation="equals">fips</ind:subexpression>
++  </ind:textfilecontent54_state>
++
++</def-group>
+diff --git a/linux_os/guide/system/software/integrity/fips/enable_dracut_fips_module/rule.yml b/linux_os/guide/system/software/integrity/fips/enable_dracut_fips_module/rule.yml
+new file mode 100644
+index 0000000000..3de551d2ca
+--- /dev/null
++++ b/linux_os/guide/system/software/integrity/fips/enable_dracut_fips_module/rule.yml
+@@ -0,0 +1,26 @@
++documentation_complete: true
++
++prodtype: rhel8,fedora
++
++title: "Enable Dracut FIPS Module"
++
++description: |-
++    To enable FIPS, the system requires that the <tt>fips</tt> module is added in
++    <tt>dracut</tt> configuration.
++    Check if <tt>/etc/dracut.conf.d/40-fips.conf</tt> contain <tt>add_dracutmodules+=" fips "</tt>
++
++rationale: |-
++    Use of weak or untested encryption algorithms undermines the purposes of utilizing encryption to
++    protect data. The operating system must implement cryptographic modules adhering to the higher
++    standards approved by the federal government since this provides assurance they have been tested
++    and validated.
++
++severity: medium
++
++ocil_clause: 'the Dracut FIPS module is not enabled'
++
++ocil: |-
++    To verify that the Dracut FIPS module is enabled, run the following command:
++    <tt>grep "add_dracutmodules" /etc/dracut.conf.d/40-fips.conf</tt>
++    The output should look like this:
++    <tt>add_dracutmodules+=" fips "</tt>
+diff --git a/linux_os/guide/system/software/integrity/fips/enable_fips_mode/bash/shared.sh b/linux_os/guide/system/software/integrity/fips/enable_fips_mode/bash/shared.sh
+new file mode 100644
+index 0000000000..b2138a5e1e
+--- /dev/null
++++ b/linux_os/guide/system/software/integrity/fips/enable_fips_mode/bash/shared.sh
+@@ -0,0 +1,3 @@
++# platform = Red Hat Enterprise Linux 8, multi_platform_fedora
++
++fips-mode-setup --enable
+diff --git a/linux_os/guide/system/software/integrity/fips/enable_fips_mode/oval/shared.xml b/linux_os/guide/system/software/integrity/fips/enable_fips_mode/oval/shared.xml
+new file mode 100644
+index 0000000000..9e6e9b5608
+--- /dev/null
++++ b/linux_os/guide/system/software/integrity/fips/enable_fips_mode/oval/shared.xml
+@@ -0,0 +1,19 @@
++<def-group oval_version="5.10">
++  <definition class="compliance" id="enable_fips_mode" version="1">
++    <metadata>
++      <title>Enable FIPS Mode</title>
++      <affected family="unix">
++        <platform>Red Hat Enterprise Linux 8</platform>
++        <platform>multi_platform_fedora</platform>
++      </affected>
++      <description>Check if FIPS mode is enabled on the system</description>
++    </metadata>
++    <criteria operator="AND">
++      <extend_definition comment="check /etc/system-fips exists" definition_ref="etc_system_fips_exists" />
++      <extend_definition comment="check sysctl crypto.fips_enabled = 1" definition_ref="sysctl_crypto_fips_enabled" />
++      <extend_definition comment="Dracut FIPS module is enabled" definition_ref="enable_dracut_fips_module" />
++      <extend_definition comment="system cryptography policy is configured" definition_ref="configure_crypto_policy" />
++      <extend_definition comment="Installed OS is certified" definition_ref="installed_OS_is_certified" />
++    </criteria>
++  </definition>
++</def-group>
+diff --git a/linux_os/guide/system/software/integrity/fips/enable_fips_mode/rule.yml b/linux_os/guide/system/software/integrity/fips/enable_fips_mode/rule.yml
+new file mode 100644
+index 0000000000..b7fda5bee1
+--- /dev/null
++++ b/linux_os/guide/system/software/integrity/fips/enable_fips_mode/rule.yml
+@@ -0,0 +1,39 @@
++documentation_complete: true
++
++prodtype: rhel8,fedora
++
++title: Enable FIPS Mode
++
++description: |-
++    To enable FIPS mode, run the following command:
++    <pre>fips-mode-setup --enable</pre>
++
++rationale: |-
++    Use of weak or untested encryption algorithms undermines the purposes of utilizing encryption to
++    protect data. The operating system must implement cryptographic modules adhering to the higher
++    standards approved by the federal government since this provides assurance they have been tested
++    and validated.
++
++severity: high
++
++ocil_clause: 'FIPS mode is not enabled'
++
++ocil: |-
++    To verify that FIPS is enabled properly, run the following command:
++    <pre>fips-mode-setup --check</pre>
++    The output should contain the following:
++    <pre>FIPS mode is enabled.</pre>
++
++warnings:
++    - general: |-
++        The system needs to be rebooted for these changes to take effect.
++    - regulatory: |-
++        The ability to enable FIPS does not denote FIPS compliancy or certification.
++        Red Hat, Inc. and Red Hat Enterprise Linux are respectively FIPS certified and compliant. Community
++        projects such as CentOS, Scientific Linux, Fedora, etc. do not necessarily meet FIPS certification and compliancy.
++        Therefore, non-certified vendors and/or projects do not meet this requirement even if technically feasible.
++        <br /><br />
++        See <b>{{{ weblink(link="http://csrc.nist.gov/groups/STM/cmvp/documents/140-1/1401vend.htm") }}}</b>
++        for a list of FIPS certified vendors.
++
++platform: machine
+diff --git a/linux_os/guide/system/software/integrity/fips/etc_system_fips_exists/oval/shared.xml b/linux_os/guide/system/software/integrity/fips/etc_system_fips_exists/oval/shared.xml
+new file mode 100644
+index 0000000000..8e0360543d
+--- /dev/null
++++ b/linux_os/guide/system/software/integrity/fips/etc_system_fips_exists/oval/shared.xml
+@@ -0,0 +1,23 @@
++<def-group oval_version="5.10">
++  <definition class="compliance" id="etc_system_fips_exists" version="1">
++    <metadata>
++      <title>Check /etc/system-fips exists</title>
++      <affected family="unix">
++        <platform>Red Hat Enterprise Linux 8</platform>
++        <platform>multi_platform_fedora</platform>
++      </affected>
++      <description>Check /etc/system-fips exists</description>
++    </metadata>
++    <criteria operator="AND">
++      <criterion test_ref="test_etc_system_fips" comment="/etc/system-fips exists" />
++    </criteria>
++  </definition>
++
++  <unix:file_test version="1" id="test_etc_system_fips" check="all" check_existence="all_exist" comment="/etc/system-fips exists">
++      <unix:object object_ref="object_etc_system_fips" />
++  </unix:file_test>
++
++  <unix:file_object version="1" id="object_etc_system_fips">
++      <unix:filepath>/etc/system-fips</unix:filepath>
++  </unix:file_object>
++</def-group>
+diff --git a/linux_os/guide/system/software/integrity/fips/etc_system_fips_exists/rule.yml b/linux_os/guide/system/software/integrity/fips/etc_system_fips_exists/rule.yml
+new file mode 100644
+index 0000000000..0f48cbf274
+--- /dev/null
++++ b/linux_os/guide/system/software/integrity/fips/etc_system_fips_exists/rule.yml
+@@ -0,0 +1,28 @@
++documentation_complete: true
++
++prodtype: rhel8,fedora
++
++title: Ensure '/etc/system-fips' exists
++
++description: |-
++    On a system where FIPS mode is enabled, <tt>/etc/system-fips</tt> must exist.
++    To enable FIPS mode, run the following command:
++    <pre>fips-mode-setup --enable</pre>
++
++rationale: |-
++    Use of weak or untested encryption algorithms undermines the purposes of utilizing encryption to
++    protect data. The operating system must implement cryptographic modules adhering to the higher
++    standards approved by the federal government since this provides assurance they have been tested
++    and validated.
++
++severity: high
++
++ocil_clause: /etc/system-fips does not exist
++
++ocil: |-
++    To verify <tt>/etc/system-fips</tt> exists, run the following command:
++    <pre>ls -l /etc/system-fips</pre>
++    The output should be similar to the the following:
++    <pre>-rw-r--r--. 1 root root 36 Nov 26 11:31 /etc/system-fips</pre>
++
++platform: machine
+diff --git a/linux_os/guide/system/software/integrity/fips/grub2_enable_fips_mode/anaconda/shared.anaconda b/linux_os/guide/system/software/integrity/fips/grub2_enable_fips_mode/anaconda/shared.anaconda
+index 089f104181..99693f62d6 100644
+--- a/linux_os/guide/system/software/integrity/fips/grub2_enable_fips_mode/anaconda/shared.anaconda
++++ b/linux_os/guide/system/software/integrity/fips/grub2_enable_fips_mode/anaconda/shared.anaconda
+@@ -1,3 +1,3 @@
+-# platform = Red Hat Enterprise Linux 7,Red Hat Enterprise Linux 8,multi_platform_fedora
++# platform = Red Hat Enterprise Linux 7
+ 
+ package --add=dracut-fips
+diff --git a/linux_os/guide/system/software/integrity/fips/grub2_enable_fips_mode/bash/shared.sh b/linux_os/guide/system/software/integrity/fips/grub2_enable_fips_mode/bash/shared.sh
+index 097b64080d..b784f9f658 100644
+--- a/linux_os/guide/system/software/integrity/fips/grub2_enable_fips_mode/bash/shared.sh
++++ b/linux_os/guide/system/software/integrity/fips/grub2_enable_fips_mode/bash/shared.sh
+@@ -1,4 +1,4 @@
+-# platform = Red Hat Enterprise Linux 7,Red Hat Enterprise Linux 8,multi_platform_fedora
++# platform = Red Hat Enterprise Linux 7
+ 
+ # include remediation functions library
+ . /usr/share/scap-security-guide/remediation_functions
+diff --git a/linux_os/guide/system/software/integrity/fips/grub2_enable_fips_mode/oval/shared.xml b/linux_os/guide/system/software/integrity/fips/grub2_enable_fips_mode/oval/shared.xml
+index b8f84e32d3..9dee4066d2 100644
+--- a/linux_os/guide/system/software/integrity/fips/grub2_enable_fips_mode/oval/shared.xml
++++ b/linux_os/guide/system/software/integrity/fips/grub2_enable_fips_mode/oval/shared.xml
+@@ -4,8 +4,6 @@
+       <title>Enable FIPS Mode in GRUB2</title>
+       <affected family="unix">
+         <platform>Red Hat Enterprise Linux 7</platform>
+-        <platform>Red Hat Enterprise Linux 8</platform>
+-        <platform>multi_platform_fedora</platform>
+       </affected>
+       <description>Look for argument fips=1 in the kernel line in /etc/default/grub.</description>
+     </metadata>
+diff --git a/linux_os/guide/system/software/integrity/fips/grub2_enable_fips_mode/rule.yml b/linux_os/guide/system/software/integrity/fips/grub2_enable_fips_mode/rule.yml
+index c8c11f8a5e..82c3dc5f68 100644
+--- a/linux_os/guide/system/software/integrity/fips/grub2_enable_fips_mode/rule.yml
++++ b/linux_os/guide/system/software/integrity/fips/grub2_enable_fips_mode/rule.yml
+@@ -1,6 +1,6 @@
+ documentation_complete: true
+ 
+-prodtype: rhel7,rhel8,fedora
++prodtype: rhel7
+ 
+ title: 'Enable FIPS Mode in GRUB2'
+ 
+diff --git a/linux_os/guide/system/software/integrity/fips/package_dracut-fips_installed/anaconda/shared.anaconda b/linux_os/guide/system/software/integrity/fips/package_dracut-fips_installed/anaconda/shared.anaconda
+index 38b5193e8e..e2ad6654f6 100644
+--- a/linux_os/guide/system/software/integrity/fips/package_dracut-fips_installed/anaconda/shared.anaconda
++++ b/linux_os/guide/system/software/integrity/fips/package_dracut-fips_installed/anaconda/shared.anaconda
+@@ -1,3 +1,3 @@
+-# platform = multi_platform_rhel, multi_platform_fedora
++# platform = Red Hat Enterprise Linux 6, Red Hat Enterprise Linux 7
+ 
+ package --add=dracut-fips
+diff --git a/linux_os/guide/system/software/integrity/fips/package_dracut-fips_installed/ansible/shared.yml b/linux_os/guide/system/software/integrity/fips/package_dracut-fips_installed/ansible/shared.yml
+index a3dadd7af0..13a1f0b372 100644
+--- a/linux_os/guide/system/software/integrity/fips/package_dracut-fips_installed/ansible/shared.yml
++++ b/linux_os/guide/system/software/integrity/fips/package_dracut-fips_installed/ansible/shared.yml
+@@ -1,4 +1,4 @@
+-# platform = multi_platform_rhel, multi_platform_fedora
++# platform = Red Hat Enterprise Linux 6, Red Hat Enterprise Linux 7
+ # reboot = false
+ # strategy = enable
+ # complexity = low
+diff --git a/linux_os/guide/system/software/integrity/fips/package_dracut-fips_installed/bash/shared.sh b/linux_os/guide/system/software/integrity/fips/package_dracut-fips_installed/bash/shared.sh
+index fd319418d9..36ecb73c25 100644
+--- a/linux_os/guide/system/software/integrity/fips/package_dracut-fips_installed/bash/shared.sh
++++ b/linux_os/guide/system/software/integrity/fips/package_dracut-fips_installed/bash/shared.sh
+@@ -1,4 +1,4 @@
+-# platform = multi_platform_rhel, multi_platform_fedora
++# platform = Red Hat Enterprise Linux 6, Red Hat Enterprise Linux 7
+ 
+ # include remediation functions library
+ . /usr/share/scap-security-guide/remediation_functions
+diff --git a/linux_os/guide/system/software/integrity/fips/package_dracut-fips_installed/oval/shared.xml b/linux_os/guide/system/software/integrity/fips/package_dracut-fips_installed/oval/shared.xml
+index 1483429a6a..4d3de0bc3e 100644
+--- a/linux_os/guide/system/software/integrity/fips/package_dracut-fips_installed/oval/shared.xml
++++ b/linux_os/guide/system/software/integrity/fips/package_dracut-fips_installed/oval/shared.xml
+@@ -8,8 +8,8 @@
+     <metadata>
+       <title>Package dracut-fips Installed</title>
+       <affected family="unix">
+-        <platform>multi_platform_rhel</platform>
+-        <platform>multi_platform_fedora</platform>
++        <platform>Red Hat Enterprise Linux 6</platform>
++        <platform>Red Hat Enterprise Linux 7</platform>
+       </affected>
+       <description>The RPM package dracut-fips should be installed.</description>
+     </metadata>
+diff --git a/linux_os/guide/system/software/integrity/fips/package_dracut-fips_installed/rule.yml b/linux_os/guide/system/software/integrity/fips/package_dracut-fips_installed/rule.yml
+index 5065cca35b..c7cd8552b0 100644
+--- a/linux_os/guide/system/software/integrity/fips/package_dracut-fips_installed/rule.yml
++++ b/linux_os/guide/system/software/integrity/fips/package_dracut-fips_installed/rule.yml
+@@ -1,6 +1,6 @@
+ documentation_complete: true
+ 
+-prodtype: rhel6,rhel7,rhel8,fedora
++prodtype: rhel6,rhel7
+ 
+ title: 'Install the dracut-fips Package'
+ 
+diff --git a/linux_os/guide/system/software/integrity/fips/sysctl_crypto_fips_enabled/oval/shared.xml b/linux_os/guide/system/software/integrity/fips/sysctl_crypto_fips_enabled/oval/shared.xml
+new file mode 100644
+index 0000000000..1b34965949
+--- /dev/null
++++ b/linux_os/guide/system/software/integrity/fips/sysctl_crypto_fips_enabled/oval/shared.xml
+@@ -0,0 +1,28 @@
++<def-group>
++  <definition class="compliance" id="sysctl_crypto_fips_enabled" version="1">
++    <metadata>
++      <title>Kernel "crypto.fips_enabled" Parameter Runtime Check</title>
++      <affected family="unix">
++        <platform>multi_platform_fedora</platform>
++        <platform>Red Hat Enterprise Linux 8</platform>
++      </affected>
++      <description>The kernel "crypto.fips_enabled" parameter should be set to "1" in system runtime.</description>
++    </metadata>
++    <criteria operator="AND">
++      <criterion comment="kernel runtime parameter crypto.fips_enabled set to 1" test_ref="test_sysctl_crypto_fips_enabled" />
++    </criteria>
++  </definition>
++
++  <unix:sysctl_test check="all" check_existence="all_exist" comment="kernel runtime parameter crypto.fips_enabled set to 1" id="test_sysctl_crypto_fips_enabled" version="1">
++    <unix:object object_ref="object_sysctl_crypto_fips_enabled" />
++    <unix:state state_ref="state_sysctl_crypto_fips_enabled" />
++  </unix:sysctl_test>
++
++  <unix:sysctl_object id="object_sysctl_crypto_fips_enabled" version="1">
++    <unix:name>crypto.fips_enabled</unix:name>
++  </unix:sysctl_object>
++
++  <unix:sysctl_state id="state_sysctl_crypto_fips_enabled" version="1">
++    <unix:value datatype="int" operation="equals">1</unix:value>
++  </unix:sysctl_state>
++</def-group>
+diff --git a/linux_os/guide/system/software/integrity/fips/sysctl_crypto_fips_enabled/rule.yml b/linux_os/guide/system/software/integrity/fips/sysctl_crypto_fips_enabled/rule.yml
+new file mode 100644
+index 0000000000..a8e9c0d36e
+--- /dev/null
++++ b/linux_os/guide/system/software/integrity/fips/sysctl_crypto_fips_enabled/rule.yml
+@@ -0,0 +1,30 @@
++documentation_complete: true
++
++prodtype: rhel8,fedora
++
++title: "Set kernel parameter 'crypto.fips_enabled' to 1"
++
++description: |-
++    System running in FIPS mode is indicated by kernel parameter
++    <tt>'crypto.fips_enabled'</tt>. This parameter should be set to <tt>1</tt>
++    in FIPS mode.
++    To enable FIPS mode, run the following command:
++    <pre>fips-mode-setup --enable</pre>
++
++rationale: |-
++    Use of weak or untested encryption algorithms undermines the purposes of utilizing encryption to
++    protect data. The operating system must implement cryptographic modules adhering to the higher
++    standards approved by the federal government since this provides assurance they have been tested
++    and validated.
++
++severity: high
++
++ocil_clause: 'crypto.fips_enabled is not 1'
++
++ocil: |-
++    To verify that kernel parameter 'crypto.fips_enabled' is set properly, run the following command:
++    <pre>sysctl crypto.fips_enabled</pre>
++    The output should contain the following:
++    <pre>crypto.fips_enabled =  1</pre>
++
++platform: machine
+diff --git a/rhel8/profiles/ospp.profile b/rhel8/profiles/ospp.profile
+index 4c8fe02f17..a78060a355 100644
+--- a/rhel8/profiles/ospp.profile
++++ b/rhel8/profiles/ospp.profile
+@@ -12,7 +12,7 @@ selections:
+     - grub2_audit_argument
+     - grub2_audit_backlog_limit_argument
+     - service_auditd_enabled
+-    - grub2_enable_fips_mode
++    - enable_fips_mode
+     - rpm_verify_hashes
+     - selinux_all_devicefiles_labeled
+     - selinux_confinement_of_daemons
+
+From fc10f00b21ca8303cb1e83189d969991069b9d1e Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Jan=20=C4=8Cern=C3=BD?= <jcerny@redhat.com>
+Date: Wed, 5 Dec 2018 17:41:39 +0100
+Subject: [PATCH 2/7] Improve description of rule "Enable FIPS mode"
+
+Describes the process based on `fips-mode-setup` manual page
+and describes the facts that are checked by the rule.
+---
+ .../integrity/fips/enable_fips_mode/rule.yml       | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+
+diff --git a/linux_os/guide/system/software/integrity/fips/enable_fips_mode/rule.yml b/linux_os/guide/system/software/integrity/fips/enable_fips_mode/rule.yml
+index b7fda5bee1..67090ea863 100644
+--- a/linux_os/guide/system/software/integrity/fips/enable_fips_mode/rule.yml
++++ b/linux_os/guide/system/software/integrity/fips/enable_fips_mode/rule.yml
+@@ -7,6 +7,20 @@ title: Enable FIPS Mode
+ description: |-
+     To enable FIPS mode, run the following command:
+     <pre>fips-mode-setup --enable</pre>
++    <br />
++    The <tt>fips-mode-setup</tt> command completes the installation of FIPS
++    modules by calling <tt>fips-finish-install</tt>. Then, it changes the
++    system crypto policy to FIPS by calling <tt>update-crypto-policies</tt>
++    tool. Also, the command modifies the boot loader configuration to add
++    <tt>fips=1</tt> and <tt>boot=&lt;boot-device&gt;</tt> options to the kernel
++    command line.
++    <br />
++    On a system running in FIPS mode, the kernel FIPS mode flag
++    (<tt>/proc/sys/crypto/fips_enabled</tt>) should be set to <tt>1</tt> and
++    the <tt>/etc/system-fips</tt> should exist. The system crypto policy should
++    be set to FIPS in <tt>/etc/crypto-policies/config</tt>. Also, the Dracut
++    <tt>fips</tt> module should be loaded. Furthermore, the system running in
++    FIPS mode should be FIPS certified.
+ 
+ rationale: |-
+     Use of weak or untested encryption algorithms undermines the purposes of utilizing encryption to
+
+From 420be5900a27772422d14489c0c776754a3621e4 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Jan=20=C4=8Cern=C3=BD?= <jcerny@redhat.com>
+Date: Tue, 11 Dec 2018 08:55:45 +0100
+Subject: [PATCH 3/7] Remove a paragraph from rule description
+
+---
+ .../software/integrity/fips/enable_fips_mode/rule.yml      | 7 -------
+ 1 file changed, 7 deletions(-)
+
+diff --git a/linux_os/guide/system/software/integrity/fips/enable_fips_mode/rule.yml b/linux_os/guide/system/software/integrity/fips/enable_fips_mode/rule.yml
+index 67090ea863..7532191961 100644
+--- a/linux_os/guide/system/software/integrity/fips/enable_fips_mode/rule.yml
++++ b/linux_os/guide/system/software/integrity/fips/enable_fips_mode/rule.yml
+@@ -8,13 +8,6 @@ description: |-
+     To enable FIPS mode, run the following command:
+     <pre>fips-mode-setup --enable</pre>
+     <br />
+-    The <tt>fips-mode-setup</tt> command completes the installation of FIPS
+-    modules by calling <tt>fips-finish-install</tt>. Then, it changes the
+-    system crypto policy to FIPS by calling <tt>update-crypto-policies</tt>
+-    tool. Also, the command modifies the boot loader configuration to add
+-    <tt>fips=1</tt> and <tt>boot=&lt;boot-device&gt;</tt> options to the kernel
+-    command line.
+-    <br />
+     On a system running in FIPS mode, the kernel FIPS mode flag
+     (<tt>/proc/sys/crypto/fips_enabled</tt>) should be set to <tt>1</tt> and
+     the <tt>/etc/system-fips</tt> should exist. The system crypto policy should
+
+From bdf0a27ef924c7cf8bf26dc4a650ae47d51195d4 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Jan=20=C4=8Cern=C3=BD?= <jcerny@redhat.com>
+Date: Tue, 11 Dec 2018 09:56:23 +0100
+Subject: [PATCH 4/7] Check if external variable has the expected value
+
+This commit adds a new criterion to OVAL definition for rule
+`enable_fips_mode`. The test checks if `var_system_crypto_policy` is set
+to FIPS.  This solves the situation when user tailors his profile and
+refines the XCCDF value `var_system_crypto_policy` to a different value
+than FIPS. In this situation the rule passes, although the FIPS mode is
+not enabled. It is obvious that this tailoring does not make any sense,
+but we should be more anticipatory.
+---
+ .../integrity/fips/enable_fips_mode/oval/shared.xml   | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/linux_os/guide/system/software/integrity/fips/enable_fips_mode/oval/shared.xml b/linux_os/guide/system/software/integrity/fips/enable_fips_mode/oval/shared.xml
+index 9e6e9b5608..9324989899 100644
+--- a/linux_os/guide/system/software/integrity/fips/enable_fips_mode/oval/shared.xml
++++ b/linux_os/guide/system/software/integrity/fips/enable_fips_mode/oval/shared.xml
+@@ -14,6 +14,17 @@
+       <extend_definition comment="Dracut FIPS module is enabled" definition_ref="enable_dracut_fips_module" />
+       <extend_definition comment="system cryptography policy is configured" definition_ref="configure_crypto_policy" />
+       <extend_definition comment="Installed OS is certified" definition_ref="installed_OS_is_certified" />
++      <criterion comment="check if system crypto policy selection in var_system_crypto_policy in the profile is set to FIPS" test_ref="test_system_crypto_policy_value" />
+     </criteria>
+   </definition>
++  <ind:variable_test check="at least one" comment="tests if var_system_crypto_policy is set to FIPS" id="test_system_crypto_policy_value" version="1">
++    <ind:object object_ref="obj_system_crypto_policy_value" />
++    <ind:state state_ref="ste_system_crypto_policy_value" />
++  </ind:variable_test>
++  <ind:variable_object id="obj_system_crypto_policy_value" version="1">
++    <ind:var_ref>var_system_crypto_policy</ind:var_ref>
++  </ind:variable_object>
++  <ind:variable_state comment="variable value is set to 'FIPS'" id="ste_system_crypto_policy_value" version="1">
++    <ind:value operation="equals" datatype="string">FIPS</ind:value>
++  </ind:variable_state>
+ </def-group>
+
+From 92fe3acfc3785c18a696696dd0a1827a399136c5 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Jan=20=C4=8Cern=C3=BD?= <jcerny@redhat.com>
+Date: Tue, 11 Dec 2018 11:39:52 +0100
+Subject: [PATCH 5/7] Add missing external_variable in OVAL
+
+---
+ .../software/integrity/fips/enable_fips_mode/oval/shared.xml     | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/linux_os/guide/system/software/integrity/fips/enable_fips_mode/oval/shared.xml b/linux_os/guide/system/software/integrity/fips/enable_fips_mode/oval/shared.xml
+index 9324989899..2c1e52c831 100644
+--- a/linux_os/guide/system/software/integrity/fips/enable_fips_mode/oval/shared.xml
++++ b/linux_os/guide/system/software/integrity/fips/enable_fips_mode/oval/shared.xml
+@@ -27,4 +27,5 @@
+   <ind:variable_state comment="variable value is set to 'FIPS'" id="ste_system_crypto_policy_value" version="1">
+     <ind:value operation="equals" datatype="string">FIPS</ind:value>
+   </ind:variable_state>
++  <external_variable comment="defined crypto policy" datatype="string" id="var_system_crypto_policy" version="1" />
+ </def-group>
+
+From e59104a23b01bbf5f2bc141e5480e594eb2a30ae Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Jan=20=C4=8Cern=C3=BD?= <jcerny@redhat.com>
+Date: Wed, 12 Dec 2018 09:04:25 +0100
+Subject: [PATCH 6/7] Add warnings to other FIPS-related rules
+
+---
+ .../fips/enable_dracut_fips_module/rule.yml        | 14 ++++++++++++++
+ .../integrity/fips/etc_system_fips_exists/rule.yml | 12 ++++++++++++
+ .../fips/sysctl_crypto_fips_enabled/rule.yml       | 12 ++++++++++++
+ 3 files changed, 38 insertions(+)
+
+diff --git a/linux_os/guide/system/software/integrity/fips/enable_dracut_fips_module/rule.yml b/linux_os/guide/system/software/integrity/fips/enable_dracut_fips_module/rule.yml
+index 3de551d2ca..b23d2e8c46 100644
+--- a/linux_os/guide/system/software/integrity/fips/enable_dracut_fips_module/rule.yml
++++ b/linux_os/guide/system/software/integrity/fips/enable_dracut_fips_module/rule.yml
+@@ -5,6 +5,8 @@ prodtype: rhel8,fedora
+ title: "Enable Dracut FIPS Module"
+ 
+ description: |-
++    To enable FIPS mode, run the following command:
++    <pre>fips-mode-setup --enable</pre>
+     To enable FIPS, the system requires that the <tt>fips</tt> module is added in
+     <tt>dracut</tt> configuration.
+     Check if <tt>/etc/dracut.conf.d/40-fips.conf</tt> contain <tt>add_dracutmodules+=" fips "</tt>
+@@ -24,3 +26,15 @@ ocil: |-
+     <tt>grep "add_dracutmodules" /etc/dracut.conf.d/40-fips.conf</tt>
+     The output should look like this:
+     <tt>add_dracutmodules+=" fips "</tt>
++
++warnings:
++    - general: |-
++        The system needs to be rebooted for these changes to take effect.
++    - regulatory: |-
++        The ability to enable FIPS does not denote FIPS compliancy or certification.
++        Red Hat, Inc. and Red Hat Enterprise Linux are respectively FIPS certified and compliant. Community
++        projects such as CentOS, Scientific Linux, Fedora, etc. do not necessarily meet FIPS certification and compliancy.
++        Therefore, non-certified vendors and/or projects do not meet this requirement even if technically feasible.
++        <br /><br />
++        See <b>{{{ weblink(link="http://csrc.nist.gov/groups/STM/cmvp/documents/140-1/1401vend.htm") }}}</b>
++        for a list of FIPS certified vendors.
+diff --git a/linux_os/guide/system/software/integrity/fips/etc_system_fips_exists/rule.yml b/linux_os/guide/system/software/integrity/fips/etc_system_fips_exists/rule.yml
+index 0f48cbf274..0f1b398a0e 100644
+--- a/linux_os/guide/system/software/integrity/fips/etc_system_fips_exists/rule.yml
++++ b/linux_os/guide/system/software/integrity/fips/etc_system_fips_exists/rule.yml
+@@ -25,4 +25,16 @@ ocil: |-
+     The output should be similar to the the following:
+     <pre>-rw-r--r--. 1 root root 36 Nov 26 11:31 /etc/system-fips</pre>
+ 
++warnings:
++    - general: |-
++        The system needs to be rebooted for these changes to take effect.
++    - regulatory: |-
++        The ability to enable FIPS does not denote FIPS compliancy or certification.
++        Red Hat, Inc. and Red Hat Enterprise Linux are respectively FIPS certified and compliant. Community
++        projects such as CentOS, Scientific Linux, Fedora, etc. do not necessarily meet FIPS certification and compliancy.
++        Therefore, non-certified vendors and/or projects do not meet this requirement even if technically feasible.
++        <br /><br />
++        See <b>{{{ weblink(link="http://csrc.nist.gov/groups/STM/cmvp/documents/140-1/1401vend.htm") }}}</b>
++        for a list of FIPS certified vendors.
++
+ platform: machine
+diff --git a/linux_os/guide/system/software/integrity/fips/sysctl_crypto_fips_enabled/rule.yml b/linux_os/guide/system/software/integrity/fips/sysctl_crypto_fips_enabled/rule.yml
+index a8e9c0d36e..734fa558a7 100644
+--- a/linux_os/guide/system/software/integrity/fips/sysctl_crypto_fips_enabled/rule.yml
++++ b/linux_os/guide/system/software/integrity/fips/sysctl_crypto_fips_enabled/rule.yml
+@@ -27,4 +27,16 @@ ocil: |-
+     The output should contain the following:
+     <pre>crypto.fips_enabled =  1</pre>
+ 
++warnings:
++    - general: |-
++        The system needs to be rebooted for these changes to take effect.
++    - regulatory: |-
++        The ability to enable FIPS does not denote FIPS compliancy or certification.
++        Red Hat, Inc. and Red Hat Enterprise Linux are respectively FIPS certified and compliant. Community
++        projects such as CentOS, Scientific Linux, Fedora, etc. do not necessarily meet FIPS certification and compliancy.
++        Therefore, non-certified vendors and/or projects do not meet this requirement even if technically feasible.
++        <br /><br />
++        See <b>{{{ weblink(link="http://csrc.nist.gov/groups/STM/cmvp/documents/140-1/1401vend.htm") }}}</b>
++        for a list of FIPS certified vendors.
++
+ platform: machine
+
+From 4c3c890a63a6061d380c5171f32f048165af0ee8 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Jan=20=C4=8Cern=C3=BD?= <jcerny@redhat.com>
+Date: Thu, 13 Dec 2018 17:33:39 +0100
+Subject: [PATCH 7/7] Improve wording in rule description enable_fips_mode
+
+---
+ .../integrity/fips/enable_fips_mode/rule.yml      | 15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
+
+diff --git a/linux_os/guide/system/software/integrity/fips/enable_fips_mode/rule.yml b/linux_os/guide/system/software/integrity/fips/enable_fips_mode/rule.yml
+index 7532191961..72db413dff 100644
+--- a/linux_os/guide/system/software/integrity/fips/enable_fips_mode/rule.yml
++++ b/linux_os/guide/system/software/integrity/fips/enable_fips_mode/rule.yml
+@@ -8,12 +8,15 @@ description: |-
+     To enable FIPS mode, run the following command:
+     <pre>fips-mode-setup --enable</pre>
+     <br />
+-    On a system running in FIPS mode, the kernel FIPS mode flag
+-    (<tt>/proc/sys/crypto/fips_enabled</tt>) should be set to <tt>1</tt> and
+-    the <tt>/etc/system-fips</tt> should exist. The system crypto policy should
+-    be set to FIPS in <tt>/etc/crypto-policies/config</tt>. Also, the Dracut
+-    <tt>fips</tt> module should be loaded. Furthermore, the system running in
+-    FIPS mode should be FIPS certified.
++    The <tt>fips-mode-setup</tt> command will configure the system in
++    FIPS mode by automatically configuring the following:
++    <ul>
++    <li>Setting the kernel FIPS mode flag (<tt>/proc/sys/crypto/fips_enabled</tt>) to <tt>1</tt></li>
++    <li>Creating <tt>/etc/system-fips</tt></li>
++    <li>Setting the system crypto policy in <tt>/etc/crypto-policies/config</tt> to <tt>FIPS</tt></li>
++    <li>Loading the Dracut <tt>fips</tt> module</li>
++    </ul>
++    Furthermore, the system running in FIPS mode should be FIPS certified by NIST.
+ 
+ rationale: |-
+     Use of weak or untested encryption algorithms undermines the purposes of utilizing encryption to

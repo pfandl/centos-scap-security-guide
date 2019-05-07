@@ -1,0 +1,1009 @@
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_etc_group_open/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_etc_group_open/rule.yml
+index 910b8a335d..5784e5ad8f 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_etc_group_open/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_etc_group_open/rule.yml
+@@ -10,11 +10,11 @@ description: |-
+     to use the <tt>augenrules</tt> program to read audit rules during daemon
+     startup (the default), add the following lines to a file with suffix
+     <tt>.rules</tt> in the directory <tt>/etc/audit/rules.d</tt>:
+-    <pre>-a always,exit -F arch=b32 -S open -F a2&amp;03 -F path=/etc/group -F auid>={{{ auid }}} -F auid!=unset -F key=group-modify</pre>
++    <pre>-a always,exit -F arch=b32 -S open -F a1&amp;03 -F path=/etc/group -F auid>={{{ auid }}} -F auid!=unset -F key=group-modify</pre>
+     If the <tt>auditd</tt> daemon is configured to use the <tt>auditctl</tt>
+     utility to read audit rules during daemon startup, add the following lines to
+     <tt>/etc/audit/audit.rules</tt> file:
+-    <pre>-a always,exit -F arch=b64 -S open -F a2&amp;03 -F path=/etc/group -F auid>={{{ auid }}} -F auid!=unset -F key=group-modify</pre>
++    <pre>-a always,exit -F arch=b64 -S open -F a1&amp;03 -F path=/etc/group -F auid>={{{ auid }}} -F auid!=unset -F key=group-modify</pre>
+ 
+ rationale: |-
+     Creation of groups through direct edition of /etc/group could be an indicator of malicious activity on a system.
+@@ -36,4 +36,4 @@ warnings:
+         number of ways while still achieving the desired effect. Here the system calls
+         have been placed independent of other system calls. Grouping system calls related
+         to the same event is more efficient. See the following example:
+-        <pre>-a always,exit -F arch=b32 -S open,openat,open_by_handle_at -F a2&amp;03 -F path=/etc/group -F auid>={{{ auid }}} -F auid!=unset -F key=group-modify</pre>
++        <pre>-a always,exit -F arch=b32 -S open -F a1&amp;03 -F path=/etc/group -F auid>={{{ auid }}} -F auid!=unset -F key=group-modify</pre>
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_etc_group_open_by_handle_at/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_etc_group_open_by_handle_at/rule.yml
+index fbf0bd1665..81841900f0 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_etc_group_open_by_handle_at/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_etc_group_open_by_handle_at/rule.yml
+@@ -36,4 +36,4 @@ warnings:
+         number of ways while still achieving the desired effect. Here the system calls
+         have been placed independent of other system calls. Grouping system calls related
+         to the same event is more efficient. See the following example:
+-        <pre>-a always,exit -F arch=b32 -S open,openat,open_by_handle_at -F a2&amp;03 -F path=/etc/group -F auid>={{{ auid }}} -F auid!=unset -F key=group-modify</pre>
++        <pre>-a always,exit -F arch=b32 -S openat,open_by_handle_at -F a2&amp;03 -F path=/etc/group -F auid>={{{ auid }}} -F auid!=unset -F key=group-modify</pre>
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_etc_group_openat/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_etc_group_openat/rule.yml
+index 4ae6609bbc..3515398d50 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_etc_group_openat/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_etc_group_openat/rule.yml
+@@ -36,4 +36,4 @@ warnings:
+         number of ways while still achieving the desired effect. Here the system calls
+         have been placed independent of other system calls. Grouping system calls related
+         to the same event is more efficient. See the following example:
+-        <pre>-a always,exit -F arch=b32 -S open,openat,open_by_handle_at -F a2&amp;03 -F path=/etc/group -F auid>={{{ auid }}} -F auid!=unset -F key=group-modify</pre>
++        <pre>-a always,exit -F arch=b32 -S openat,open_by_handle_at -F a2&amp;03 -F path=/etc/group -F auid>={{{ auid }}} -F auid!=unset -F key=group-modify</pre>
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_etc_passwd_open/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_etc_passwd_open/rule.yml
+index fb0f465ed4..deb20d24c5 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_etc_passwd_open/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_etc_passwd_open/rule.yml
+@@ -10,11 +10,11 @@ description: |-
+     to use the <tt>augenrules</tt> program to read audit rules during daemon
+     startup (the default), add the following lines to a file with suffix
+     <tt>.rules</tt> in the directory <tt>/etc/audit/rules.d</tt>:
+-    <pre>-a always,exit -F arch=b32 -S open -F a2&amp;03 -F path=/etc/passwd -F auid>={{{ auid }}} -F auid!=unset -F key=user-modify</pre>
++    <pre>-a always,exit -F arch=b32 -S open -F a1&amp;03 -F path=/etc/passwd -F auid>={{{ auid }}} -F auid!=unset -F key=user-modify</pre>
+     If the <tt>auditd</tt> daemon is configured to use the <tt>auditctl</tt>
+     utility to read audit rules during daemon startup, add the following lines to
+     <tt>/etc/audit/audit.rules</tt> file:
+-    <pre>-a always,exit -F arch=b64 -S open -F a2&amp;03 -F path=/etc/passwd -F auid>={{{ auid }}} -F auid!=unset -F key=user-modify</pre>
++    <pre>-a always,exit -F arch=b64 -S open -F a1&amp;03 -F path=/etc/passwd -F auid>={{{ auid }}} -F auid!=unset -F key=user-modify</pre>
+ 
+ rationale: |-
+     Creation of users through direct edition of /etc/passwd could be an indicator of malicious activity on a system.
+@@ -36,4 +36,4 @@ warnings:
+         number of ways while still achieving the desired effect. Here the system calls
+         have been placed independent of other system calls. Grouping system calls related
+         to the same event is more efficient. See the following example:
+-        <pre>-a always,exit -F arch=b32 -S open,openat,open_by_handle_at -F a2&amp;03 -F path=/etc/passwd -F auid>={{{ auid }}} -F auid!=unset -F key=user-modify</pre>
++        <pre>-a always,exit -F arch=b32 -S open -F a1&amp;03 -F path=/etc/passwd -F auid>={{{ auid }}} -F auid!=unset -F key=user-modify</pre>
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_etc_passwd_open_by_handle_at/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_etc_passwd_open_by_handle_at/rule.yml
+index 4c489f2679..d65c9171e4 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_etc_passwd_open_by_handle_at/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_etc_passwd_open_by_handle_at/rule.yml
+@@ -36,4 +36,4 @@ warnings:
+         number of ways while still achieving the desired effect. Here the system calls
+         have been placed independent of other system calls. Grouping system calls related
+         to the same event is more efficient. See the following example:
+-        <pre>-a always,exit -F arch=b32 -S open,openat,open_by_handle_at -F a2&amp;03 -F path=/etc/passwd -F auid>={{{ auid }}} -F auid!=unset -F key=user-modify</pre>
++        <pre>-a always,exit -F arch=b32 -S openat,open_by_handle_at -F a2&amp;03 -F path=/etc/passwd -F auid>={{{ auid }}} -F auid!=unset -F key=user-modify</pre>
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_etc_passwd_openat/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_etc_passwd_openat/rule.yml
+index e5decedd03..da910036b2 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_etc_passwd_openat/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_etc_passwd_openat/rule.yml
+@@ -36,4 +36,4 @@ warnings:
+         number of ways while still achieving the desired effect. Here the system calls
+         have been placed independent of other system calls. Grouping system calls related
+         to the same event is more efficient. See the following example:
+-        <pre>-a always,exit -F arch=b32 -S open,openat,open_by_handle_at -F a2&amp;03 -F path=/etc/passwd -F auid>={{{ auid }}} -F auid!=unset -F key=user-modify</pre>
++        <pre>-a always,exit -F arch=b32 -S openat,open_by_handle_at -F a2&amp;03 -F path=/etc/passwd -F auid>={{{ auid }}} -F auid!=unset -F key=user-modify</pre>
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open_by_handle_at_o_creat/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open_by_handle_at_o_creat/rule.yml
+index 4e36f77912..c509cf49c3 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open_by_handle_at_o_creat/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open_by_handle_at_o_creat/rule.yml
+@@ -58,4 +58,4 @@ warnings:
+         number of ways while still achieving the desired effect. Here the system calls
+         have been placed independent of other system calls. Grouping system calls related
+         to the same event is more efficient. See the following example:
+-        <pre>-a always,exit -F arch=b32 -S open,openat,open_by_handle_at -F a2&amp;0100 -F exit=-EACCES -F auid>={{{ auid }}} -F auid!=unset -F key=unsuccesful-create</pre>
++        <pre>-a always,exit -F arch=b32 -S openat,open_by_handle_at -F a2&amp;0100 -F exit=-EACCES -F auid>={{{ auid }}} -F auid!=unset -F key=unsuccesful-create</pre>
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open_by_handle_at_o_trunc_write/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open_by_handle_at_o_trunc_write/rule.yml
+index c5ef0ad70a..fb72b3d4f7 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open_by_handle_at_o_trunc_write/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open_by_handle_at_o_trunc_write/rule.yml
+@@ -57,4 +57,4 @@ warnings:
+         number of ways while still achieving the desired effect. Here the system calls
+         have been placed independent of other system calls. Grouping system calls related
+         to the same event is more efficient. See the following example:
+-        <pre>-a always,exit -F arch=b32 -S open,openat,open_by_handle_at -F a2&amp;01003 -F exit=-EACCES -F auid>={{{ auid }}} -F auid!=unset -F key=unsuccesful-modification</pre>
++        <pre>-a always,exit -F arch=b32 -S openat,open_by_handle_at -F a2&amp;01003 -F exit=-EACCES -F auid>={{{ auid }}} -F auid!=unset -F key=unsuccesful-modification</pre>
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open_o_creat/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open_o_creat/rule.yml
+index 414956e43d..86e43df256 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open_o_creat/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open_o_creat/rule.yml
+@@ -19,13 +19,13 @@ description: |-
+     utility to read audit rules during daemon startup, add the rules below to
+     <tt>/etc/audit/audit.rules</tt> file.
+     <pre>
+-    -a always,exit -F arch=b32 -S open -F a2&amp;0100 -F exit=-EACCES -F auid>={{{ auid }}} -F auid!=unset -F key=unsuccesful-create
+-    -a always,exit -F arch=b32 -S open -F a2&amp;0100 -F exit=-EPERM -F auid>={{{ auid }}} -F auid!=unset -F key=unsuccesful-create
++    -a always,exit -F arch=b32 -S open -F a1&amp;0100 -F exit=-EACCES -F auid>={{{ auid }}} -F auid!=unset -F key=unsuccesful-create
++    -a always,exit -F arch=b32 -S open -F a1&amp;0100 -F exit=-EPERM -F auid>={{{ auid }}} -F auid!=unset -F key=unsuccesful-create
+     </pre>
+     If the system is 64 bit then also add the following lines:
+     <pre>
+-    -a always,exit -F arch=b64 -S open -F a2&amp;0100 -F exit=-EACCES -F auid>={{{ auid }}} -F auid!=unset -F key=unsuccesful-create
+-    -a always,exit -F arch=b64 -S open -F a2&amp;0100 -F exit=-EPERM -F auid>={{{ auid }}} -F auid!=unset -F key=unsuccesful-create
++    -a always,exit -F arch=b64 -S open -F a1&amp;0100 -F exit=-EACCES -F auid>={{{ auid }}} -F auid!=unset -F key=unsuccesful-create
++    -a always,exit -F arch=b64 -S open -F a1&amp;0100 -F exit=-EPERM -F auid>={{{ auid }}} -F auid!=unset -F key=unsuccesful-create
+     </pre>
+ 
+ rationale: |-
+@@ -58,4 +58,4 @@ warnings:
+         number of ways while still achieving the desired effect. Here the system calls
+         have been placed independent of other system calls. Grouping system calls related
+         to the same event is more efficient. See the following example:
+-        <pre>-a always,exit -F arch=b32 -S open,openat,open_by_handle_at -F a2&amp;0100 -F exit=-EACCES -F auid>={{{ auid }}} -F auid!=unset -F key=unsuccesful-create</pre>
++        <pre>-a always,exit -F arch=b32 -S open -F a1&amp;0100 -F exit=-EACCES -F auid>={{{ auid }}} -F auid!=unset -F key=unsuccesful-create</pre>
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open_o_trunc_write/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open_o_trunc_write/rule.yml
+index 0108be7bb6..a05b8127b2 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open_o_trunc_write/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open_o_trunc_write/rule.yml
+@@ -18,13 +18,13 @@ description: |-
+     utility to read audit rules during daemon startup, add the rules below to
+     <tt>/etc/audit/audit.rules</tt> file.
+     <pre>
+-    -a always,exit -F arch=b32 -S open -F a2&amp;01003 -F exit=-EACCES -F auid>={{{ auid }}} -F auid!=unset -F key=unsuccesful-modification
+-    -a always,exit -F arch=b32 -S open -F a2&amp;01003 -F exit=-EPERM -F auid>={{{ auid }}} -F auid!=unset -F key=unsuccesful-modification
++    -a always,exit -F arch=b32 -S open -F a1&amp;01003 -F exit=-EACCES -F auid>={{{ auid }}} -F auid!=unset -F key=unsuccesful-modification
++    -a always,exit -F arch=b32 -S open -F a1&amp;01003 -F exit=-EPERM -F auid>={{{ auid }}} -F auid!=unset -F key=unsuccesful-modification
+     </pre>
+     If the system is 64 bit then also add the following lines:
+     <pre>
+-    -a always,exit -F arch=b64 -S open -F a2&amp;01003 -F exit=-EACCES -F auid>={{{ auid }}} -F auid!=unset -F key=unsuccesful-modification
+-    -a always,exit -F arch=b64 -S open -F a2&amp;01003 -F exit=-EPERM -F auid>={{{ auid }}} -F auid!=unset -F key=unsuccesful-modification
++    -a always,exit -F arch=b64 -S open -F a1&amp;01003 -F exit=-EACCES -F auid>={{{ auid }}} -F auid!=unset -F key=unsuccesful-modification
++    -a always,exit -F arch=b64 -S open -F a1&amp;01003 -F exit=-EPERM -F auid>={{{ auid }}} -F auid!=unset -F key=unsuccesful-modification
+     </pre>
+ 
+ rationale: |-
+@@ -57,4 +57,4 @@ warnings:
+         number of ways while still achieving the desired effect. Here the system calls
+         have been placed independent of other system calls. Grouping system calls related
+         to the same event is more efficient. See the following example:
+-        <pre>-a always,exit -F arch=b32 -S open,openat,open_by_handle_at -F a2&amp;01003 -F exit=-EACCES -F auid>={{{ auid }}} -F auid!=unset -F key=unsuccesful-modification</pre>
++        <pre>-a always,exit -F arch=b32 -S open -F a1&amp;01003 -F exit=-EACCES -F auid>={{{ auid }}} -F auid!=unset -F key=unsuccesful-modification</pre>
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open_rule_order/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open_rule_order/rule.yml
+index 64e7389981..6f792a5d73 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open_rule_order/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open_rule_order/rule.yml
+@@ -21,19 +21,19 @@ description: |-
+     utility to read audit rules during daemon startup, check the order of rules below in
+     <tt>/etc/audit/audit.rules</tt> file.
+     <pre>
+-    -a always,exit -F arch=b32 -S open -F a2&amp;0100 -F exit=-EACCES -F auid>={{{ auid }}} -F auid!=unset -F key=unsuccesful-create
+-    -a always,exit -F arch=b32 -S open -F a2&amp;0100 -F exit=-EPERM -F auid>={{{ auid }}} -F auid!=unset -F key=unsuccesful-create
+-    -a always,exit -F arch=b32 -S open -F a2&amp;01003 -F exit=-EACCES -F auid>={{{ auid }}} -F auid!=unset -F key=unsuccesful-modification
+-    -a always,exit -F arch=b32 -S open -F a2&amp;01003 -F exit=-EPERM -F auid>={{{ auid }}} -F auid!=unset -F key=unsuccesful-modification
++    -a always,exit -F arch=b32 -S open -F a1&amp;0100 -F exit=-EACCES -F auid>={{{ auid }}} -F auid!=unset -F key=unsuccesful-create
++    -a always,exit -F arch=b32 -S open -F a1&amp;0100 -F exit=-EPERM -F auid>={{{ auid }}} -F auid!=unset -F key=unsuccesful-create
++    -a always,exit -F arch=b32 -S open -F a1&amp;01003 -F exit=-EACCES -F auid>={{{ auid }}} -F auid!=unset -F key=unsuccesful-modification
++    -a always,exit -F arch=b32 -S open -F a1&amp;01003 -F exit=-EPERM -F auid>={{{ auid }}} -F auid!=unset -F key=unsuccesful-modification
+     -a always,exit -F arch=b32 -S open -F exit=-EACCES -F auid>={{{ auid }}} -F auid!=unset -F key=unsuccesful-access
+     -a always,exit -F arch=b32 -S open -F exit=-EPERM -F auid>={{{ auid }}} -F auid!=unset -F key=unsuccesful-access
+     </pre>
+     If the system is 64 bit then also add the following lines:
+     <pre>
+-    -a always,exit -F arch=b64 -S open -F a2&amp;0100 -F exit=-EACCES -F auid>={{{ auid }}} -F auid!=unset -F key=unsuccesful-create
+-    -a always,exit -F arch=b64 -S open -F a2&amp;0100 -F exit=-EPERM -F auid>={{{ auid }}} -F auid!=unset -F key=unsuccesful-create
+-    -a always,exit -F arch=b64 -S open -F a2&amp;01003 -F exit=-EACCES -F auid>={{{ auid }}} -F auid!=unset -F key=unsuccesful-modification
+-    -a always,exit -F arch=b64 -S open -F a2&amp;01003 -F exit=-EPERM -F auid>={{{ auid }}} -F auid!=unset -F key=unsuccesful-modification
++    -a always,exit -F arch=b64 -S open -F a1&amp;0100 -F exit=-EACCES -F auid>={{{ auid }}} -F auid!=unset -F key=unsuccesful-create
++    -a always,exit -F arch=b64 -S open -F a1&amp;0100 -F exit=-EPERM -F auid>={{{ auid }}} -F auid!=unset -F key=unsuccesful-create
++    -a always,exit -F arch=b64 -S open -F a1&amp;01003 -F exit=-EACCES -F auid>={{{ auid }}} -F auid!=unset -F key=unsuccesful-modification
++    -a always,exit -F arch=b64 -S open -F a1&amp;01003 -F exit=-EPERM -F auid>={{{ auid }}} -F auid!=unset -F key=unsuccesful-modification
+     -a always,exit -F arch=b64 -S open -F exit=-EACCES -F auid>={{{ auid }}} -F auid!=unset -F key=unsuccesful-access
+     -a always,exit -F arch=b64 -S open -F exit=-EPERM -F auid>={{{ auid }}} -F auid!=unset -F key=unsuccesful-access
+     </pre>
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_openat_o_creat/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_openat_o_creat/rule.yml
+index 593cb7eeb6..94eed06377 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_openat_o_creat/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_openat_o_creat/rule.yml
+@@ -58,4 +58,4 @@ warnings:
+         number of ways while still achieving the desired effect. Here the system calls
+         have been placed independent of other system calls. Grouping system calls related
+         to the same event is more efficient. See the following example:
+-        <pre>-a always,exit -F arch=b32 -S open,openat,open_by_handle_at -F a2&amp;0100 -F exit=-EACCES -F auid>={{{ auid }}} -F auid!=unset -F key=unsuccesful-create</pre>
++        <pre>-a always,exit -F arch=b32 -S openat,open_by_handle_at -F a2&amp;0100 -F exit=-EACCES -F auid>={{{ auid }}} -F auid!=unset -F key=unsuccesful-create</pre>
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_openat_o_trunc_write/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_openat_o_trunc_write/rule.yml
+index 7d2343544d..9875ae1215 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_openat_o_trunc_write/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_openat_o_trunc_write/rule.yml
+@@ -57,4 +57,4 @@ warnings:
+         number of ways while still achieving the desired effect. Here the system calls
+         have been placed independent of other system calls. Grouping system calls related
+         to the same event is more efficient. See the following example:
+-        <pre>-a always,exit -F arch=b32 -S open,openat,open_by_handle_at -F a2&amp;01003 -F exit=-EACCES -F auid>={{{ auid }}} -F auid!=unset -F key=unsuccesful-modification</pre>
++        <pre>-a always,exit -F arch=b32 -S openat,open_by_handle_at -F a2&amp;01003 -F exit=-EACCES -F auid>={{{ auid }}} -F auid!=unset -F key=unsuccesful-modification</pre>
+diff --git a/shared/templates/create_audit_rules_path_syscall.py b/shared/templates/create_audit_rules_path_syscall.py
+index 0283bf439c..9ab984491e 100644
+--- a/shared/templates/create_audit_rules_path_syscall.py
++++ b/shared/templates/create_audit_rules_path_syscall.py
+@@ -11,7 +11,7 @@
+ 
+ class AuditRulesPathSyscallGenerator(FilesGenerator):
+     def generate(self, target, args):
+-        path,syscall = args[0:2]
++        path,syscall,pos = args[0:3]
+         pathid = re.sub('[-\./]', '_', path)
+         # remove root slash made into '_'
+         pathid = pathid[1:]
+@@ -21,7 +21,8 @@ def generate(self, target, args):
+                 {
+                     "PATH":	path,
+                     "PATHID":	pathid,
+-                    "SYSCALL":	syscall
++                    "SYSCALL":	syscall,
++                    "POS":	pos
+                 },
+                 "./oval/audit_rules_{0}_{1}.xml", pathid, syscall
+             )
+@@ -30,4 +31,4 @@ def generate(self, target, args):
+ 
+     def csv_format(self):
+         return("CSV should contains lines of the format: " +
+-               "PATH,SYSCALL")
++               "PATH,SYSCALL,POS")
+diff --git a/shared/templates/create_audit_rules_unsuccessful_file_modification_detailed.py b/shared/templates/create_audit_rules_unsuccessful_file_modification_detailed.py
+index c14c35a381..5afed5993d 100644
+--- a/shared/templates/create_audit_rules_unsuccessful_file_modification_detailed.py
++++ b/shared/templates/create_audit_rules_unsuccessful_file_modification_detailed.py
+@@ -14,26 +14,29 @@
+ 
+ class ARUFMDetailedGenerator(FilesGenerator):
+     def generate(self, target, args):
+-        syscall = re.sub('[-\./]', '_', args[0])
++        syscall,pos = args[0:2]
+         if target == "oval":
+             self.file_from_template(
+                 "./template_OVAL_audit_rules_unsuccessful_file_modification_o_creat",
+                 {
+-                    "SYSCALL":	syscall
++                    "SYSCALL":	syscall,
++                    "POS":	pos
+                 },
+                 "./oval/audit_rules_unsuccessful_file_modification_{0}_o_creat.xml", syscall
+             )
+             self.file_from_template(
+                 "./template_OVAL_audit_rules_unsuccessful_file_modification_o_trunc_write",
+                 {
+-                    "SYSCALL":	syscall
++                    "SYSCALL":	syscall,
++                    "POS":	pos
+                 },
+                 "./oval/audit_rules_unsuccessful_file_modification_{0}_o_trunc_write.xml", syscall
+             )
+             self.file_from_template(
+                 "./template_OVAL_audit_rules_unsuccessful_file_modification_rule_order",
+                 {
+-                    "SYSCALL":	syscall
++                    "SYSCALL":	syscall,
++                    "POS":	pos
+                 },
+                 "./oval/audit_rules_unsuccessful_file_modification_{0}_rule_order.xml", syscall
+             )
+diff --git a/shared/templates/csv/audit_rules_path_syscall.csv b/shared/templates/csv/audit_rules_path_syscall.csv
+index 015f02f58d..3738369e7e 100644
+--- a/shared/templates/csv/audit_rules_path_syscall.csv
++++ b/shared/templates/csv/audit_rules_path_syscall.csv
+@@ -2,10 +2,11 @@
+ # <path>,<syscall>
+ # - path is the absolute path to watch
+ # - syscall is the syscall to wath the path for
++# - pos is the position of syscall parameter with flags (in audit format)
+ 
+-/etc/passwd,open
+-/etc/passwd,openat
+-/etc/passwd,open_by_handle_at
+-/etc/group,open
+-/etc/group,openat
+-/etc/group,open_by_handle_at
++/etc/passwd,open,a1
++/etc/passwd,openat,a2
++/etc/passwd,open_by_handle_at,a2
++/etc/group,open,a1
++/etc/group,openat,a2
++/etc/group,open_by_handle_at,a2
+diff --git a/shared/templates/csv/audit_rules_unsuccessful_file_modification_detailed.csv b/shared/templates/csv/audit_rules_unsuccessful_file_modification_detailed.csv
+index 97d5c04e14..99d007048f 100644
+--- a/shared/templates/csv/audit_rules_unsuccessful_file_modification_detailed.csv
++++ b/shared/templates/csv/audit_rules_unsuccessful_file_modification_detailed.csv
+@@ -1,7 +1,8 @@
+ # format:
+ # <syscall>
+ # - syscall is the syscall to generate detailed rules for
++# - pos is the position of syscall parameter with flags (in audit format)
+ 
+-open
+-openat
+-open_by_handle_at
++open,a1
++openat,a2
++open_by_handle_at,a2
+diff --git a/shared/templates/template_OVAL_audit_rules_path_syscall b/shared/templates/template_OVAL_audit_rules_path_syscall
+index b720091f5b..3e5db49b54 100644
+--- a/shared/templates/template_OVAL_audit_rules_path_syscall
++++ b/shared/templates/template_OVAL_audit_rules_path_syscall
+@@ -46,11 +46,11 @@
+ 
+   <!-- Access to /var/log/audit rule regex-->
+   <constant_variable id="var_audit_rule_32bit_{{{ SYSCALL }}}_write_{{{ PATHID }}}_regex" version="1" datatype="string" comment="audit rule arch and syscal">
+-      <value>^[\s]*-a[\s]+always,exit[\s]+(?:-F[\s]+arch=b32[\s]+)(?:-S[\s]+(?:|(?:[\S]+,)+)({{{ SYSCALL }}})(?:|(?:,[\S]+)+))[\s]+(?:-F[\s]+a2&amp;03)[\s]+(?:-F[\s]+path={{{ PATH }}})[\s]+(?:-F\s+auid>={{{ auid }}}[\s]+)(?:-F\s+auid!=(unset|4294967295)[\s]+)(?:-k[\s]+|-F[\s]+key=)[\S]+[\s]*$</value>
++      <value>^[\s]*-a[\s]+always,exit[\s]+(?:-F[\s]+arch=b32[\s]+)(?:-S[\s]+(?:|(?:[\S]+,)+)({{{ SYSCALL }}})(?:|(?:,[\S]+)+))[\s]+(?:-F[\s]+{{{ POS }}}&amp;03)[\s]+(?:-F[\s]+path={{{ PATH }}})[\s]+(?:-F\s+auid>={{{ auid }}}[\s]+)(?:-F\s+auid!=(unset|4294967295)[\s]+)(?:-k[\s]+|-F[\s]+key=)[\S]+[\s]*$</value>
+   </constant_variable>
+ 
+   <constant_variable id="var_audit_rule_64bit_{{{ SYSCALL }}}_write_{{{ PATHID }}}_regex" version="1" datatype="string" comment="audit rule arch and syscal">
+-      <value>^[\s]*-a[\s]+always,exit[\s]+(?:-F[\s]+arch=b64[\s]+)(?:-S[\s]+(?:|(?:[\S]+,)+)({{{ SYSCALL }}})(?:|(?:,[\S]+)+))[\s]+(?:-F[\s]+a2&amp;03)[\s]+(?:-F[\s]+path={{{ PATH }}})[\s]+(?:-F\s+auid>={{{ auid }}}[\s]+)(?:-F\s+auid!=(unset|4294967295)[\s]+)(?:-k[\s]+|-F[\s]+key=)[\S]+[\s]*$</value>
++      <value>^[\s]*-a[\s]+always,exit[\s]+(?:-F[\s]+arch=b64[\s]+)(?:-S[\s]+(?:|(?:[\S]+,)+)({{{ SYSCALL }}})(?:|(?:,[\S]+)+))[\s]+(?:-F[\s]+{{{ POS }}}&amp;03)[\s]+(?:-F[\s]+path={{{ PATH }}})[\s]+(?:-F\s+auid>={{{ auid }}}[\s]+)(?:-F\s+auid!=(unset|4294967295)[\s]+)(?:-k[\s]+|-F[\s]+key=)[\S]+[\s]*$</value>
+   </constant_variable>
+ 
+   <!-- directory access {{{ PATH }}} augenrule -->
+diff --git a/shared/templates/template_OVAL_audit_rules_unsuccessful_file_modification_o_creat b/shared/templates/template_OVAL_audit_rules_unsuccessful_file_modification_o_creat
+index 8b3e9970e2..9d31e8a14b 100644
+--- a/shared/templates/template_OVAL_audit_rules_unsuccessful_file_modification_o_creat
++++ b/shared/templates/template_OVAL_audit_rules_unsuccessful_file_modification_o_creat
+@@ -17,16 +17,16 @@
+       <!-- Test the augenrules case -->
+       <criteria operator="AND">
+         <extend_definition comment="audit augenrules" definition_ref="audit_rules_augenrules" />
+-        <criterion comment="Verify audit rule {{{ SYSCALL }}} 32bit a2&amp;0100 eacces augenrules exists" test_ref="test_arufm_{{{ SYSCALL }}}_o_creat_32bit_a20100_eacces_augenrules" />
+-        <criterion comment="Verify audit rule {{{ SYSCALL }}} 32bit a2&amp;0100 eperm augenrules exists" test_ref="test_arufm_{{{ SYSCALL }}}_o_creat_32bit_a20100_eperm_augenrules" />
++        <criterion comment="Verify audit rule {{{ SYSCALL }}} 32bit {{{ POS }}}&amp;0100 eacces augenrules exists" test_ref="test_arufm_{{{ SYSCALL }}}_o_creat_32bit_a20100_eacces_augenrules" />
++        <criterion comment="Verify audit rule {{{ SYSCALL }}} 32bit {{{ POS }}}&amp;0100 eperm augenrules exists" test_ref="test_arufm_{{{ SYSCALL }}}_o_creat_32bit_a20100_eperm_augenrules" />
+ 
+         <criteria operator="OR">
+           <!-- System either isn't 64-bit => we just check presence of the 32-bit version of the EACCES / EPERM rules-->
+           <extend_definition comment="64-bit system" definition_ref="system_info_architecture_64bit" negate="true" />
+           <!-- Or system is 64-bit => in that case we also need to verify the presence of 64-bit versions of the rules -->
+           <criteria operator="AND">
+-            <criterion comment="Verify audit rule {{{ SYSCALL }}} 64bit a2&amp;0100 eacces augenrules exists" test_ref="test_arufm_{{{ SYSCALL }}}_o_creat_64bit_a20100_eacces_augenrules" />
+-            <criterion comment="Verify audit rule {{{ SYSCALL }}} 64bit a2&amp;0100 eperm augenrules exists" test_ref="test_arufm_{{{ SYSCALL }}}_o_creat_64bit_a20100_eperm_augenrules" />
++            <criterion comment="Verify audit rule {{{ SYSCALL }}} 64bit {{{ POS }}}&amp;0100 eacces augenrules exists" test_ref="test_arufm_{{{ SYSCALL }}}_o_creat_64bit_a20100_eacces_augenrules" />
++            <criterion comment="Verify audit rule {{{ SYSCALL }}} 64bit {{{ POS }}}&amp;0100 eperm augenrules exists" test_ref="test_arufm_{{{ SYSCALL }}}_o_creat_64bit_a20100_eperm_augenrules" />
+           </criteria>
+         </criteria>
+       </criteria>
+@@ -34,16 +34,16 @@
+       <!-- OR test the auditctl case -->
+       <criteria operator="AND">
+         <extend_definition comment="audit auditctl" definition_ref="audit_rules_auditctl" />
+-        <criterion comment="Verify audit rule {{{ SYSCALL }}} 32bit a2&amp;0100 eacces auditctl exists" test_ref="test_arufm_{{{ SYSCALL }}}_o_creat_32bit_a20100_eacces_auditctl" />
+-        <criterion comment="Verify audit rule {{{ SYSCALL }}} 32bit a2&amp;0100 eperm auditctl exists" test_ref="test_arufm_{{{ SYSCALL }}}_o_creat_32bit_a20100_eperm_auditctl" />
++        <criterion comment="Verify audit rule {{{ SYSCALL }}} 32bit {{{ POS }}}&amp;0100 eacces auditctl exists" test_ref="test_arufm_{{{ SYSCALL }}}_o_creat_32bit_a20100_eacces_auditctl" />
++        <criterion comment="Verify audit rule {{{ SYSCALL }}} 32bit {{{ POS }}}&amp;0100 eperm auditctl exists" test_ref="test_arufm_{{{ SYSCALL }}}_o_creat_32bit_a20100_eperm_auditctl" />
+ 
+         <criteria operator="OR">
+           <!-- System either isn't 64-bit => we just check presence of the 32-bit version of the EACCES / EPERM rules -->
+           <extend_definition comment="64-bit_system" definition_ref="system_info_architecture_64bit" negate="true" />
+           <!-- Or system is 64-bit => in that case we also need to verify the presence of 64-bit versions of the rules -->
+           <criteria operator="AND">
+-            <criterion comment="Verify audit rule {{{ SYSCALL }}} 64bit a2&amp;0100 eacces auditctl exists" test_ref="test_arufm_{{{ SYSCALL }}}_o_creat_64bit_a20100_eacces_auditctl" />
+-            <criterion comment="Verify audit rule {{{ SYSCALL }}} 64bit a2&amp;0100 eperm auditctl exists" test_ref="test_arufm_{{{ SYSCALL }}}_o_creat_64bit_a20100_eperm_auditctl" />
++            <criterion comment="Verify audit rule {{{ SYSCALL }}} 64bit {{{ POS }}}&amp;0100 eacces auditctl exists" test_ref="test_arufm_{{{ SYSCALL }}}_o_creat_64bit_a20100_eacces_auditctl" />
++            <criterion comment="Verify audit rule {{{ SYSCALL }}} 64bit {{{ POS }}}&amp;0100 eperm auditctl exists" test_ref="test_arufm_{{{ SYSCALL }}}_o_creat_64bit_a20100_eperm_auditctl" />
+ 
+           </criteria>
+         </criteria>
+@@ -72,7 +72,7 @@
+   <local_variable id="var_audit_rule_{{{ SYSCALL }}}_o_creat_32bit_a20100_eacces_regex" version="1" datatype="string" comment="Expression to match 32bit {{{ SYSCALL }}} O_CREAT EACCES syscall">
+     <concat>
+       <variable_component var_ref="var_audit_rule_{{{ SYSCALL }}}_o_creat_32bit_head" />
+-      <literal_component>(?:-F\s+a2&amp;0100)[\s]+(?:-F\s+exit=-EACCES)</literal_component>
++      <literal_component>(?:-F\s+{{{ POS }}}&amp;0100)[\s]+(?:-F\s+exit=-EACCES)</literal_component>
+       <variable_component var_ref="var_audit_rule_{{{ SYSCALL }}}_o_creat_tail" />
+     </concat>
+   </local_variable>
+@@ -81,7 +81,7 @@
+   <local_variable id="var_audit_rule_{{{ SYSCALL }}}_o_creat_32bit_a20100_eperm_regex" version="1" datatype="string" comment="Expression to match 32bit {{{ SYSCALL }}} O_CREAT EPERM syscall">
+     <concat>
+       <variable_component var_ref="var_audit_rule_{{{ SYSCALL }}}_o_creat_32bit_head" />
+-      <literal_component>(?:-F\s+a2&amp;0100)[\s]+(?:-F\s+exit=-EPERM)</literal_component>
++      <literal_component>(?:-F\s+{{{ POS }}}&amp;0100)[\s]+(?:-F\s+exit=-EPERM)</literal_component>
+       <variable_component var_ref="var_audit_rule_{{{ SYSCALL }}}_o_creat_tail" />
+     </concat>
+   </local_variable>
+@@ -90,7 +90,7 @@
+   <local_variable id="var_audit_rule_{{{ SYSCALL }}}_o_creat_64bit_a20100_eacces_regex" version="1" datatype="string" comment="Expression to match 64bit {{{ SYSCALL }}} O_CREAT EACCES syscall">
+     <concat>
+       <variable_component var_ref="var_audit_rule_{{{ SYSCALL }}}_o_creat_64bit_head" />
+-      <literal_component>(?:-F\s+a2&amp;0100)[\s]+(?:-F\s+exit=-EACCES)</literal_component>
++      <literal_component>(?:-F\s+{{{ POS }}}&amp;0100)[\s]+(?:-F\s+exit=-EACCES)</literal_component>
+       <variable_component var_ref="var_audit_rule_{{{ SYSCALL }}}_o_creat_tail" />
+     </concat>
+   </local_variable>
+@@ -99,7 +99,7 @@
+   <local_variable id="var_audit_rule_{{{ SYSCALL }}}_o_creat_64bit_a20100_eperm_regex" version="1" datatype="string" comment="Expression to match 32bit {{{ SYSCALL }}} O_CREAT EPERM syscall">
+     <concat>
+       <variable_component var_ref="var_audit_rule_{{{ SYSCALL }}}_o_creat_64bit_head" />
+-      <literal_component>(?:-F\s+a2&amp;0100)[\s]+(?:-F\s+exit=-EPERM)</literal_component>
++      <literal_component>(?:-F\s+{{{ POS }}}&amp;0100)[\s]+(?:-F\s+exit=-EPERM)</literal_component>
+       <variable_component var_ref="var_audit_rule_{{{ SYSCALL }}}_o_creat_tail" />
+     </concat>
+   </local_variable>
+diff --git a/shared/templates/template_OVAL_audit_rules_unsuccessful_file_modification_o_trunc_write b/shared/templates/template_OVAL_audit_rules_unsuccessful_file_modification_o_trunc_write
+index 392e82485a..a4ed459a34 100644
+--- a/shared/templates/template_OVAL_audit_rules_unsuccessful_file_modification_o_trunc_write
++++ b/shared/templates/template_OVAL_audit_rules_unsuccessful_file_modification_o_trunc_write
+@@ -17,16 +17,16 @@
+       <!-- Test the augenrules case -->
+       <criteria operator="AND">
+         <extend_definition comment="audit augenrules" definition_ref="audit_rules_augenrules" />
+-        <criterion comment="Verify audit rule {{{ SYSCALL }}} 32bit a2&amp;01003 eacces augenrules exists" test_ref="test_arufm_{{{ SYSCALL }}}_o_trunc_32bit_a201003_eacces_augenrules" />
+-        <criterion comment="Verify audit rule {{{ SYSCALL }}} 32bit a2&amp;01003 eperm augenrules exists" test_ref="test_arufm_{{{ SYSCALL }}}_o_trunc_32bit_a201003_eperm_augenrules" />
++        <criterion comment="Verify audit rule {{{ SYSCALL }}} 32bit {{{ POS }}}&amp;01003 eacces augenrules exists" test_ref="test_arufm_{{{ SYSCALL }}}_o_trunc_32bit_a201003_eacces_augenrules" />
++        <criterion comment="Verify audit rule {{{ SYSCALL }}} 32bit {{{ POS }}}&amp;01003 eperm augenrules exists" test_ref="test_arufm_{{{ SYSCALL }}}_o_trunc_32bit_a201003_eperm_augenrules" />
+ 
+         <criteria operator="OR">
+           <!-- System either isn't 64-bit => we just check presence of the 32-bit version of the EACCES / EPERM rules-->
+           <extend_definition comment="64-bit system" definition_ref="system_info_architecture_64bit" negate="true" />
+           <!-- Or system is 64-bit => in that case we also need to verify the presence of 64-bit versions of the rules -->
+           <criteria operator="AND">
+-            <criterion comment="Verify audit rule {{{ SYSCALL }}} 64bit a2&amp;01003 eacces augenrules exists" test_ref="test_arufm_{{{ SYSCALL }}}_o_trunc_64bit_a201003_eacces_augenrules" />
+-            <criterion comment="Verify audit rule {{{ SYSCALL }}} 64bit a2&amp;01003 eperm augenrules exists" test_ref="test_arufm_{{{ SYSCALL }}}_o_trunc_64bit_a201003_eperm_augenrules" />
++            <criterion comment="Verify audit rule {{{ SYSCALL }}} 64bit {{{ POS }}}&amp;01003 eacces augenrules exists" test_ref="test_arufm_{{{ SYSCALL }}}_o_trunc_64bit_a201003_eacces_augenrules" />
++            <criterion comment="Verify audit rule {{{ SYSCALL }}} 64bit {{{ POS }}}&amp;01003 eperm augenrules exists" test_ref="test_arufm_{{{ SYSCALL }}}_o_trunc_64bit_a201003_eperm_augenrules" />
+           </criteria>
+         </criteria>
+       </criteria>
+@@ -34,16 +34,16 @@
+       <!-- OR test the auditctl case -->
+       <criteria operator="AND">
+         <extend_definition comment="audit auditctl" definition_ref="audit_rules_auditctl" />
+-        <criterion comment="Verify audit rule {{{ SYSCALL }}} 32bit a2&amp;01003 eacces auditctl exists" test_ref="test_arufm_{{{ SYSCALL }}}_o_trunc_32bit_a201003_eacces_auditctl" />
+-        <criterion comment="Verify audit rule {{{ SYSCALL }}} 32bit a2&amp;01003 eperm auditctl exists" test_ref="test_arufm_{{{ SYSCALL }}}_o_trunc_32bit_a201003_eperm_auditctl" />
++        <criterion comment="Verify audit rule {{{ SYSCALL }}} 32bit {{{ POS }}}&amp;01003 eacces auditctl exists" test_ref="test_arufm_{{{ SYSCALL }}}_o_trunc_32bit_a201003_eacces_auditctl" />
++        <criterion comment="Verify audit rule {{{ SYSCALL }}} 32bit {{{ POS }}}&amp;01003 eperm auditctl exists" test_ref="test_arufm_{{{ SYSCALL }}}_o_trunc_32bit_a201003_eperm_auditctl" />
+ 
+         <criteria operator="OR">
+           <!-- System either isn't 64-bit => we just check presence of the 32-bit version of the EACCES / EPERM rules -->
+           <extend_definition comment="64-bit_system" definition_ref="system_info_architecture_64bit" negate="true" />
+           <!-- Or system is 64-bit => in that case we also need to verify the presence of 64-bit versions of the rules -->
+           <criteria operator="AND">
+-            <criterion comment="Verify audit rule {{{ SYSCALL }}} 64bit a2&amp;01003 eacces auditctl exists" test_ref="test_arufm_{{{ SYSCALL }}}_o_trunc_64bit_a201003_eacces_auditctl" />
+-            <criterion comment="Verify audit rule {{{ SYSCALL }}} 64bit a2&amp;01003 eperm auditctl exists" test_ref="test_arufm_{{{ SYSCALL }}}_o_trunc_64bit_a201003_eperm_auditctl" />
++            <criterion comment="Verify audit rule {{{ SYSCALL }}} 64bit {{{ POS }}}&amp;01003 eacces auditctl exists" test_ref="test_arufm_{{{ SYSCALL }}}_o_trunc_64bit_a201003_eacces_auditctl" />
++            <criterion comment="Verify audit rule {{{ SYSCALL }}} 64bit {{{ POS }}}&amp;01003 eperm auditctl exists" test_ref="test_arufm_{{{ SYSCALL }}}_o_trunc_64bit_a201003_eperm_auditctl" />
+ 
+           </criteria>
+         </criteria>
+@@ -72,7 +72,7 @@
+   <local_variable id="var_audit_rule_{{{ SYSCALL }}}_o_trunc_32bit_a201003_eacces_regex" version="1" datatype="string" comment="Expression to match 32bit {{{ SYSCALL }}} O_TRUNC EACCES syscall">
+     <concat>
+       <variable_component var_ref="var_audit_rule_{{{ SYSCALL }}}_o_trunc_32bit_head" />
+-      <literal_component>(?:-F\s+a2&amp;01003)[\s]+(?:-F\s+exit=-EACCES)</literal_component>
++      <literal_component>(?:-F\s+{{{ POS }}}&amp;01003)[\s]+(?:-F\s+exit=-EACCES)</literal_component>
+       <variable_component var_ref="var_audit_rule_{{{ SYSCALL }}}_o_trunc_tail" />
+     </concat>
+   </local_variable>
+@@ -81,7 +81,7 @@
+   <local_variable id="var_audit_rule_{{{ SYSCALL }}}_o_trunc_32bit_a201003_eperm_regex" version="1" datatype="string" comment="Expression to match 32bit {{{ SYSCALL }}} O_TRUNC EPERM EACCES syscall">
+     <concat>
+       <variable_component var_ref="var_audit_rule_{{{ SYSCALL }}}_o_trunc_32bit_head" />
+-      <literal_component>(?:-F\s+a2&amp;01003)[\s]+(?:-F\s+exit=-EPERM)</literal_component>
++      <literal_component>(?:-F\s+{{{ POS }}}&amp;01003)[\s]+(?:-F\s+exit=-EPERM)</literal_component>
+       <variable_component var_ref="var_audit_rule_{{{ SYSCALL }}}_o_trunc_tail" />
+     </concat>
+   </local_variable>
+@@ -90,7 +90,7 @@
+   <local_variable id="var_audit_rule_{{{ SYSCALL }}}_o_trunc_64bit_a201003_eacces_regex" version="1" datatype="string" comment="Expression to match 64bit {{{ SYSCALL }}} O_TRUNC EACCES syscall">
+     <concat>
+       <variable_component var_ref="var_audit_rule_{{{ SYSCALL }}}_o_trunc_64bit_head" />
+-      <literal_component>(?:-F\s+a2&amp;01003)[\s]+(?:-F\s+exit=-EACCES)</literal_component>
++      <literal_component>(?:-F\s+{{{ POS }}}&amp;01003)[\s]+(?:-F\s+exit=-EACCES)</literal_component>
+       <variable_component var_ref="var_audit_rule_{{{ SYSCALL }}}_o_trunc_tail" />
+     </concat>
+   </local_variable>
+@@ -99,7 +99,7 @@
+   <local_variable id="var_audit_rule_{{{ SYSCALL }}}_o_trunc_64bit_a201003_eperm_regex" version="1" datatype="string" comment="Expression to match 64bit {{{ SYSCALL }}} O_TRUNC EPERM syscall">
+     <concat>
+       <variable_component var_ref="var_audit_rule_{{{ SYSCALL }}}_o_trunc_64bit_head" />
+-      <literal_component>(?:-F\s+a2&amp;01003)[\s]+(?:-F\s+exit=-EPERM)</literal_component>
++      <literal_component>(?:-F\s+{{{ POS }}}&amp;01003)[\s]+(?:-F\s+exit=-EPERM)</literal_component>
+       <variable_component var_ref="var_audit_rule_{{{ SYSCALL }}}_o_trunc_tail" />
+     </concat>
+   </local_variable>
+diff --git a/shared/templates/template_OVAL_audit_rules_unsuccessful_file_modification_rule_order b/shared/templates/template_OVAL_audit_rules_unsuccessful_file_modification_rule_order
+index 38be967c75..8178c94e11 100644
+--- a/shared/templates/template_OVAL_audit_rules_unsuccessful_file_modification_rule_order
++++ b/shared/templates/template_OVAL_audit_rules_unsuccessful_file_modification_rule_order
+@@ -73,14 +73,14 @@
+   <local_variable id="var_audit_rule_{{{ SYSCALL }}}_order_32bit_a20100_eacces_regex" version="1" datatype="string" comment="arches to audit">
+     <concat>
+       <variable_component var_ref="var_audit_rule_{{{ SYSCALL }}}_order_32bit_head" />
+-      <literal_component>(?:-F\s+a2&amp;0100)[\s]+(?:-F\s+exit=-EACCES)</literal_component>
++      <literal_component>(?:-F\s+{{{ POS }}}&amp;0100)[\s]+(?:-F\s+exit=-EACCES)</literal_component>
+       <variable_component var_ref="var_audit_rule_{{{ SYSCALL }}}_order_tail" />
+     </concat>
+   </local_variable>
+   <local_variable id="var_audit_rule_{{{ SYSCALL }}}_order_32bit_a201003_eacces_regex" version="1" datatype="string" comment="arches to audit">
+     <concat>
+       <variable_component var_ref="var_audit_rule_{{{ SYSCALL }}}_order_32bit_head" />
+-      <literal_component>(?:-F\s+a2&amp;01003)[\s]+(?:-F\s+exit=-EACCES)</literal_component>
++      <literal_component>(?:-F\s+{{{ POS }}}&amp;01003)[\s]+(?:-F\s+exit=-EACCES)</literal_component>
+       <variable_component var_ref="var_audit_rule_{{{ SYSCALL }}}_order_tail" />
+     </concat>
+   </local_variable>
+@@ -96,14 +96,14 @@
+   <local_variable id="var_audit_rule_{{{ SYSCALL }}}_order_32bit_a20100_eperm_regex" version="1" datatype="string" comment="arches to audit">
+     <concat>
+       <variable_component var_ref="var_audit_rule_{{{ SYSCALL }}}_order_32bit_head" />
+-      <literal_component>(?:-F\s+a2&amp;0100)[\s]+(?:-F\s+exit=-EPERM)</literal_component>
++      <literal_component>(?:-F\s+{{{ POS }}}&amp;0100)[\s]+(?:-F\s+exit=-EPERM)</literal_component>
+       <variable_component var_ref="var_audit_rule_{{{ SYSCALL }}}_order_tail" />
+     </concat>
+   </local_variable>
+   <local_variable id="var_audit_rule_{{{ SYSCALL }}}_order_32bit_a201003_eperm_regex" version="1" datatype="string" comment="arches to audit">
+     <concat>
+       <variable_component var_ref="var_audit_rule_{{{ SYSCALL }}}_order_32bit_head" />
+-      <literal_component>(?:-F\s+a2&amp;01003)[\s]+(?:-F\s+exit=-EPERM)</literal_component>
++      <literal_component>(?:-F\s+{{{ POS }}}&amp;01003)[\s]+(?:-F\s+exit=-EPERM)</literal_component>
+       <variable_component var_ref="var_audit_rule_{{{ SYSCALL }}}_order_tail" />
+     </concat>
+   </local_variable>
+@@ -119,14 +119,14 @@
+   <local_variable id="var_audit_rule_{{{ SYSCALL }}}_order_64bit_a20100_eacces_regex" version="1" datatype="string" comment="arches to audit">
+     <concat>
+       <variable_component var_ref="var_audit_rule_{{{ SYSCALL }}}_order_64bit_head" />
+-      <literal_component>(?:-F\s+a2&amp;0100)[\s]+(?:-F\s+exit=-EACCES)</literal_component>
++      <literal_component>(?:-F\s+{{{ POS }}}&amp;0100)[\s]+(?:-F\s+exit=-EACCES)</literal_component>
+       <variable_component var_ref="var_audit_rule_{{{ SYSCALL }}}_order_tail" />
+     </concat>
+   </local_variable>
+   <local_variable id="var_audit_rule_{{{ SYSCALL }}}_order_64bit_a201003_eacces_regex" version="1" datatype="string" comment="arches to audit">
+     <concat>
+       <variable_component var_ref="var_audit_rule_{{{ SYSCALL }}}_order_64bit_head" />
+-      <literal_component>(?:-F\s+a2&amp;01003)[\s]+(?:-F\s+exit=-EACCES)</literal_component>
++      <literal_component>(?:-F\s+{{{ POS }}}&amp;01003)[\s]+(?:-F\s+exit=-EACCES)</literal_component>
+       <variable_component var_ref="var_audit_rule_{{{ SYSCALL }}}_order_tail" />
+     </concat>
+   </local_variable>
+@@ -142,14 +142,14 @@
+   <local_variable id="var_audit_rule_{{{ SYSCALL }}}_order_64bit_a20100_eperm_regex" version="1" datatype="string" comment="arches to audit">
+     <concat>
+       <variable_component var_ref="var_audit_rule_{{{ SYSCALL }}}_order_64bit_head" />
+-      <literal_component>(?:-F\s+a2&amp;0100)[\s]+(?:-F\s+exit=-EPERM)</literal_component>
++      <literal_component>(?:-F\s+{{{ POS }}}&amp;0100)[\s]+(?:-F\s+exit=-EPERM)</literal_component>
+       <variable_component var_ref="var_audit_rule_{{{ SYSCALL }}}_order_tail" />
+     </concat>
+   </local_variable>
+   <local_variable id="var_audit_rule_{{{ SYSCALL }}}_order_64bit_a201003_eperm_regex" version="1" datatype="string" comment="arches to audit">
+     <concat>
+       <variable_component var_ref="var_audit_rule_{{{ SYSCALL }}}_order_64bit_head" />
+-      <literal_component>(?:-F\s+a2&amp;01003)[\s]+(?:-F\s+exit=-EPERM)</literal_component>
++      <literal_component>(?:-F\s+{{{ POS }}}&amp;01003)[\s]+(?:-F\s+exit=-EPERM)</literal_component>
+       <variable_component var_ref="var_audit_rule_{{{ SYSCALL }}}_order_tail" />
+     </concat>
+   </local_variable>
+diff --git a/tests/data/group_system/group_auditing/group_auditd_configure_rules/audit_path_syscall/rule_audit_rules_etc_passwd_open/auditctl_correct_rule.pass.sh b/tests/data/group_system/group_auditing/group_auditd_configure_rules/audit_path_syscall/rule_audit_rules_etc_passwd_open/auditctl_correct_rule.pass.sh
+index 1d7e184d77..a9a4207877 100644
+--- a/tests/data/group_system/group_auditing/group_auditd_configure_rules/audit_path_syscall/rule_audit_rules_etc_passwd_open/auditctl_correct_rule.pass.sh
++++ b/tests/data/group_system/group_auditing/group_auditd_configure_rules/audit_path_syscall/rule_audit_rules_etc_passwd_open/auditctl_correct_rule.pass.sh
+@@ -6,5 +6,5 @@
+ # Use auditctl in RHEL7
+ sed -i "s%^ExecStartPost=.*%ExecStartPost=-/sbin/auditctl%" /usr/lib/systemd/system/auditd.service
+ 
+-echo "-a always,exit -F arch=b32 -S open -F a2&03 -F path=/etc/passwd -F auid>=1000 -F auid!=unset -F key=user-modify" >> /etc/audit/audit.rules
+-echo "-a always,exit -F arch=b64 -S open -F a2&03 -F path=/etc/passwd -F auid>=1000 -F auid!=unset -F key=user-modify" >> /etc/audit/audit.rules
++echo "-a always,exit -F arch=b32 -S open -F a1&03 -F path=/etc/passwd -F auid>=1000 -F auid!=unset -F key=user-modify" >> /etc/audit/audit.rules
++echo "-a always,exit -F arch=b64 -S open -F a1&03 -F path=/etc/passwd -F auid>=1000 -F auid!=unset -F key=user-modify" >> /etc/audit/audit.rules
+diff --git a/tests/data/group_system/group_auditing/group_auditd_configure_rules/audit_path_syscall/rule_audit_rules_etc_passwd_open/auditctl_multiple_syscalls.pass.sh b/tests/data/group_system/group_auditing/group_auditd_configure_rules/audit_path_syscall/rule_audit_rules_etc_passwd_open/auditctl_multiple_syscalls.pass.sh
+deleted file mode 100644
+index 3a021a17c2..0000000000
+--- a/tests/data/group_system/group_auditing/group_auditd_configure_rules/audit_path_syscall/rule_audit_rules_etc_passwd_open/auditctl_multiple_syscalls.pass.sh
++++ /dev/null
+@@ -1,10 +0,0 @@
+-#!/bin/bash
+-
+-# profiles = xccdf_org.ssgproject.content_profile_ospp
+-# remediation = none
+-
+-# Use auditctl in RHEL7
+-sed -i "s%^ExecStartPost=.*%ExecStartPost=-/sbin/auditctl%" /usr/lib/systemd/system/auditd.service
+-
+-echo "-a always,exit -F arch=b32 -S open,openat,open_by_handle_at -F a2&03 -F path=/etc/passwd -F auid>=1000 -F auid!=unset -F key=user-modify" >> /etc/audit/audit.rules
+-echo "-a always,exit -F arch=b64 -S open,openat,open_by_handle_at -F a2&03 -F path=/etc/passwd -F auid>=1000 -F auid!=unset -F key=user-modify" >> /etc/audit/audit.rules
+diff --git a/tests/data/group_system/group_auditing/group_auditd_configure_rules/audit_path_syscall/rule_audit_rules_etc_passwd_open/auditctl_wrong_dir.fail.sh b/tests/data/group_system/group_auditing/group_auditd_configure_rules/audit_path_syscall/rule_audit_rules_etc_passwd_open/auditctl_wrong_dir.fail.sh
+index 86b90c7081..0eabbe097c 100644
+--- a/tests/data/group_system/group_auditing/group_auditd_configure_rules/audit_path_syscall/rule_audit_rules_etc_passwd_open/auditctl_wrong_dir.fail.sh
++++ b/tests/data/group_system/group_auditing/group_auditd_configure_rules/audit_path_syscall/rule_audit_rules_etc_passwd_open/auditctl_wrong_dir.fail.sh
+@@ -6,5 +6,5 @@
+ # Use auditctl in RHEL7
+ sed -i "s%^ExecStartPost=.*%ExecStartPost=-/sbin/auditctl%" /usr/lib/systemd/system/auditd.service
+ 
+-echo "-a always,exit -F arch=b32 -S open -F a2&03 -F path=/etc/password -F auid>=1000 -F auid!=unset -F key=user-modify" >> /etc/audit/audit.rules
+-echo "-a always,exit -F arch=b64 -S open -F a2&03 -F path=/etc/passwd -F auid>=1000 -F auid!=unset -F key=user-modify" >> /etc/audit/audit.rules
++echo "-a always,exit -F arch=b32 -S open -F a1&03 -F path=/etc/password -F auid>=1000 -F auid!=unset -F key=user-modify" >> /etc/audit/audit.rules
++echo "-a always,exit -F arch=b64 -S open -F a1&03 -F path=/etc/passwd -F auid>=1000 -F auid!=unset -F key=user-modify" >> /etc/audit/audit.rules
+diff --git a/tests/data/group_system/group_auditing/group_auditd_configure_rules/audit_path_syscall/rule_audit_rules_etc_passwd_open/augenrules_correct_rule.pass.sh b/tests/data/group_system/group_auditing/group_auditd_configure_rules/audit_path_syscall/rule_audit_rules_etc_passwd_open/augenrules_correct_rule.pass.sh
+index 5498915471..6e17de9c20 100644
+--- a/tests/data/group_system/group_auditing/group_auditd_configure_rules/audit_path_syscall/rule_audit_rules_etc_passwd_open/augenrules_correct_rule.pass.sh
++++ b/tests/data/group_system/group_auditing/group_auditd_configure_rules/audit_path_syscall/rule_audit_rules_etc_passwd_open/augenrules_correct_rule.pass.sh
+@@ -3,5 +3,5 @@
+ # profiles = xccdf_org.ssgproject.content_profile_ospp
+ # remediation = none
+ 
+-echo "-a always,exit -F arch=b32 -S open -F a2&03 -F path=/etc/passwd -F auid>=1000 -F auid!=unset -F key=user-modify" >> /etc/audit/rules.d/var_log_audit.rules
+-echo "-a always,exit -F arch=b64 -S open -F a2&03 -F path=/etc/passwd -F auid>=1000 -F auid!=unset -F key=user-modify" >> /etc/audit/rules.d/var_log_audit.rules
++echo "-a always,exit -F arch=b32 -S open -F a1&03 -F path=/etc/passwd -F auid>=1000 -F auid!=unset -F key=user-modify" >> /etc/audit/rules.d/var_log_audit.rules
++echo "-a always,exit -F arch=b64 -S open -F a1&03 -F path=/etc/passwd -F auid>=1000 -F auid!=unset -F key=user-modify" >> /etc/audit/rules.d/var_log_audit.rules
+diff --git a/tests/data/group_system/group_auditing/group_auditd_configure_rules/audit_path_syscall/rule_audit_rules_etc_passwd_open/augenrules_wrong_dir.fail.sh b/tests/data/group_system/group_auditing/group_auditd_configure_rules/audit_path_syscall/rule_audit_rules_etc_passwd_open/augenrules_wrong_dir.fail.sh
+index 2852da3aaa..7b7b6bc76d 100644
+--- a/tests/data/group_system/group_auditing/group_auditd_configure_rules/audit_path_syscall/rule_audit_rules_etc_passwd_open/augenrules_wrong_dir.fail.sh
++++ b/tests/data/group_system/group_auditing/group_auditd_configure_rules/audit_path_syscall/rule_audit_rules_etc_passwd_open/augenrules_wrong_dir.fail.sh
+@@ -3,5 +3,5 @@
+ # profiles = xccdf_org.ssgproject.content_profile_ospp
+ # remediation = none
+ 
+-echo "-a always,exit -F arch=b32 -S open -F a2&03 -F path=/etc/password -F auid>=1000 -F auid!=unset -F key=user-modify" >> /etc/audit/rules.d/var_log_audit.rules
+-echo "-a always,exit -F arch=b64 -S open -F a2&03 -F path=/etc/passwd -F auid>=1000 -F auid!=unset -F key=user-modify" >> /etc/audit/rules.d/var_log_audit.rules
++echo "-a always,exit -F arch=b32 -S open -F a1&03 -F path=/etc/password -F auid>=1000 -F auid!=unset -F key=user-modify" >> /etc/audit/rules.d/var_log_audit.rules
++echo "-a always,exit -F arch=b64 -S open -F a1&03 -F path=/etc/passwd -F auid>=1000 -F auid!=unset -F key=user-modify" >> /etc/audit/rules.d/var_log_audit.rules
+diff --git a/tests/data/group_system/group_auditing/group_auditd_configure_rules/audit_path_syscall/rule_audit_rules_etc_passwd_openat/auditctl_correct_rule.pass.sh b/tests/data/group_system/group_auditing/group_auditd_configure_rules/audit_path_syscall/rule_audit_rules_etc_passwd_openat/auditctl_correct_rule.pass.sh
+new file mode 100644
+index 0000000000..472b62ee57
+--- /dev/null
++++ b/tests/data/group_system/group_auditing/group_auditd_configure_rules/audit_path_syscall/rule_audit_rules_etc_passwd_openat/auditctl_correct_rule.pass.sh
+@@ -0,0 +1,10 @@
++#!/bin/bash
++
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++# remediation = none
++
++# Use auditctl in RHEL7
++sed -i "s%^ExecStartPost=.*%ExecStartPost=-/sbin/auditctl%" /usr/lib/systemd/system/auditd.service
++
++echo "-a always,exit -F arch=b32 -S openat -F a2&03 -F path=/etc/passwd -F auid>=1000 -F auid!=unset -F key=user-modify" >> /etc/audit/audit.rules
++echo "-a always,exit -F arch=b64 -S openat -F a2&03 -F path=/etc/passwd -F auid>=1000 -F auid!=unset -F key=user-modify" >> /etc/audit/audit.rules
+diff --git a/tests/data/group_system/group_auditing/group_auditd_configure_rules/audit_path_syscall/rule_audit_rules_etc_passwd_openat/auditctl_multiple_syscalls.pass.sh b/tests/data/group_system/group_auditing/group_auditd_configure_rules/audit_path_syscall/rule_audit_rules_etc_passwd_openat/auditctl_multiple_syscalls.pass.sh
+new file mode 100644
+index 0000000000..595a97ab22
+--- /dev/null
++++ b/tests/data/group_system/group_auditing/group_auditd_configure_rules/audit_path_syscall/rule_audit_rules_etc_passwd_openat/auditctl_multiple_syscalls.pass.sh
+@@ -0,0 +1,10 @@
++#!/bin/bash
++
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++# remediation = none
++
++# Use auditctl in RHEL7
++sed -i "s%^ExecStartPost=.*%ExecStartPost=-/sbin/auditctl%" /usr/lib/systemd/system/auditd.service
++
++echo "-a always,exit -F arch=b32 -S openat,open_by_handle_at -F a2&03 -F path=/etc/passwd -F auid>=1000 -F auid!=unset -F key=user-modify" >> /etc/audit/audit.rules
++echo "-a always,exit -F arch=b64 -S openat,open_by_handle_at -F a2&03 -F path=/etc/passwd -F auid>=1000 -F auid!=unset -F key=user-modify" >> /etc/audit/audit.rules
+diff --git a/tests/data/group_system/group_auditing/group_auditd_configure_rules/audit_path_syscall/rule_audit_rules_etc_passwd_openat/auditctl_wrong_dir.fail.sh b/tests/data/group_system/group_auditing/group_auditd_configure_rules/audit_path_syscall/rule_audit_rules_etc_passwd_openat/auditctl_wrong_dir.fail.sh
+new file mode 100644
+index 0000000000..6ef86ff816
+--- /dev/null
++++ b/tests/data/group_system/group_auditing/group_auditd_configure_rules/audit_path_syscall/rule_audit_rules_etc_passwd_openat/auditctl_wrong_dir.fail.sh
+@@ -0,0 +1,10 @@
++#!/bin/bash
++
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++# remediation = none
++
++# Use auditctl in RHEL7
++sed -i "s%^ExecStartPost=.*%ExecStartPost=-/sbin/auditctl%" /usr/lib/systemd/system/auditd.service
++
++echo "-a always,exit -F arch=b32 -S openat -F a2&03 -F path=/etc/password -F auid>=1000 -F auid!=unset -F key=user-modify" >> /etc/audit/audit.rules
++echo "-a always,exit -F arch=b64 -S openat -F a2&03 -F path=/etc/passwd -F auid>=1000 -F auid!=unset -F key=user-modify" >> /etc/audit/audit.rules
+diff --git a/tests/data/group_system/group_auditing/group_auditd_configure_rules/audit_path_syscall/rule_audit_rules_etc_passwd_openat/augenrules_correct_rule.pass.sh b/tests/data/group_system/group_auditing/group_auditd_configure_rules/audit_path_syscall/rule_audit_rules_etc_passwd_openat/augenrules_correct_rule.pass.sh
+new file mode 100644
+index 0000000000..8c4aaaac25
+--- /dev/null
++++ b/tests/data/group_system/group_auditing/group_auditd_configure_rules/audit_path_syscall/rule_audit_rules_etc_passwd_openat/augenrules_correct_rule.pass.sh
+@@ -0,0 +1,7 @@
++#!/bin/bash
++
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++# remediation = none
++
++echo "-a always,exit -F arch=b32 -S openat -F a2&03 -F path=/etc/passwd -F auid>=1000 -F auid!=unset -F key=user-modify" >> /etc/audit/rules.d/var_log_audit.rules
++echo "-a always,exit -F arch=b64 -S openat -F a2&03 -F path=/etc/passwd -F auid>=1000 -F auid!=unset -F key=user-modify" >> /etc/audit/rules.d/var_log_audit.rules
+diff --git a/tests/data/group_system/group_auditing/group_auditd_configure_rules/audit_path_syscall/rule_audit_rules_etc_passwd_openat/augenrules_escaped_gt.fail.sh b/tests/data/group_system/group_auditing/group_auditd_configure_rules/audit_path_syscall/rule_audit_rules_etc_passwd_openat/augenrules_escaped_gt.fail.sh
+new file mode 100644
+index 0000000000..28ee5ffd9d
+--- /dev/null
++++ b/tests/data/group_system/group_auditing/group_auditd_configure_rules/audit_path_syscall/rule_audit_rules_etc_passwd_openat/augenrules_escaped_gt.fail.sh
+@@ -0,0 +1,7 @@
++#!/bin/bash
++
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++# remediation = none
++
++echo "-a always,exit -F arch=b32 -S openat -F a2&03 -F path=/etc/passwd -F auid&gt;=1000 -F auid!=unset -F key=user-modify" >> /etc/audit/rules.d/var_log_audit.rules
++echo "-a always,exit -F arch=b64 -S openat -F a2&03 -F path=/etc/passwd -F auid&gt;=1000 -F auid!=unset -F key=user-modify" >> /etc/audit/rules.d/var_log_audit.rules
+diff --git a/tests/data/group_system/group_auditing/group_auditd_configure_rules/audit_path_syscall/rule_audit_rules_etc_passwd_openat/augenrules_wrong_dir.fail.sh b/tests/data/group_system/group_auditing/group_auditd_configure_rules/audit_path_syscall/rule_audit_rules_etc_passwd_openat/augenrules_wrong_dir.fail.sh
+new file mode 100644
+index 0000000000..9c9ac0fad4
+--- /dev/null
++++ b/tests/data/group_system/group_auditing/group_auditd_configure_rules/audit_path_syscall/rule_audit_rules_etc_passwd_openat/augenrules_wrong_dir.fail.sh
+@@ -0,0 +1,7 @@
++#!/bin/bash
++
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++# remediation = none
++
++echo "-a always,exit -F arch=b32 -S openat -F a2&03 -F path=/etc/password -F auid>=1000 -F auid!=unset -F key=user-modify" >> /etc/audit/rules.d/var_log_audit.rules
++echo "-a always,exit -F arch=b64 -S openat -F a2&03 -F path=/etc/passwd -F auid>=1000 -F auid!=unset -F key=user-modify" >> /etc/audit/rules.d/var_log_audit.rules
+diff --git a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/audit_open_o_creat.rules b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/audit_open_o_creat.rules
+index 0a07041e63..1b4fca8722 100644
+--- a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/audit_open_o_creat.rules
++++ b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/audit_open_o_creat.rules
+@@ -1,5 +1,5 @@
+ ## Unsuccessful file creation (open with O_CREAT)
+--a always,exit -F arch=b32 -S open,openat,open_by_handle_at -F a2&0100 -F exit=-EACCES -F auid>=1000 -F auid!=unset -F key=unsuccesful-create
+--a always,exit -F arch=b64 -S open,openat,open_by_handle_at -F a2&0100 -F exit=-EACCES -F auid>=1000 -F auid!=unset -F key=unsuccesful-create
+--a always,exit -F arch=b32 -S open,openat,open_by_handle_at -F a2&0100 -F exit=-EPERM -F auid>=1000 -F auid!=unset -F key=unsuccesful-create
+--a always,exit -F arch=b64 -S open,openat,open_by_handle_at -F a2&0100 -F exit=-EPERM -F auid>=1000 -F auid!=unset -F key=unsuccesful-create
++-a always,exit -F arch=b32 -S open -F a1&0100 -F exit=-EACCES -F auid>=1000 -F auid!=unset -F key=unsuccesful-create
++-a always,exit -F arch=b64 -S open -F a1&0100 -F exit=-EACCES -F auid>=1000 -F auid!=unset -F key=unsuccesful-create
++-a always,exit -F arch=b32 -S open -F a1&0100 -F exit=-EPERM -F auid>=1000 -F auid!=unset -F key=unsuccesful-create
++-a always,exit -F arch=b64 -S open -F a1&0100 -F exit=-EPERM -F auid>=1000 -F auid!=unset -F key=unsuccesful-create
+diff --git a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/audit_open_o_trunc_write.rules b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/audit_open_o_trunc_write.rules
+index 0ce682f401..7313ee8afd 100644
+--- a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/audit_open_o_trunc_write.rules
++++ b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/audit_open_o_trunc_write.rules
+@@ -1,5 +1,5 @@
+ ## Unsuccessful file modifications (open for write or truncate)
+--a always,exit -F arch=b32 -S open,openat,open_by_handle_at -F a2&01003 -F exit=-EACCES -F auid>=1000 -F auid!=unset -F key=unsuccesful-modification
+--a always,exit -F arch=b64 -S open,openat,open_by_handle_at -F a2&01003 -F exit=-EACCES -F auid>=1000 -F auid!=unset -F key=unsuccesful-modification
+--a always,exit -F arch=b32 -S open,openat,open_by_handle_at -F a2&01003 -F exit=-EPERM -F auid>=1000 -F auid!=unset -F key=unsuccesful-modification
+--a always,exit -F arch=b64 -S open,openat,open_by_handle_at -F a2&01003 -F exit=-EPERM -F auid>=1000 -F auid!=unset -F key=unsuccesful-modification
++-a always,exit -F arch=b32 -S open -F a1&01003 -F exit=-EACCES -F auid>=1000 -F auid!=unset -F key=unsuccesful-modification
++-a always,exit -F arch=b64 -S open -F a1&01003 -F exit=-EACCES -F auid>=1000 -F auid!=unset -F key=unsuccesful-modification
++-a always,exit -F arch=b32 -S open -F a1&01003 -F exit=-EPERM -F auid>=1000 -F auid!=unset -F key=unsuccesful-modification
++-a always,exit -F arch=b64 -S open -F a1&01003 -F exit=-EPERM -F auid>=1000 -F auid!=unset -F key=unsuccesful-modification
+diff --git a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/audit_openat_o_creat.rules b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/audit_openat_o_creat.rules
+new file mode 100644
+index 0000000000..b8b4020a58
+--- /dev/null
++++ b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/audit_openat_o_creat.rules
+@@ -0,0 +1,5 @@
++## Unsuccessful file creation (open with O_CREAT)
++-a always,exit -F arch=b32 -S openat,open_by_handle_at -F a2&0100 -F exit=-EACCES -F auid>=1000 -F auid!=unset -F key=unsuccesful-create
++-a always,exit -F arch=b64 -S openat,open_by_handle_at -F a2&0100 -F exit=-EACCES -F auid>=1000 -F auid!=unset -F key=unsuccesful-create
++-a always,exit -F arch=b32 -S openat,open_by_handle_at -F a2&0100 -F exit=-EPERM -F auid>=1000 -F auid!=unset -F key=unsuccesful-create
++-a always,exit -F arch=b64 -S openat,open_by_handle_at -F a2&0100 -F exit=-EPERM -F auid>=1000 -F auid!=unset -F key=unsuccesful-create
+diff --git a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/audit_openat_o_trunc_write.rules b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/audit_openat_o_trunc_write.rules
+new file mode 100644
+index 0000000000..21083847d8
+--- /dev/null
++++ b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/audit_openat_o_trunc_write.rules
+@@ -0,0 +1,5 @@
++## Unsuccessful file modifications (open for write or truncate)
++-a always,exit -F arch=b32 -S openat,open_by_handle_at -F a2&01003 -F exit=-EACCES -F auid>=1000 -F auid!=unset -F key=unsuccesful-modification
++-a always,exit -F arch=b64 -S openat,open_by_handle_at -F a2&01003 -F exit=-EACCES -F auid>=1000 -F auid!=unset -F key=unsuccesful-modification
++-a always,exit -F arch=b32 -S openat,open_by_handle_at -F a2&01003 -F exit=-EPERM -F auid>=1000 -F auid!=unset -F key=unsuccesful-modification
++-a always,exit -F arch=b64 -S openat,open_by_handle_at -F a2&01003 -F exit=-EPERM -F auid>=1000 -F auid!=unset -F key=unsuccesful-modification
+diff --git a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_open_o_creat/o_creat_before_last.pass.sh b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_open_o_creat/o_creat_before_last.pass.sh
+deleted file mode 100644
+index acdec877ef..0000000000
+--- a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_open_o_creat/o_creat_before_last.pass.sh
++++ /dev/null
+@@ -1,7 +0,0 @@
+-#!/bin/bash
+-
+-# profiles = xccdf_org.ssgproject.content_profile_ospp
+-# remediation = none
+-
+-sed 's/openat,open_by_handle_at/open,open_by_handle_at/' ../audit_open_o_creat.rules > /etc/audit/rules.d/open_o_creat.rules
+-sed -i 's/ open,/ openat,/' /etc/audit/rules.d/open_o_creat.rules
+diff --git a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_open_o_creat/o_creat_last.pass.sh b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_open_o_creat/o_creat_last.pass.sh
+deleted file mode 100644
+index 33a3ad88bf..0000000000
+--- a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_open_o_creat/o_creat_last.pass.sh
++++ /dev/null
+@@ -1,7 +0,0 @@
+-#!/bin/bash
+-
+-# profiles = xccdf_org.ssgproject.content_profile_ospp
+-# remediation = none
+-
+-sed 's/_by_handle_at//' ../audit_open_o_creat.rules > /etc/audit/rules.d/open_o_creat.rules
+-sed -i 's/open,/open_by_handle_at,/' /etc/audit/rules.d/open_o_creat.rules
+diff --git a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_openat_o_creat/empty.fail.sh b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_openat_o_creat/empty.fail.sh
+new file mode 100644
+index 0000000000..8ad6e6db48
+--- /dev/null
++++ b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_openat_o_creat/empty.fail.sh
+@@ -0,0 +1,8 @@
++#!/bin/bash
++
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++# remediation = none
++
++rm -f /etc/audit/rules.d/*
++> /etc/audit/audit.rules
++true
+diff --git a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_openat_o_creat/o_creat_last.pass.sh b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_openat_o_creat/o_creat_last.pass.sh
+new file mode 100644
+index 0000000000..920799a16a
+--- /dev/null
++++ b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_openat_o_creat/o_creat_last.pass.sh
+@@ -0,0 +1,7 @@
++#!/bin/bash
++
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++# remediation = none
++
++sed 's/_by_handle_at/at/' ../audit_openat_o_creat.rules > /etc/audit/rules.d/openat_o_creat.rules
++sed -i 's/openat,/open_by_handle_at,/' /etc/audit/rules.d/openat_o_creat.rules
+diff --git a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_openat_o_creat/o_creat_rules.pass.sh b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_openat_o_creat/o_creat_rules.pass.sh
+new file mode 100644
+index 0000000000..177e34e936
+--- /dev/null
++++ b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_openat_o_creat/o_creat_rules.pass.sh
+@@ -0,0 +1,6 @@
++#!/bin/bash
++
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++# remediation = none
++
++cp ../audit_openat_o_creat.rules /etc/audit/rules.d/
+diff --git a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_openat_o_creat/o_trunc_write.fails.sh b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_openat_o_creat/o_trunc_write.fails.sh
+new file mode 100644
+index 0000000000..c5c656184f
+--- /dev/null
++++ b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_openat_o_creat/o_trunc_write.fails.sh
+@@ -0,0 +1,6 @@
++#!/bin/bash
++
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++# remediation = none
++
++cp ../audit_openat_o_trunc_write.rules /etc/audit/rules.d/
+diff --git a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_openat_o_creat/open_rules.fail.sh b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_openat_o_creat/open_rules.fail.sh
+new file mode 100644
+index 0000000000..4da58d43ca
+--- /dev/null
++++ b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_openat_o_creat/open_rules.fail.sh
+@@ -0,0 +1,6 @@
++#!/bin/bash
++
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++# remediation = none
++
++cp ../audit_open.rules /etc/audit/rules.d/
+diff --git a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_openat_o_creat/rules-amis.fail.sh b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_openat_o_creat/rules-amis.fail.sh
+new file mode 100644
+index 0000000000..6d274c2c8a
+--- /dev/null
++++ b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_openat_o_creat/rules-amis.fail.sh
+@@ -0,0 +1,6 @@
++#!/bin/bash
++
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++# remediation = none
++
++sed '3,4d' ../audit_openat_o_creat.rules > /etc/audit/rules.d/openat-o_creat.rules
+diff --git a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_openat_o_trunc_write/empty.fail.sh b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_openat_o_trunc_write/empty.fail.sh
+new file mode 100644
+index 0000000000..8ad6e6db48
+--- /dev/null
++++ b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_openat_o_trunc_write/empty.fail.sh
+@@ -0,0 +1,8 @@
++#!/bin/bash
++
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++# remediation = none
++
++rm -f /etc/audit/rules.d/*
++> /etc/audit/audit.rules
++true
+diff --git a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_openat_o_trunc_write/o_creat.fail.sh b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_openat_o_trunc_write/o_creat.fail.sh
+new file mode 100644
+index 0000000000..18c2133ff2
+--- /dev/null
++++ b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_openat_o_trunc_write/o_creat.fail.sh
+@@ -0,0 +1,6 @@
++#!/bin/bash
++
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++# remediation = none
++
++cp ../audit_open_o_creat.rules /etc/audit/rules.d/
+diff --git a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_openat_o_trunc_write/o_trunc.pass.sh b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_openat_o_trunc_write/o_trunc.pass.sh
+new file mode 100644
+index 0000000000..9156a1c53f
+--- /dev/null
++++ b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_openat_o_trunc_write/o_trunc.pass.sh
+@@ -0,0 +1,6 @@
++#!/bin/bash
++
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++# remediation = none
++
++cp ../audit_open_o_trunc_write.rules /etc/audit/rules.d/
+diff --git a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_openat_o_trunc_write/open_rules.fail.sh b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_openat_o_trunc_write/open_rules.fail.sh
+new file mode 100644
+index 0000000000..4da58d43ca
+--- /dev/null
++++ b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_openat_o_trunc_write/open_rules.fail.sh
+@@ -0,0 +1,6 @@
++#!/bin/bash
++
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++# remediation = none
++
++cp ../audit_open.rules /etc/audit/rules.d/
+diff --git a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_openat_o_trunc_write/rules-amis.fail.sh b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_openat_o_trunc_write/rules-amis.fail.sh
+new file mode 100644
+index 0000000000..7f677fd2c6
+--- /dev/null
++++ b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_openat_o_trunc_write/rules-amis.fail.sh
+@@ -0,0 +1,6 @@
++#!/bin/bash
++
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++# remediation = none
++
++sed '3,4d' ../audit_open_o_trunc_write.rules > /etc/audit/rules.d/open-o_trunc_write.rules
+diff --git a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_openat_rule_order/ordered_arch.pass.sh b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_openat_rule_order/ordered_arch.pass.sh
+new file mode 100644
+index 0000000000..72673b69a5
+--- /dev/null
++++ b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_openat_rule_order/ordered_arch.pass.sh
+@@ -0,0 +1,9 @@
++#!/bin/bash
++
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++# remediation = none
++
++grep -h 'arch=b32.*EACCES' ../audit_openat_o_creat.rules ../audit_openat_o_trunc_write.rules ../audit_open.rules > /etc/audit/rules.d/ordered_by_arch_error.rules
++grep -h 'arch=b32.*EPERM' ../audit_openat_o_creat.rules ../audit_openat_o_trunc_write.rules ../audit_open.rules >> /etc/audit/rules.d/ordered_by_arch_error.rules
++grep -h 'arch=b64.*EACCES' ../audit_openat_o_creat.rules ../audit_openat_o_trunc_write.rules ../audit_open.rules >> /etc/audit/rules.d/ordered_by_arch_error.rules
++grep -h 'arch=b64.*EPERM' ../audit_openat_o_creat.rules ../audit_openat_o_trunc_write.rules ../audit_open.rules >> /etc/audit/rules.d/ordered_by_arch_error.rules
+diff --git a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_openat_rule_order/ordered_filter.pass.sh b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_openat_rule_order/ordered_filter.pass.sh
+new file mode 100644
+index 0000000000..993c399c26
+--- /dev/null
++++ b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_openat_rule_order/ordered_filter.pass.sh
+@@ -0,0 +1,6 @@
++#!/bin/bash
++
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++# remediation = none
++
++cat ../audit_openat_o_creat.rules ../audit_openat_o_trunc_write.rules ../audit_open.rules > /etc/audit/rules.d/ordered_by_filter.rules
+diff --git a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_openat_rule_order/rule_missing.fail.sh b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_openat_rule_order/rule_missing.fail.sh
+new file mode 100644
+index 0000000000..885548c7c5
+--- /dev/null
++++ b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_openat_rule_order/rule_missing.fail.sh
+@@ -0,0 +1,7 @@
++#!/bin/bash
++
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++# remediation = none
++
++cat ../audit_openat_o_creat.rules ../audit_openat_o_trunc_write.rules ../audit_open.rules > /etc/audit/rules.d/ordered_by_filter.rules
++sed -i '2d' /etc/audit/rules.d/ordered_by_filter.rules
+diff --git a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_openat_rule_order/sorted_rules.fail.sh b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_openat_rule_order/sorted_rules.fail.sh
+new file mode 100644
+index 0000000000..bee7042570
+--- /dev/null
++++ b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_openat_rule_order/sorted_rules.fail.sh
+@@ -0,0 +1,7 @@
++#!/bin/bash
++
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++# remediation = none
++
++cat ../audit_openat_o_creat.rules ../audit_openat_o_trunc_write.rules ../audit_open.rules > ./ordered_by_filter.rules
++sort ./ordered_by_filter.rules > /etc/audit/rules.d/unsuccessful_open.rules
+diff --git a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_openat_rule_order/unordered.fail.sh b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_openat_rule_order/unordered.fail.sh
+new file mode 100644
+index 0000000000..6e71b5456e
+--- /dev/null
++++ b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_unsuccessful_file_modification/rule_audit_rules_unsuccessful_file_modification_openat_rule_order/unordered.fail.sh
+@@ -0,0 +1,11 @@
++#!/bin/bash
++
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++# remediation = none
++
++# The rule without filter is less specific, and thus, catches more events than the more specific rules (with O_CREAT and O_TRUNC filters)
++# If they rule withou filter is first, it will catch everything and rules below it will never trigger
++grep -h 'arch=b32.*EACCES' ../audit_open.rules ../audit_openat_o_creat.rules ../audit_openat_o_trunc_write.rules > /etc/audit/rules.d/unordered.rules
++grep -h 'arch=b32.*EPERM' ../audit_open.rules ../audit_openat_o_creat.rules ../audit_openat_o_trunc_write.rules >> /etc/audit/rules.d/unordered.rules
++grep -h 'arch=b64.*EACCES' ../audit_open.rules ../audit_openat_o_creat.rules ../audit_openat_o_trunc_write.rules >> /etc/audit/rules.d/unordered.rules
++grep -h 'arch=b64.*EPERM' ../audit_open.rules ../audit_openat_o_creat.rules ../audit_openat_o_trunc_write.rules >> /etc/audit/rules.d/unordered.rules

@@ -1,0 +1,440 @@
+commit 0f82de52d96cd1e98e92ecfd5b8b82acbc050859
+Author: Gabriel Becker <ggasparb@redhat.com>
+Date:   Mon Mar 11 14:44:01 2019 +0100
+
+    Assign RHEL8 CCE to OSPP rules which were missed during last CCE batch assignment.
+
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_at/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_at/rule.yml
+index ca21ca80c..8a1abb475 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_at/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_at/rule.yml
+@@ -30,6 +30,9 @@ rationale: |-
+ 
+ severity: medium
+ 
++identifiers:
++    cce@rhel8: 80988-9
++
+ references:
+     ospp@rhel7: FAU_GEN.1.1.c
+ 
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_mount/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_mount/rule.yml
+index 569e67390..f977fcf9b 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_mount/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_mount/rule.yml
+@@ -30,6 +30,9 @@ rationale: |-
+ 
+ severity: medium
+ 
++identifiers:
++    cce@rhel8: 80989-7
++
+ references:
+     ospp@rhel7: FAU_GEN.1.1.c
+ 
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_newgidmap/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_newgidmap/rule.yml
+index d05aad935..878932fe6 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_newgidmap/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_newgidmap/rule.yml
+@@ -30,6 +30,9 @@ rationale: |-
+ 
+ severity: medium
+ 
++identifiers:
++    cce@rhel8: 80991-3
++
+ references:
+     ospp@rhel7: FAU_GEN.1.1.c
+ 
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_newuidmap/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_newuidmap/rule.yml
+index 6e251ae77..0cd0337f1 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_newuidmap/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_newuidmap/rule.yml
+@@ -30,6 +30,9 @@ rationale: |-
+ 
+ severity: medium
+ 
++identifiers:
++    cce@rhel8: 80992-1
++
+ references:
+     ospp@rhel7: FAU_GEN.1.1.c
+ 
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_usernetctl/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_usernetctl/rule.yml
+index 24b24ae82..9bb571290 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_usernetctl/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_privileged_commands/audit_rules_privileged_commands_usernetctl/rule.yml
+@@ -30,6 +30,9 @@ rationale: |-
+ 
+ severity: medium
+ 
++identifiers:
++    cce@rhel8: 80990-5
++
+ references:
+     ospp@rhel7: FAU_GEN.1.1.c
+ 
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_chmod/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_chmod/rule.yml
+index 0fead2af7..81804a44b 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_chmod/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_chmod/rule.yml
+@@ -27,6 +27,9 @@ rationale: |-
+ 
+ severity: medium
+ 
++identifiers:
++    cce@rhel8: 80975-6
++
+ {{{ complete_ocil_entry_audit_syscall(syscall="chmod") }}}
+ 
+ warnings:
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_chown/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_chown/rule.yml
+index a7866b9e8..414946dfd 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_chown/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_chown/rule.yml
+@@ -27,6 +27,9 @@ rationale: |-
+ 
+ severity: medium
+ 
++identifiers:
++    cce@rhel8: 80984-8
++
+ {{{ complete_ocil_entry_audit_syscall(syscall="chown") }}}
+ 
+ warnings:
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_fchmod/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_fchmod/rule.yml
+index d99ed0be6..68ddc37ee 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_fchmod/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_fchmod/rule.yml
+@@ -27,6 +27,9 @@ rationale: |-
+ 
+ severity: medium
+ 
++identifiers:
++    cce@rhel8: 80977-2
++
+ {{{ complete_ocil_entry_audit_syscall(syscall="fchmod") }}}
+ 
+ warnings:
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_fchmodat/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_fchmodat/rule.yml
+index 988c604f6..dfea56dc3 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_fchmodat/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_fchmodat/rule.yml
+@@ -27,6 +27,9 @@ rationale: |-
+ 
+ severity: medium
+ 
++identifiers:
++    cce@rhel8: 80976-4
++
+ {{{ complete_ocil_entry_audit_syscall(syscall="fchmodat") }}}
+ 
+ warnings:
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_fchown/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_fchown/rule.yml
+index 09aabbb8e..313f359f1 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_fchown/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_fchown/rule.yml
+@@ -27,6 +27,9 @@ rationale: |-
+ 
+ severity: medium
+ 
++identifiers:
++    cce@rhel8: 80986-3
++
+ {{{ complete_ocil_entry_audit_syscall(syscall="fchown") }}}
+ 
+ warnings:
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_fchownat/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_fchownat/rule.yml
+index 28617ead9..fd688b54f 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_fchownat/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_fchownat/rule.yml
+@@ -27,6 +27,9 @@ rationale: |-
+ 
+ severity: medium
+ 
++identifiers:
++    cce@rhel8: 80985-5
++
+ {{{ complete_ocil_entry_audit_syscall(syscall="fchownat") }}}
+ 
+ warnings:
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_fremovexattr/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_fremovexattr/rule.yml
+index 62030fe81..1c47c86aa 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_fremovexattr/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_fremovexattr/rule.yml
+@@ -27,6 +27,9 @@ rationale: |-
+ 
+ severity: medium
+ 
++identifiers:
++    cce@rhel8: 80978-0
++
+ {{{ complete_ocil_entry_audit_syscall(syscall="fremovexattr") }}}
+ 
+ warnings:
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_fsetxattr/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_fsetxattr/rule.yml
+index 0a7c9f1ec..3eac105a9 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_fsetxattr/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_fsetxattr/rule.yml
+@@ -27,6 +27,9 @@ rationale: |-
+ 
+ severity: medium
+ 
++identifiers:
++    cce@rhel8: 80979-8
++
+ {{{ complete_ocil_entry_audit_syscall(syscall="fsetxattr") }}}
+ 
+ warnings:
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_lchown/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_lchown/rule.yml
+index 990925706..01a6393ba 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_lchown/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_lchown/rule.yml
+@@ -27,6 +27,9 @@ rationale: |-
+ 
+ severity: medium
+ 
++identifiers:
++    cce@rhel8: 80987-1
++
+ {{{ complete_ocil_entry_audit_syscall(syscall="lchown") }}}
+ 
+ warnings:
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_lremovexattr/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_lremovexattr/rule.yml
+index 167ae03c6..66f340118 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_lremovexattr/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_lremovexattr/rule.yml
+@@ -27,6 +27,9 @@ rationale: |-
+ 
+ severity: medium
+ 
++identifiers:
++    cce@rhel8: 80980-6
++
+ {{{ complete_ocil_entry_audit_syscall(syscall="lremovexattr") }}}
+ 
+ warnings:
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_lsetxattr/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_lsetxattr/rule.yml
+index 106d30321..928705ff3 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_lsetxattr/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_lsetxattr/rule.yml
+@@ -27,6 +27,9 @@ rationale: |-
+ 
+ severity: medium
+ 
++identifiers:
++    cce@rhel8: 80981-4
++
+ {{{ complete_ocil_entry_audit_syscall(syscall="lsetxattr") }}}
+ 
+ warnings:
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open_by_handle_at_o_creat/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open_by_handle_at_o_creat/rule.yml
+index c509cf49c..4c60c1397 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open_by_handle_at_o_creat/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open_by_handle_at_o_creat/rule.yml
+@@ -34,6 +34,9 @@ rationale: |-
+ 
+ severity: medium
+ 
++identifiers:
++    cce@rhel8: 80965-7
++
+ references:
+     cis: 5.2.10
+     cui: 3.1.7
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open_by_handle_at_o_trunc_write/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open_by_handle_at_o_trunc_write/rule.yml
+index fb72b3d4f..7375db879 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open_by_handle_at_o_trunc_write/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open_by_handle_at_o_trunc_write/rule.yml
+@@ -33,6 +33,9 @@ rationale: |-
+ 
+ severity: medium
+ 
++identifiers:
++    cce@rhel8: 80966-5
++
+ references:
+     cis: 5.2.10
+     cui: 3.1.7
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open_by_handle_at_rule_order/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open_by_handle_at_rule_order/rule.yml
+index c71447c34..7a79af855 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open_by_handle_at_rule_order/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open_by_handle_at_rule_order/rule.yml
+@@ -45,6 +45,9 @@ rationale: |-
+ 
+ severity: medium
+ 
++identifiers:
++    cce@rhel8: 80967-3
++
+ references:
+     cis: 5.2.10
+     cui: 3.1.7
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open_o_creat/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open_o_creat/rule.yml
+index 86e43df25..34bfd9099 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open_o_creat/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open_o_creat/rule.yml
+@@ -34,6 +34,9 @@ rationale: |-
+ 
+ severity: medium
+ 
++identifiers:
++    cce@rhel8: 80968-1
++
+ references:
+     cis: 5.2.10
+     cui: 3.1.7
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open_o_trunc_write/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open_o_trunc_write/rule.yml
+index a05b8127b..f954430d7 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open_o_trunc_write/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open_o_trunc_write/rule.yml
+@@ -33,6 +33,9 @@ rationale: |-
+ 
+ severity: medium
+ 
++identifiers:
++    cce@rhel8: 80969-9
++
+ references:
+     cis: 5.2.10
+     cui: 3.1.7
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open_rule_order/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open_rule_order/rule.yml
+index 6f792a5d7..cf04d5414 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open_rule_order/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_open_rule_order/rule.yml
+@@ -45,6 +45,9 @@ rationale: |-
+ 
+ severity: medium
+ 
++identifiers:
++    cce@rhel8: 80970-7
++
+ references:
+     cis: 5.2.10
+     cui: 3.1.7
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_openat_o_creat/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_openat_o_creat/rule.yml
+index 94eed0637..8ceb3c3b1 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_openat_o_creat/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_openat_o_creat/rule.yml
+@@ -34,6 +34,9 @@ rationale: |-
+ 
+ severity: medium
+ 
++identifiers:
++    cce@rhel8: 80962-4
++
+ references:
+     cis: 5.2.10
+     cui: 3.1.7
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_openat_o_trunc_write/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_openat_o_trunc_write/rule.yml
+index 9875ae121..cf740430d 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_openat_o_trunc_write/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_openat_o_trunc_write/rule.yml
+@@ -33,6 +33,9 @@ rationale: |-
+ 
+ severity: medium
+ 
++identifiers:
++    cce@rhel8: 80963-2
++
+ references:
+     cis: 5.2.10
+     cui: 3.1.7
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_openat_rule_order/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_openat_rule_order/rule.yml
+index 22f3b850d..65f9d1909 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_openat_rule_order/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_openat_rule_order/rule.yml
+@@ -45,6 +45,9 @@ rationale: |-
+ 
+ severity: medium
+ 
++identifiers:
++    cce@rhel8: 80964-0
++
+ references:
+     cis: 5.2.10
+     cui: 3.1.7
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_removexattr/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_removexattr/rule.yml
+index 18fac94b1..b0898544e 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_removexattr/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_removexattr/rule.yml
+@@ -27,6 +27,9 @@ rationale: |-
+ 
+ severity: medium
+ 
++identifiers:
++    cce@rhel8: 80982-2
++
+ {{{ complete_ocil_entry_audit_syscall(syscall="removexattr") }}}
+ 
+ warnings:
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_rename/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_rename/rule.yml
+index 7409ed4ab..6fd73df0d 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_rename/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_rename/rule.yml
+@@ -26,6 +26,9 @@ rationale: |-
+ 
+ severity: medium
+ 
++identifiers:
++    cce@rhel8: 80973-1
++
+ references:
+     cis: 5.2.10
+     cui: 3.1.7
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_renameat/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_renameat/rule.yml
+index 96ce23fc7..beb16b6d5 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_renameat/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_renameat/rule.yml
+@@ -26,6 +26,9 @@ rationale: |-
+ 
+ severity: medium
+ 
++identifiers:
++    cce@rhel8: 80974-9
++
+ references:
+     cis: 5.2.10
+     cui: 3.1.7
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_setxattr/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_setxattr/rule.yml
+index b8fbc09d1..1aff0f14e 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_setxattr/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_setxattr/rule.yml
+@@ -27,6 +27,9 @@ rationale: |-
+ 
+ severity: medium
+ 
++identifiers:
++    cce@rhel8: 80983-0
++
+ {{{ complete_ocil_entry_audit_syscall(syscall="setxattr") }}}
+ 
+ warnings:
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_unlink/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_unlink/rule.yml
+index 692d7fe4b..5f84d08a0 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_unlink/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_unlink/rule.yml
+@@ -26,6 +26,9 @@ rationale: |-
+ 
+ severity: medium
+ 
++identifiers:
++    cce@rhel8: 80971-5
++
+ references:
+     cis: 5.2.10
+     cui: 3.1.7
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_unlinkat/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_unlinkat/rule.yml
+index e52c07889..00bad657e 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_unlinkat/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_unsuccessful_file_modification/audit_rules_unsuccessful_file_modification_unlinkat/rule.yml
+@@ -26,6 +26,9 @@ rationale: |-
+ 
+ severity: medium
+ 
++identifiers:
++    cce@rhel8: 80972-3
++
+ references:
+     cis: 5.2.10
+     cui: 3.1.7

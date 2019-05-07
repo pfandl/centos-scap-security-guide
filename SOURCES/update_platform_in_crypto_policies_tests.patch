@@ -1,0 +1,353 @@
+From b280b1212b64933700521891d30a7c5b09523919 Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Mon, 7 Jan 2019 14:26:25 +0100
+Subject: [PATCH] Update applicable platforms in crypto policy tests
+
+Added Fedora and RHEL8 as applicable platforms
+and ospp and standard profiles.
+---
+ .../rule_configure_bind_crypto_policy/absent.fail.sh         | 3 ++-
+ .../rule_configure_bind_crypto_policy/no_config_file.fail.sh | 3 ++-
+ .../rule_configure_bind_crypto_policy/ok.pass.sh             | 3 ++-
+ .../rule_configure_bind_crypto_policy/overrides.fail.sh      | 3 ++-
+ .../rule_configure_crypto_policy/bad_symlink.fail.sh         | 3 ++-
+ .../rule_configure_crypto_policy/missing_policy.fail.sh      | 3 ++-
+ .../rule_configure_crypto_policy/missing_policy_file.fail.sh | 3 ++-
+ .../rule_configure_crypto_policy/missing_symlink.fail.sh     | 3 ++-
+ .../{policy_set.pass.sh => policy_default_set.pass.sh}       | 1 +
+ .../rule_configure_crypto_policy/policy_fips_set.pass.sh     | 5 +++++
+ .../symlink_to_wrong_policy.fail.sh                          | 3 ++-
+ .../rule_configure_crypto_policy/wrong_policy.fail.sh        | 3 ++-
+ .../kerberos_correct_policy.pass.sh                          | 3 ++-
+ .../kerberos_missing_policy.fail.sh                          | 3 ++-
+ .../kerberos_wrong_policy.fail.sh                            | 3 ++-
+ .../line_commented.fail.sh                                   | 3 ++-
+ .../line_is_there.pass.sh                                    | 3 ++-
+ .../line_not_there.fail.sh                                   | 3 ++-
+ .../wrong_value.fail.sh                                      | 3 ++-
+ .../rule_configure_openssl_crypto_policy/nothing.fail.sh     | 3 ++-
+ .../rule_configure_openssl_crypto_policy/ok.pass.sh          | 3 ++-
+ .../section_not_include.fail.sh                              | 3 ++-
+ .../rule_configure_ssh_crypto_policy/absent.pass.sh          | 3 ++-
+ .../rule_configure_ssh_crypto_policy/comment.pass.sh         | 3 ++-
+ .../rule_configure_ssh_crypto_policy/no_config_file.pass.sh  | 3 ++-
+ .../rule_configure_ssh_crypto_policy/overrides.fail.sh       | 3 ++-
+ 26 files changed, 54 insertions(+), 24 deletions(-)
+ rename tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_crypto_policy/{policy_set.pass.sh => policy_default_set.pass.sh} (76%)
+ create mode 100644 tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_crypto_policy/policy_fips_set.pass.sh
+
+diff --git a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_bind_crypto_policy/absent.fail.sh b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_bind_crypto_policy/absent.fail.sh
+index 99f603f1a..223a45ccf 100644
+--- a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_bind_crypto_policy/absent.fail.sh
++++ b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_bind_crypto_policy/absent.fail.sh
+@@ -1,5 +1,6 @@
+ #!/bin/bash
+-# profiles = xccdf_org.ssgproject.content_profile_standard
++# platform = multi_platform_fedora, Red Hat Enterprise Linux 8
++# profiles = xccdf_org.ssgproject.content_profile_ospp, xccdf_org.ssgproject.content_profile_standard
+ 
+ yum install -y bind
+ 
+diff --git a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_bind_crypto_policy/no_config_file.fail.sh b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_bind_crypto_policy/no_config_file.fail.sh
+index 59e45aa26..1a7cca92e 100644
+--- a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_bind_crypto_policy/no_config_file.fail.sh
++++ b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_bind_crypto_policy/no_config_file.fail.sh
+@@ -1,6 +1,7 @@
+ #!/bin/bash
+ # 
+-# profiles = xccdf_org.ssgproject.content_profile_standard
++# platform = multi_platform_fedora, Red Hat Enterprise Linux 8
++# profiles = xccdf_org.ssgproject.content_profile_ospp, xccdf_org.ssgproject.content_profile_standard
+ # We don't remediate anything if the config file is missing completely.
+ # remediation = none
+ 
+diff --git a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_bind_crypto_policy/ok.pass.sh b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_bind_crypto_policy/ok.pass.sh
+index 145e25cfa..c6f9ffbcf 100644
+--- a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_bind_crypto_policy/ok.pass.sh
++++ b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_bind_crypto_policy/ok.pass.sh
+@@ -1,5 +1,6 @@
+ #!/bin/bash
+-# profiles = xccdf_org.ssgproject.content_profile_standard
++# platform = multi_platform_fedora, Red Hat Enterprise Linux 8
++# profiles = xccdf_org.ssgproject.content_profile_ospp, xccdf_org.ssgproject.content_profile_standard
+ 
+ BIND_CONF='/etc/named.conf'
+ 
+diff --git a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_bind_crypto_policy/overrides.fail.sh b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_bind_crypto_policy/overrides.fail.sh
+index 79e14c1cc..e5ec32342 100644
+--- a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_bind_crypto_policy/overrides.fail.sh
++++ b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_bind_crypto_policy/overrides.fail.sh
+@@ -1,5 +1,6 @@
+ #!/bin/bash
+-# profiles = xccdf_org.ssgproject.content_profile_standard
++# platform = multi_platform_fedora, Red Hat Enterprise Linux 8
++# profiles = xccdf_org.ssgproject.content_profile_ospp, xccdf_org.ssgproject.content_profile_standard
+ 
+ yum install -y bind
+ 
+diff --git a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_crypto_policy/bad_symlink.fail.sh b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_crypto_policy/bad_symlink.fail.sh
+index efcea05b1..1d0ec9335 100644
+--- a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_crypto_policy/bad_symlink.fail.sh
++++ b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_crypto_policy/bad_symlink.fail.sh
+@@ -1,5 +1,6 @@
+ #!/bin/bash
+-# profiles = xccdf_org.ssgproject.content_profile_standard
++# platform = multi_platform_fedora, Red Hat Enterprise Linux 8
++# profiles = xccdf_org.ssgproject.content_profile_ospp, xccdf_org.ssgproject.content_profile_standard
+ 
+ CRYPTO_POLICY_LIB_FILE="/etc/crypto-policies/back-ends/gnutls.config"
+ SYMLINK_TO="/tmp/some_file"
+diff --git a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_crypto_policy/missing_policy.fail.sh b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_crypto_policy/missing_policy.fail.sh
+index 16943b508..1fb839110 100644
+--- a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_crypto_policy/missing_policy.fail.sh
++++ b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_crypto_policy/missing_policy.fail.sh
+@@ -1,4 +1,5 @@
+ #!/bin/bash
+-# profiles = xccdf_org.ssgproject.content_profile_standard
++# platform = multi_platform_fedora, Red Hat Enterprise Linux 8
++# profiles = xccdf_org.ssgproject.content_profile_ospp, xccdf_org.ssgproject.content_profile_standard
+ 
+ sed -i "1d" /etc/crypto-policies/config
+diff --git a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_crypto_policy/missing_policy_file.fail.sh b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_crypto_policy/missing_policy_file.fail.sh
+index 29939bc6e..f2aadc38c 100644
+--- a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_crypto_policy/missing_policy_file.fail.sh
++++ b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_crypto_policy/missing_policy_file.fail.sh
+@@ -1,4 +1,5 @@
+ #!/bin/bash
+-# profiles = xccdf_org.ssgproject.content_profile_standard
++# platform = multi_platform_fedora, Red Hat Enterprise Linux 8
++# profiles = xccdf_org.ssgproject.content_profile_ospp, xccdf_org.ssgproject.content_profile_standard
+ 
+ rm /etc/crypto-policies/state/current
+diff --git a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_crypto_policy/missing_symlink.fail.sh b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_crypto_policy/missing_symlink.fail.sh
+index ccccfe6b7..e58a7a56e 100644
+--- a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_crypto_policy/missing_symlink.fail.sh
++++ b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_crypto_policy/missing_symlink.fail.sh
+@@ -1,4 +1,5 @@
+ #!/bin/bash
+-# profiles = xccdf_org.ssgproject.content_profile_standard
++# platform = multi_platform_fedora, Red Hat Enterprise Linux 8
++# profiles = xccdf_org.ssgproject.content_profile_ospp, xccdf_org.ssgproject.content_profile_standard
+ 
+ rm -f /etc/crypto-policies/back-ends/openssl.config
+diff --git a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_crypto_policy/policy_set.pass.sh b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_crypto_policy/policy_default_set.pass.sh
+similarity index 76%
+rename from tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_crypto_policy/policy_set.pass.sh
+rename to tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_crypto_policy/policy_default_set.pass.sh
+index 821d1dffc..9c5aa6583 100644
+--- a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_crypto_policy/policy_set.pass.sh
++++ b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_crypto_policy/policy_default_set.pass.sh
+@@ -1,4 +1,5 @@
+ #!/bin/bash
++# platform = multi_platform_fedora
+ # profiles = xccdf_org.ssgproject.content_profile_standard
+ 
+ update-crypto-policies --set "DEFAULT"
+diff --git a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_crypto_policy/policy_fips_set.pass.sh b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_crypto_policy/policy_fips_set.pass.sh
+new file mode 100644
+index 000000000..de1197263
+--- /dev/null
++++ b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_crypto_policy/policy_fips_set.pass.sh
+@@ -0,0 +1,5 @@
++#!/bin/bash
++# platform = multi_platform_fedora, Red Hat Enterprise Linux 8
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++
++update-crypto-policies --set "FIPS"
+diff --git a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_crypto_policy/symlink_to_wrong_policy.fail.sh b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_crypto_policy/symlink_to_wrong_policy.fail.sh
+index 4fc6f5384..eb083c9a2 100644
+--- a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_crypto_policy/symlink_to_wrong_policy.fail.sh
++++ b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_crypto_policy/symlink_to_wrong_policy.fail.sh
+@@ -1,5 +1,6 @@
+ #!/bin/bash
+-# profiles = xccdf_org.ssgproject.content_profile_standard
++# platform = multi_platform_fedora, Red Hat Enterprise Linux 8
++# profiles = xccdf_org.ssgproject.content_profile_ospp, xccdf_org.ssgproject.content_profile_standard
+ 
+ CRYPTO_POLICY_LIB_FILE="/etc/crypto-policies/back-ends/openssh.config"
+ SYMLINK_TO_FOLDER="/usr/share/crypto-policies/LEGACY/"
+diff --git a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_crypto_policy/wrong_policy.fail.sh b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_crypto_policy/wrong_policy.fail.sh
+index 0b0f786b1..c54cc1e80 100644
+--- a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_crypto_policy/wrong_policy.fail.sh
++++ b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_crypto_policy/wrong_policy.fail.sh
+@@ -1,4 +1,5 @@
+ #!/bin/bash
+-# profiles = xccdf_org.ssgproject.content_profile_standard
++# platform = multi_platform_fedora, Red Hat Enterprise Linux 8
++# profiles = xccdf_org.ssgproject.content_profile_ospp, xccdf_org.ssgproject.content_profile_standard
+ 
+ sed -i "1s/.*/LEGACY/" /etc/crypto-policies/config
+diff --git a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_kerberos_crypto_policy/kerberos_correct_policy.pass.sh b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_kerberos_crypto_policy/kerberos_correct_policy.pass.sh
+index dfbafea05..5c9ff5e79 100644
+--- a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_kerberos_crypto_policy/kerberos_correct_policy.pass.sh
++++ b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_kerberos_crypto_policy/kerberos_correct_policy.pass.sh
+@@ -1,5 +1,6 @@
+ #!/bin/bash
+-# profiles = xccdf_org.ssgproject.content_profile_standard
++# platform = multi_platform_fedora, Red Hat Enterprise Linux 8
++# profiles = xccdf_org.ssgproject.content_profile_ospp, xccdf_org.ssgproject.content_profile_standard
+ 
+ rm -f /etc/krb5.conf.d/crypto-policies
+ ln -s /etc/crypto-policies/back-ends/krb5.config /etc/krb5.conf.d/crypto-policies
+diff --git a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_kerberos_crypto_policy/kerberos_missing_policy.fail.sh b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_kerberos_crypto_policy/kerberos_missing_policy.fail.sh
+index a2bbc947f..73cd9e312 100644
+--- a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_kerberos_crypto_policy/kerberos_missing_policy.fail.sh
++++ b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_kerberos_crypto_policy/kerberos_missing_policy.fail.sh
+@@ -1,4 +1,5 @@
+ #!/bin/bash
+-# profiles = xccdf_org.ssgproject.content_profile_standard
++# platform = multi_platform_fedora, Red Hat Enterprise Linux 8
++# profiles = xccdf_org.ssgproject.content_profile_ospp, xccdf_org.ssgproject.content_profile_standard
+ 
+ rm -f /etc/krb5.conf.d/crypto-policies
+diff --git a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_kerberos_crypto_policy/kerberos_wrong_policy.fail.sh b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_kerberos_crypto_policy/kerberos_wrong_policy.fail.sh
+index 49ad6ae5e..7aba7a49c 100644
+--- a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_kerberos_crypto_policy/kerberos_wrong_policy.fail.sh
++++ b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_kerberos_crypto_policy/kerberos_wrong_policy.fail.sh
+@@ -1,5 +1,6 @@
+ #!/bin/bash
+-# profiles = xccdf_org.ssgproject.content_profile_standard
++# platform = multi_platform_fedora, Red Hat Enterprise Linux 8
++# profiles = xccdf_org.ssgproject.content_profile_ospp, xccdf_org.ssgproject.content_profile_standard
+ 
+ rm -f /etc/krb5.conf.d/crypto-policies
+ ln -s /etc/crypto-policies/back-ends/openssh.config /etc/krb5.conf.d/crypto-policies
+diff --git a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_libreswan_crypto_policy/line_commented.fail.sh b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_libreswan_crypto_policy/line_commented.fail.sh
+index 053f60dd9..9af2825f6 100644
+--- a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_libreswan_crypto_policy/line_commented.fail.sh
++++ b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_libreswan_crypto_policy/line_commented.fail.sh
+@@ -1,5 +1,6 @@
+ #!/bin/bash
+-# profiles = xccdf_org.ssgproject.content_profile_standard
++# platform = multi_platform_fedora, Red Hat Enterprise Linux 8
++# profiles = xccdf_org.ssgproject.content_profile_ospp, xccdf_org.ssgproject.content_profile_standard
+ 
+ yum install -y libreswan
+ 
+diff --git a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_libreswan_crypto_policy/line_is_there.pass.sh b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_libreswan_crypto_policy/line_is_there.pass.sh
+index bb357a0a6..2bedb24ac 100644
+--- a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_libreswan_crypto_policy/line_is_there.pass.sh
++++ b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_libreswan_crypto_policy/line_is_there.pass.sh
+@@ -1,5 +1,6 @@
+ #!/bin/bash
+-# profiles = xccdf_org.ssgproject.content_profile_standard
++# platform = multi_platform_fedora, Red Hat Enterprise Linux 8
++# profiles = xccdf_org.ssgproject.content_profile_ospp, xccdf_org.ssgproject.content_profile_standard
+ 
+ yum install -y libreswan
+ 
+diff --git a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_libreswan_crypto_policy/line_not_there.fail.sh b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_libreswan_crypto_policy/line_not_there.fail.sh
+index 8756c09dd..ce14f1a35 100644
+--- a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_libreswan_crypto_policy/line_not_there.fail.sh
++++ b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_libreswan_crypto_policy/line_not_there.fail.sh
+@@ -1,5 +1,6 @@
+ #!/bin/bash
+-# profiles = xccdf_org.ssgproject.content_profile_standard
++# platform = multi_platform_fedora, Red Hat Enterprise Linux 8
++# profiles = xccdf_org.ssgproject.content_profile_ospp, xccdf_org.ssgproject.content_profile_standard
+ 
+ yum install -y libreswan
+ 
+diff --git a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_libreswan_crypto_policy/wrong_value.fail.sh b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_libreswan_crypto_policy/wrong_value.fail.sh
+index 75ba9f4f3..0bfabb92f 100644
+--- a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_libreswan_crypto_policy/wrong_value.fail.sh
++++ b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_libreswan_crypto_policy/wrong_value.fail.sh
+@@ -1,5 +1,6 @@
+ #!/bin/bash
+-# profiles = xccdf_org.ssgproject.content_profile_standard
++# platform = multi_platform_fedora, Red Hat Enterprise Linux 8
++# profiles = xccdf_org.ssgproject.content_profile_ospp, xccdf_org.ssgproject.content_profile_standard
+ 
+ yum install -y libreswan
+ 
+diff --git a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_openssl_crypto_policy/nothing.fail.sh b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_openssl_crypto_policy/nothing.fail.sh
+index 4893924f7..b2cb21be5 100644
+--- a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_openssl_crypto_policy/nothing.fail.sh
++++ b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_openssl_crypto_policy/nothing.fail.sh
+@@ -1,5 +1,6 @@
+ #!/bin/bash
+-# profiles = xccdf_org.ssgproject.content_profile_standard
++# platform = multi_platform_fedora, Red Hat Enterprise Linux 8
++# profiles = xccdf_org.ssgproject.content_profile_ospp, xccdf_org.ssgproject.content_profile_standard
+ 
+ . common.sh
+ 
+diff --git a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_openssl_crypto_policy/ok.pass.sh b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_openssl_crypto_policy/ok.pass.sh
+index e1663c5c4..695d1d9bb 100644
+--- a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_openssl_crypto_policy/ok.pass.sh
++++ b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_openssl_crypto_policy/ok.pass.sh
+@@ -1,5 +1,6 @@
+ #!/bin/bash
+-# profiles = xccdf_org.ssgproject.content_profile_standard
++# platform = multi_platform_fedora, Red Hat Enterprise Linux 8
++# profiles = xccdf_org.ssgproject.content_profile_ospp, xccdf_org.ssgproject.content_profile_standard
+ 
+ . common.sh
+ 
+diff --git a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_openssl_crypto_policy/section_not_include.fail.sh b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_openssl_crypto_policy/section_not_include.fail.sh
+index e8acf2218..c2006df88 100644
+--- a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_openssl_crypto_policy/section_not_include.fail.sh
++++ b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_openssl_crypto_policy/section_not_include.fail.sh
+@@ -1,5 +1,6 @@
+ #!/bin/bash
+-# profiles = xccdf_org.ssgproject.content_profile_standard
++# platform = multi_platform_fedora, Red Hat Enterprise Linux 8
++# profiles = xccdf_org.ssgproject.content_profile_ospp, xccdf_org.ssgproject.content_profile_standard
+ 
+ . common.sh
+ 
+diff --git a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_ssh_crypto_policy/absent.pass.sh b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_ssh_crypto_policy/absent.pass.sh
+index 64ab66e82..e0db2badb 100644
+--- a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_ssh_crypto_policy/absent.pass.sh
++++ b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_ssh_crypto_policy/absent.pass.sh
+@@ -1,6 +1,7 @@
+ #!/bin/bash
+ #
+-# profiles = xccdf_org.ssgproject.content_profile_standard
++# platform = multi_platform_fedora, Red Hat Enterprise Linux 8
++# profiles = xccdf_org.ssgproject.content_profile_ospp, xccdf_org.ssgproject.content_profile_standard
+ 
+ SSH_CONF="/etc/sysconfig/sshd"
+ 
+diff --git a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_ssh_crypto_policy/comment.pass.sh b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_ssh_crypto_policy/comment.pass.sh
+index c97092eb6..b309c5016 100644
+--- a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_ssh_crypto_policy/comment.pass.sh
++++ b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_ssh_crypto_policy/comment.pass.sh
+@@ -1,6 +1,7 @@
+ #!/bin/bash
+ #
+-# profiles = xccdf_org.ssgproject.content_profile_standard
++# platform = multi_platform_fedora, Red Hat Enterprise Linux 8
++# profiles = xccdf_org.ssgproject.content_profile_ospp, xccdf_org.ssgproject.content_profile_standard
+ 
+ SSH_CONF="/etc/sysconfig/sshd"
+ 
+diff --git a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_ssh_crypto_policy/no_config_file.pass.sh b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_ssh_crypto_policy/no_config_file.pass.sh
+index 665186f1b..d90e8c65c 100644
+--- a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_ssh_crypto_policy/no_config_file.pass.sh
++++ b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_ssh_crypto_policy/no_config_file.pass.sh
+@@ -1,6 +1,7 @@
+ #!/bin/bash
+ #
+-# profiles = xccdf_org.ssgproject.content_profile_standard
++# platform = multi_platform_fedora, Red Hat Enterprise Linux 8
++# profiles = xccdf_org.ssgproject.content_profile_ospp, xccdf_org.ssgproject.content_profile_standard
+ 
+ SSH_CONF="/etc/sysconfig/sshd"
+ 
+diff --git a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_ssh_crypto_policy/overrides.fail.sh b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_ssh_crypto_policy/overrides.fail.sh
+index 4d2ed758e..3a1822414 100644
+--- a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_ssh_crypto_policy/overrides.fail.sh
++++ b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_ssh_crypto_policy/overrides.fail.sh
+@@ -1,6 +1,7 @@
+ #!/bin/bash
+ #
+-# profiles = xccdf_org.ssgproject.content_profile_standard
++# platform = multi_platform_fedora, Red Hat Enterprise Linux 8
++# profiles = xccdf_org.ssgproject.content_profile_ospp, xccdf_org.ssgproject.content_profile_standard
+ 
+ SSH_CONF="/etc/sysconfig/sshd"
+ 
+-- 
+2.19.2
+

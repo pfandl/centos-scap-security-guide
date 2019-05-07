@@ -1,0 +1,56 @@
+From 0f3788743238ae998e646bc507cf3b0852f6c75d Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Mat=C4=9Bj=20T=C3=BD=C4=8D?= <matyc@redhat.com>
+Date: Fri, 11 Jan 2019 15:36:17 +0100
+Subject: [PATCH] Fixed minor profile description issues.
+
+---
+ rhel7/profiles/docker-host.profile      | 2 +-
+ rhel7/profiles/nist-800-171-cui.profile | 2 +-
+ rhel7/profiles/stig-rhel7-disa.profile  | 6 +++---
+ 3 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/rhel7/profiles/docker-host.profile b/rhel7/profiles/docker-host.profile
+index 98fd5ecb51..894b78930b 100644
+--- a/rhel7/profiles/docker-host.profile
++++ b/rhel7/profiles/docker-host.profile
+@@ -4,7 +4,7 @@ title: 'DRAFT - Standard Docker Host Security Profile'
+ 
+ description: |-
+     This profile contains rules to ensure standard security
+-    baseline of Red Hat Enterprise Linux 7 system running the docker
++    baseline of Red Hat Enterprise Linux 7 system running docker.
+ 
+     This discussion is currently being held on open-scap-list@redhat.com
+     and scap-security-guide@lists.fedorahosted.org.
+diff --git a/rhel7/profiles/nist-800-171-cui.profile b/rhel7/profiles/nist-800-171-cui.profile
+index 966c2a2a75..7230ad0654 100644
+--- a/rhel7/profiles/nist-800-171-cui.profile
++++ b/rhel7/profiles/nist-800-171-cui.profile
+@@ -4,7 +4,7 @@ title: 'Unclassified Information in Non-federal Information Systems and Organiza
+ 
+ description: |-
+     From NIST 800-171, Section 2.2:
+-    Security requirements for protecting the confidentiality of CUI in nonfederal
++    Security requirements for protecting the confidentiality of CUI in non-federal
+     information systems and organizations have a well-defined structure that
+     consists of:
+ 
+diff --git a/rhel7/profiles/stig-rhel7-disa.profile b/rhel7/profiles/stig-rhel7-disa.profile
+index f751bc0857..01ee1dbfed 100644
+--- a/rhel7/profiles/stig-rhel7-disa.profile
++++ b/rhel7/profiles/stig-rhel7-disa.profile
+@@ -3,11 +3,11 @@ documentation_complete: true
+ title: 'DISA STIG for Red Hat Enterprise Linux 7'
+ 
+ description: |-
+-    This profile contains configuration checks that align to the \
++    This profile contains configuration checks that align to the
+     DISA STIG for Red Hat Enterprise Linux V1R4.
+ 
+-    In addition to being applicable to RHEL7, DISA recognizes this \
+-    configuration baseline as applicable to the operating system tier of \
++    In addition to being applicable to RHEL7, DISA recognizes this
++    configuration baseline as applicable to the operating system tier of
+     Red Hat technologies that are based off RHEL7, such as:
+ 
+     - Red Hat Enterprise Linux Server

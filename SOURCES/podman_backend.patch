@@ -1,0 +1,810 @@
+From 1b4e88f7ce56db4f8eb8e1d0a4272c91b421aefb Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Jan=20=C4=8Cern=C3=BD?= <jcerny@redhat.com>
+Date: Wed, 16 Jan 2019 14:43:19 +0100
+Subject: [PATCH 1/7] Update SSG test suite container backend Dockerfiles
+
+- It's more appopriate to describe CentOS container as CentOS-based
+  than RHEL based.
+- The utility that generates SSH keys is ssh-keygen, not sshd-keygen
+  which is a legacy service.
+- We remove pam_loginuid.so from SSHD PAM configuration in the container
+  as it prevents users to log in via ssh to the container. As our test
+  suite doesn't check if oscap scans produce audit messages, we can
+  simply remove that.
+---
+ Dockerfiles/test_suite-centos | 5 +++--
+ Dockerfiles/test_suite-fedora | 1 +
+ Dockerfiles/test_suite-rhel   | 3 ++-
+ 3 files changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/Dockerfiles/test_suite-centos b/Dockerfiles/test_suite-centos
+index d653345486..0160917bb9 100644
+--- a/Dockerfiles/test_suite-centos
++++ b/Dockerfiles/test_suite-centos
+@@ -1,4 +1,4 @@
+-# This Dockerfile is a minimal example for a RHEL-based SSG test suite target container.
++# This Dockerfile is a minimal example for a CentOS-based SSG test suite target container.
+ FROM centos
+ 
+ ENV AUTH_KEYS=/root/.ssh/authorized_keys
+@@ -12,9 +12,10 @@ RUN true \
+         && true
+ 
+ RUN true \
+-        && for key_type in rsa ecdsa ed25519; do sshd-keygen -N '' -t $key_type -f /etc/ssh/ssh_host_${key_type}_key; done \
++        && for key_type in rsa ecdsa ed25519; do ssh-keygen -N '' -t $key_type -f /etc/ssh/ssh_host_${key_type}_key; done \
+         && mkdir -p /root/.ssh \
+         && printf "%s\n" "$CLIENT_PUBLIC_KEY" >> "$AUTH_KEYS" \
+         && chmod og-rw /root/.ssh "$AUTH_KEYS" \
++        && sed -i '/session\s\+required\s\+pam_loginuid.so/d' /etc/pam.d/sshd \
+ && true
+ 
+diff --git a/Dockerfiles/test_suite-fedora b/Dockerfiles/test_suite-fedora
+index 250da22e64..3bc4e8f6a7 100644
+--- a/Dockerfiles/test_suite-fedora
++++ b/Dockerfiles/test_suite-fedora
+@@ -16,5 +16,6 @@ RUN true \
+         && mkdir -p /root/.ssh \
+         && printf "%s\n" "$CLIENT_PUBLIC_KEY" >> "$AUTH_KEYS" \
+         && chmod og-rw /root/.ssh "$AUTH_KEYS" \
++        && sed -i '/session\s\+required\s\+pam_loginuid.so/d' /etc/pam.d/sshd \
+ && true
+ 
+diff --git a/Dockerfiles/test_suite-rhel b/Dockerfiles/test_suite-rhel
+index ac264da0db..96c3af24b7 100644
+--- a/Dockerfiles/test_suite-rhel
++++ b/Dockerfiles/test_suite-rhel
+@@ -12,8 +12,9 @@ RUN true \
+         && true
+ 
+ RUN true \
+-        && for key_type in rsa ecdsa ed25519; do sshd-keygen -N '' -t $key_type -f /etc/ssh/ssh_host_${key_type}_key; done \
++        && for key_type in rsa ecdsa ed25519; do ssh-keygen -N '' -t $key_type -f /etc/ssh/ssh_host_${key_type}_key; done \
+         && mkdir -p /root/.ssh \
+         && printf "%s\n" "$CLIENT_PUBLIC_KEY" >> "$AUTH_KEYS" \
+         && chmod og-rw /root/.ssh "$AUTH_KEYS" \
++        && sed -i '/session\s\+required\s\+pam_loginuid.so/d' /etc/pam.d/sshd \
+ && true
+
+From c9de05e77285597ceb80216ec5e54a5a354d891e Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Jan=20=C4=8Cern=C3=BD?= <jcerny@redhat.com>
+Date: Wed, 16 Jan 2019 14:49:10 +0100
+Subject: [PATCH 2/7] Introduce Podman backend to SSG Test Suite harness
+
+On RHEL8, Docker isn't available and it's replaced by Podman. Therefore,
+we need to implement a backend for Podman to run container-based tests.
+The Podman backend works similar way as the Docker backend. However,
+it's implemented by invoking podman CLI calls (subprocess) instead of
+using Python 3 bindings, because as of python3-podman version 0.12.1.2
+it doesn't allow to run, inspect and commit containers. Users will use
+this backend using `--container` cmdline option.
+---
+ tests/ssg_test_suite/test_env.py | 137 ++++++++++++++++++++++++++++++-
+ tests/test_suite.py              |   9 ++
+ 2 files changed, 145 insertions(+), 1 deletion(-)
+
+diff --git a/tests/ssg_test_suite/test_env.py b/tests/ssg_test_suite/test_env.py
+index 3b0d549d42..4c1503542c 100644
+--- a/tests/ssg_test_suite/test_env.py
++++ b/tests/ssg_test_suite/test_env.py
+@@ -4,6 +4,7 @@
+ import sys
+ import os
+ import time
++import subprocess
+ 
+ import docker
+ 
+@@ -172,7 +173,7 @@ def offline_scan(self, args, verbose_path):
+ 
+ 
+ class DockerTestEnv(TestEnv):
+-    name = "container-based"
++    name = "docker-based"
+ 
+     def __init__(self, mode, image_name):
+         super(DockerTestEnv, self).__init__(mode)
+@@ -249,6 +250,7 @@ def reset_state_to(self, state_name, new_running_state_name):
+         return new_container
+ 
+     def _find_image_by_name(self, image_name):
++        # only in DockerTestEnv
+         return self.client.images.get(image_name)
+ 
+     def _new_container_from_image(self, image_name, container_name):
+@@ -285,3 +287,136 @@ def offline_scan(self, args, verbose_path):
+         command_list = self._local_oscap_check_base_arguments() + args
+ 
+         return common.run_cmd_local(command_list, verbose_path)
++
++
++class PodmanTestEnv(TestEnv):
++    # TODO: Rework this class using Podman Python bindings (python3-podman)
++    # at the moment when their API will provide methods to run containers,
++    # commit images and inspect containers
++    name = "podman-based"
++
++    def __init__(self, scanning_mode, image_name):
++        super(PodmanTestEnv, self).__init__(scanning_mode)
++        self._name_stem = "ssg_test"
++        self.base_image = image_name
++        self.created_images = []
++        self.containers = []
++        self.domain_ip = None
++
++    def start(self):
++        self.run_container(self.base_image)
++
++    def finalize(self):
++        self._terminate_current_running_container_if_applicable()
++
++    def image_stem2fqn(self, stem):
++        image_name = "{0}_{1}".format(self.base_image, stem)
++        return image_name
++
++    @property
++    def current_container(self):
++        if self.containers:
++            return self.containers[-1]
++        return None
++
++    @property
++    def current_image(self):
++        if self.created_images:
++            return self.created_images[-1]
++        return self.base_image
++
++    def _create_new_image(self, from_container, name):
++        new_image_name = self.image_stem2fqn(name)
++        if not from_container:
++            from_container = self.run_container(self.current_image)
++        podman_cmd = ["podman", "commit", from_container, new_image_name]
++        try:
++            subprocess.check_output(podman_cmd, stderr=subprocess.STDOUT)
++        except subprocess.CalledProcessError as e:
++            msg = "Command '{0}' returned {1}:\n{2}".format(" ".join(e.cmd), e.returncode, e.output.decode("utf-8"))
++            raise RuntimeError(msg)
++        self.created_images.append(new_image_name)
++        return new_image_name
++
++    def _save_state(self, state_name):
++        state = self._create_new_image(self.current_container, state_name)
++        return state
++
++    def run_container(self, image_name, container_name="running"):
++        new_container = self._new_container_from_image(image_name, container_name)
++        self.containers.append(new_container)
++        # Get the container time to fully start its service
++        time.sleep(0.2)
++        self.domain_ip = self._get_container_ip(new_container)
++        return new_container
++
++    def reset_state_to(self, state_name, new_running_state_name):
++        self._terminate_current_running_container_if_applicable()
++        image_name = self.image_stem2fqn(state_name)
++
++        new_container = self.run_container(image_name, new_running_state_name)
++
++        return new_container
++
++    def _new_container_from_image(self, image_name, container_name):
++        long_name = "{0}_{1}".format(self._name_stem, container_name)
++        podman_cmd = ["podman", "run", "--name", long_name,
++                      "--publish", "22", "--detach", image_name,
++                      "/usr/sbin/sshd", "-D"]
++        try:
++            podman_output = subprocess.check_output(podman_cmd, stderr=subprocess.STDOUT)
++        except subprocess.CalledProcessError as e:
++            msg = "Command '{0}' returned {1}:\n{2}".format(" ".join(e.cmd), e.returncode, e.output.decode("utf-8"))
++            raise RuntimeError(msg)
++        container_id = podman_output.decode("utf-8").strip()
++        return container_id
++
++    def _get_container_ip(self, container):
++        # only in PodmanTestEnv
++        podman_cmd = ["podman", "inspect", container, "--format", "{{.NetworkSettings.IPAddress}}"]
++        try:
++            podman_output = subprocess.check_output(podman_cmd, stderr=subprocess.STDOUT)
++        except subprocess.CalledProcessError as e:
++            msg = "Command '{0}' returned {1}:\n{2}".format(" ".join(e.cmd), e.returncode, e.output.decode("utf-8"))
++            raise RuntimeError(msg)
++        ip_address = podman_output.decode("utf-8")
++        return ip_address
++
++    def _terminate_current_running_container_if_applicable(self):
++        if self.containers:
++            running_state = self.containers.pop()
++            podman_cmd = ["podman", "stop", running_state]
++            try:
++                subprocess.check_output(podman_cmd, stderr=subprocess.STDOUT)
++            except subprocess.CalledProcessError as e:
++                msg = "Command '{0}' returned {1}:\n{2}".format(" ".join(e.cmd), e.returncode, e.output.decode("utf-8"))
++                raise RuntimeError(msg)
++            podman_cmd = ["podman", "rm", running_state]
++            try:
++                subprocess.check_output(podman_cmd, stderr=subprocess.STDOUT)
++            except subprocess.CalledProcessError as e:
++                msg = "Command '{0}' returned {1}:\n{2}".format(" ".join(e.cmd), e.returncode, e.output.decode("utf-8"))
++                raise RuntimeError(msg)
++
++    def _delete_saved_state(self, image):
++        self._terminate_current_running_container_if_applicable()
++
++        assert self.created_images
++
++        associated_image = self.created_images.pop()
++        assert associated_image == image
++        podman_cmd = ["podman", "rmi", associated_image]
++        try:
++            subprocess.check_output(podman_cmd, stderr=subprocess.STDOUT)
++        except subprocess.CalledProcessError as e:
++            msg = "Command '{0}' returned {1}:\n{2}".format(" ".join(e.cmd), e.returncode, e.output.decode("utf-8"))
++            raise RuntimeError(msg)
++
++    def discard_running_state(self, state_handle):
++        self._terminate_current_running_container_if_applicable()
++
++    def _local_oscap_check_base_arguments(self):
++        raise NotImplementedError
++
++    def offline_scan(self, args, verbose_path):
++        raise NotImplementedError("OpenSCAP doesn't support offline scanning of Podman Containers")
+diff --git a/tests/test_suite.py b/tests/test_suite.py
+index 667fdd7296..275a147bdf 100755
+--- a/tests/test_suite.py
++++ b/tests/test_suite.py
+@@ -30,6 +30,9 @@ def parse_args():
+     backends.add_argument(
+         "--docker", dest="docker", metavar="BASE_IMAGE",
+         help="Use Docker test environment with this base image.")
++    backends.add_argument(
++        "--container", dest="container", metavar="BASE_IMAGE",
++        help="Use container test environment with this base image.")
+ 
+     backends.add_argument(
+         "--libvirt", dest="libvirt", metavar="HYPERVISOR DOMAIN", nargs=2,
+@@ -163,6 +166,12 @@ def normalize_passed_arguments(options):
+         logging.info(
+             "The base image option has been specified, "
+             "choosing Docker-based test environment.")
++    elif options.container:
++        options.test_env = ssg_test_suite.test_env.PodmanTestEnv(
++            options.scanning_mode, options.container)
++        logging.info(
++            "The base image option has been specified, "
++            "choosing Podman-based test environment.")
+     else:
+         hypervisor, domain_name = options.libvirt
+         options.test_env = ssg_test_suite.test_env.VMTestEnv(
+
+From 05bf3c7cfcc25a2d7b4970712df8b2c67336ba23 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Jan=20=C4=8Cern=C3=BD?= <jcerny@redhat.com>
+Date: Wed, 16 Jan 2019 14:56:45 +0100
+Subject: [PATCH 3/7] Update tests/README.md with the new Podman backend
+
+---
+ tests/README.md | 70 ++++++++++++++++++++++++++++++++++++-------------
+ 1 file changed, 52 insertions(+), 18 deletions(-)
+
+diff --git a/tests/README.md b/tests/README.md
+index 02ddc2921e..517f754c8c 100644
+--- a/tests/README.md
++++ b/tests/README.md
+@@ -10,7 +10,7 @@ remediation works.
+ 
+ ## Prerequisites
+ 
+-You can use the more powerful VM-based tests, or more lightweight Docker-based tests.
++You can use the more powerful VM-based tests, or more lightweight container-based tests.
+ 
+ For the Test Suite to work, you need to have libvirt domains prepared for
+ testing.
+@@ -69,9 +69,10 @@ VM-based tests:
+   - `hypervisor`: Typically, you will use the `qemu:///system` value.
+   - `domain`: `libvirt` domain, which is basically name of the virtual machine.
+ 
+-docker-based tests:
++Container-based tests:
+ 
+-- `--docker`: Accepts the base image name.
++- `--docker`: Uses Docker as container engine. Accepts the base image name.
++- `--container`: Uses Podman as container engine. Accepts the base image name.
+ 
+ ### Profile-based testing
+ 
+@@ -187,41 +188,74 @@ Now, you can perform validation check with command
+ ./test_suite.py rule --libvirt qemu:///system ssg-test-suite-centos --datastream ../build/ssg-centos7-ds.xml --xccdf-id scap_org.open-scap_cref_ssg-rhel7-xccdf-1.2.xml rule_sshd_disable_kerb_auth
+ ```
+ 
+-## Docker backend
++## Container backends
+ 
+-You can also use the docker-based for running tests, just use the script with the `--docker` argument.
+-You need to provide `--docker <base image name>` option on the command-line.
++You can also run the tests in a container. There are 2 container backends, Podman and Docker, supported.
++
++To use container backends, use the following options on the command line:
++
++- Podman - `--container <base image name>`
++- Docker - `--docker <base image name>`
+ 
+ To obtain the base image, you can use `test_suite-*` Dockerfiles in the `Dockerfiles` directory to build it.
+ We recommend to use RHEL-based containers, as the test suite is optimized for testing the RHEL content.
+ 
+-Build the image using this command:
++To use Podman backend, you need to have:
+ 
+-```
+-public_key="ssh-rsa AAAAB3NzaC1y...rJSs4BL me@localhost"
+-docker build --build-arg CLIENT_PUBLIC_KEY="$public_key" -t ssg_test_suite -f test_suite-rhel .
+-```
+-
+-Run the test suite using this command:
++- `podman` package installed, and
++- rights that allow you to start/stop containers and to create images.
+ 
+-```
+-./test_suite.py rule --docker ssg_test_suite --datastream ../build/ssg-centos7-ds.xml --xccdf-id scap_org.open-scap_cref_ssg-rhel7-xccdf-1.2.xml rule_sshd_disable_kerb_auth
+-```
++To use Docker backend, you need to have:
+ 
+-On your side, you need to have
+ - the [docker](https://pypi.org/project/docker/) Python module installed. You may have to use `pip` to install it on older distributions s.a. RHEL 7, running `pip install --user docker` as `root` will do the trick of installing it only for the `root` user.
+ - the Docker service running, and
+ - rights that allow you to start/stop containers and to create images.
+   This level of rights is considered to be insecure, so it is recommended to run the test suite in a VM.
+   You can accomplish this by creating a `docker` group, then add yourself in it and restart `docker`.
+ 
+-The Docker image you want to use with the tests needs to be prepared, so it can scan itself, and that it can accept connections and data.
++
++### Building the base image
++
++The container image you want to use with the tests needs to be prepared, so it can scan itself, and that it can accept connections and data.
+ Following services need to be supported:
+ 
+ - `sshd` (`openssh-server` needs to be installed, server host keys have to be in place, root's `.ssh/authorized_keys` are set up with correct permissions)
+ - `scp` (`openssh-clients` need to be installed - `scp` requires more than a ssh server on the server-side)
+ - `oscap` (`openscap-scanner` - the container has to be able to scan itself)
+ - You may want to include another packages, as base images tend to be bare-bone and tests may require more packages to be present.
++
++Using Podman:
++
++NOTE: With Podman, you have to run all the operations as root. Podman supports rootless containers, but the test suite internally uses a container exposing a TCP port. As of Podman version 0.12.1.2, port bindings are not yet supported by rootless containers.
++
++```
++# public_key="ssh-rsa AAAAB3NzaC1y...rJSs4BL root@localhost"
++# podman build --build-arg CLIENT_PUBLIC_KEY="$public_key" -t ssg_test_suite -f test_suite-rhel .
++```
++
++Using Docker:
++
++```
++public_key="ssh-rsa AAAAB3NzaC1y...rJSs4BL me@localhost"
++docker build --build-arg CLIENT_PUBLIC_KEY="$public_key" -t ssg_test_suite -f test_suite-rhel .
++```
++
++### Running the tests
++
++This is an example to run test scenarios for rule `rule_sshd_disable_kerb_auth`:
++
++Using Podman:
++
++```
++./test_suite.py rule --container ssg_test_suite --datastream ../build/ssg-centos7-ds.xml --xccdf-id scap_org.open-scap_cref_ssg-rhel7-xccdf-1.2.xml rule_sshd_disable_kerb_auth
++```
++
++Using Docker:
++
++```
++./test_suite.py rule --docker ssg_test_suite --datastream ../build/ssg-centos7-ds.xml --xccdf-id scap_org.open-scap_cref_ssg-rhel7-xccdf-1.2.xml rule_sshd_disable_kerb_auth
++```
++
+ Also, as containers may get any IP address, a conflict may appear in your local client's `known_hosts` file.
+ You might have a version of `oscap-ssh` that doesn't support ssh connection customization at the client-side, so it may be a good idea to disable known hosts checks for all hosts if you are testing on a VM or under a separate user.
+ You can do that by putting following lines in your `$HOME/.ssh/config` file:
+
+From e27f410f20dd1fb7fb719f5d4874774ef43316ff Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Jan=20=C4=8Cern=C3=BD?= <jcerny@redhat.com>
+Date: Wed, 16 Jan 2019 15:47:44 +0100
+Subject: [PATCH 4/7] Refactor: Extract common code to a parent class
+
+Classes DockerTestEnv and PodmanTestEnv contain a lot of duplicate code.
+They're very similar because both of them are a specific implementation
+of a generic container backend.  We introduce a new parent class
+ContainerTestEnv that contains common code. Then, DockerTestEnv and
+PodmanTestEnv will inherit from ContainerTestEnv.
+---
+ tests/ssg_test_suite/test_env.py | 188 ++++++++++++-------------------
+ 1 file changed, 74 insertions(+), 114 deletions(-)
+
+diff --git a/tests/ssg_test_suite/test_env.py b/tests/ssg_test_suite/test_env.py
+index 4c1503542c..1b11f4888b 100644
+--- a/tests/ssg_test_suite/test_env.py
++++ b/tests/ssg_test_suite/test_env.py
+@@ -172,28 +172,14 @@ def offline_scan(self, args, verbose_path):
+         return common.run_cmd_local(command_list, verbose_path)
+ 
+ 
+-class DockerTestEnv(TestEnv):
+-    name = "docker-based"
+-
+-    def __init__(self, mode, image_name):
+-        super(DockerTestEnv, self).__init__(mode)
+-
++class ContainerTestEnv(TestEnv):
++    def __init__(self, scanning_mode, image_name):
++        super(ContainerTestEnv, self).__init__(scanning_mode)
+         self._name_stem = "ssg_test"
+-
+-        try:
+-            self.client = docker.from_env(version="auto")
+-            self.client.ping()
+-        except Exception as exc:
+-            msg = (
+-                "Unable to start the Docker test environment, "
+-                "is the Docker service started "
+-                "and do you have rights to access it?"
+-                .format(str(exc)))
+-            raise RuntimeError(msg)
+-
+         self.base_image = image_name
+         self.created_images = []
+         self.containers = []
++        self.domain_ip = None
+ 
+     def start(self):
+         self.run_container(self.base_image)
+@@ -221,7 +207,7 @@ def _create_new_image(self, from_container, name):
+         new_image_name = self.image_stem2fqn(name)
+         if not from_container:
+             from_container = self.run_container(self.current_image)
+-        from_container.commit(repository=new_image_name)
++        self._commit(from_container, new_image_name)
+         self.created_images.append(new_image_name)
+         return new_image_name
+ 
+@@ -232,13 +218,10 @@ def _save_state(self, state_name):
+     def run_container(self, image_name, container_name="running"):
+         new_container = self._new_container_from_image(image_name, container_name)
+         self.containers.append(new_container)
+-
+         # Get the container time to fully start its service
+         time.sleep(0.2)
+ 
+-        new_container.reload()
+-        self.domain_ip = new_container.attrs["NetworkSettings"]["Networks"]["bridge"]["IPAddress"]
+-
++        self.domain_ip = self._get_container_ip(new_container)
+         return new_container
+ 
+     def reset_state_to(self, state_name, new_running_state_name):
+@@ -249,114 +232,104 @@ def reset_state_to(self, state_name, new_running_state_name):
+ 
+         return new_container
+ 
+-    def _find_image_by_name(self, image_name):
+-        # only in DockerTestEnv
+-        return self.client.images.get(image_name)
++    def _delete_saved_state(self, image):
++        self._terminate_current_running_container_if_applicable()
++
++        assert self.created_images
++
++        associated_image = self.created_images.pop()
++        assert associated_image == image
++        self._remove_image(associated_image)
++
++    def discard_running_state(self, state_handle):
++        self._terminate_current_running_container_if_applicable()
++
++    def offline_scan(self, args, verbose_path):
++        command_list = self._local_oscap_check_base_arguments() + args
++
++        return common.run_cmd_local(command_list, verbose_path)
++
++    def _commit(self, container, image):
++        pass
+ 
+     def _new_container_from_image(self, image_name, container_name):
+-        img = self._find_image_by_name(image_name)
++        pass
++
++    def _get_container_ip(self, container):
++        pass
++
++    def _terminate_current_running_container_if_applicable(self):
++        pass
++
++    def _remove_image(self, image):
++        pass
++
++    def _local_oscap_check_base_arguments(self):
++        pass
++
++
++class DockerTestEnv(ContainerTestEnv):
++    name = "docker-based"
++
++    def __init__(self, mode, image_name):
++        super(DockerTestEnv, self).__init__(mode, image_name)
++        try:
++            self.client = docker.from_env(version="auto")
++            self.client.ping()
++        except Exception as exc:
++            msg = (
++                "Unable to start the Docker test environment, "
++                "is the Docker service started "
++                "and do you have rights to access it?"
++                .format(str(exc)))
++            raise RuntimeError(msg)
++
++    def _commit(self, container, image):
++        container.commit(repository=image)
++
++    def _new_container_from_image(self, image_name, container_name):
++        img = self.client.images.get(image_name)
+         result = self.client.containers.run(
+             img, "/usr/sbin/sshd -D",
+             name="{0}_{1}".format(self._name_stem, container_name), ports={"22": None},
+             detach=True)
+         return result
+ 
++    def _get_container_ip(self, container):
++        container.reload()
++        container_ip = container.attrs["NetworkSettings"]["Networks"]["bridge"]["IPAddress"]
++        return container_ip
++
+     def _terminate_current_running_container_if_applicable(self):
+         if self.containers:
+             running_state = self.containers.pop()
+             running_state.stop()
+             running_state.remove()
+ 
+-    def _delete_saved_state(self, image):
+-        self._terminate_current_running_container_if_applicable()
+-
+-        assert self.created_images
+-
+-        associated_image = self.created_images.pop()
+-        assert associated_image == image
+-        self.client.images.remove(associated_image)
+-
+-    def discard_running_state(self, state_handle):
+-        self._terminate_current_running_container_if_applicable()
++    def _remove_image(self, image):
++        self.client.images.remove(image)
+ 
+     def _local_oscap_check_base_arguments(self):
+         return ['oscap-docker', "container", self.current_container.id,
+                                                             'xccdf', 'eval']
+ 
+-    def offline_scan(self, args, verbose_path):
+-        command_list = self._local_oscap_check_base_arguments() + args
+-
+-        return common.run_cmd_local(command_list, verbose_path)
+-
+ 
+-class PodmanTestEnv(TestEnv):
++class PodmanTestEnv(ContainerTestEnv):
+     # TODO: Rework this class using Podman Python bindings (python3-podman)
+     # at the moment when their API will provide methods to run containers,
+     # commit images and inspect containers
+     name = "podman-based"
+ 
+     def __init__(self, scanning_mode, image_name):
+-        super(PodmanTestEnv, self).__init__(scanning_mode)
+-        self._name_stem = "ssg_test"
+-        self.base_image = image_name
+-        self.created_images = []
+-        self.containers = []
+-        self.domain_ip = None
+-
+-    def start(self):
+-        self.run_container(self.base_image)
+-
+-    def finalize(self):
+-        self._terminate_current_running_container_if_applicable()
+-
+-    def image_stem2fqn(self, stem):
+-        image_name = "{0}_{1}".format(self.base_image, stem)
+-        return image_name
++        super(PodmanTestEnv, self).__init__(scanning_mode, image_name)
+ 
+-    @property
+-    def current_container(self):
+-        if self.containers:
+-            return self.containers[-1]
+-        return None
+-
+-    @property
+-    def current_image(self):
+-        if self.created_images:
+-            return self.created_images[-1]
+-        return self.base_image
+-
+-    def _create_new_image(self, from_container, name):
+-        new_image_name = self.image_stem2fqn(name)
+-        if not from_container:
+-            from_container = self.run_container(self.current_image)
+-        podman_cmd = ["podman", "commit", from_container, new_image_name]
++    def _commit(self, container, image):
++        podman_cmd = ["podman", "commit", container, image]
+         try:
+             subprocess.check_output(podman_cmd, stderr=subprocess.STDOUT)
+         except subprocess.CalledProcessError as e:
+             msg = "Command '{0}' returned {1}:\n{2}".format(" ".join(e.cmd), e.returncode, e.output.decode("utf-8"))
+             raise RuntimeError(msg)
+-        self.created_images.append(new_image_name)
+-        return new_image_name
+-
+-    def _save_state(self, state_name):
+-        state = self._create_new_image(self.current_container, state_name)
+-        return state
+-
+-    def run_container(self, image_name, container_name="running"):
+-        new_container = self._new_container_from_image(image_name, container_name)
+-        self.containers.append(new_container)
+-        # Get the container time to fully start its service
+-        time.sleep(0.2)
+-        self.domain_ip = self._get_container_ip(new_container)
+-        return new_container
+-
+-    def reset_state_to(self, state_name, new_running_state_name):
+-        self._terminate_current_running_container_if_applicable()
+-        image_name = self.image_stem2fqn(state_name)
+-
+-        new_container = self.run_container(image_name, new_running_state_name)
+-
+-        return new_container
+ 
+     def _new_container_from_image(self, image_name, container_name):
+         long_name = "{0}_{1}".format(self._name_stem, container_name)
+@@ -372,7 +345,6 @@ def _new_container_from_image(self, image_name, container_name):
+         return container_id
+ 
+     def _get_container_ip(self, container):
+-        # only in PodmanTestEnv
+         podman_cmd = ["podman", "inspect", container, "--format", "{{.NetworkSettings.IPAddress}}"]
+         try:
+             podman_output = subprocess.check_output(podman_cmd, stderr=subprocess.STDOUT)
+@@ -398,25 +370,13 @@ def _terminate_current_running_container_if_applicable(self):
+                 msg = "Command '{0}' returned {1}:\n{2}".format(" ".join(e.cmd), e.returncode, e.output.decode("utf-8"))
+                 raise RuntimeError(msg)
+ 
+-    def _delete_saved_state(self, image):
+-        self._terminate_current_running_container_if_applicable()
+-
+-        assert self.created_images
+-
+-        associated_image = self.created_images.pop()
+-        assert associated_image == image
+-        podman_cmd = ["podman", "rmi", associated_image]
++    def _remove_image(self, image):
++        podman_cmd = ["podman", "rmi", image]
+         try:
+             subprocess.check_output(podman_cmd, stderr=subprocess.STDOUT)
+         except subprocess.CalledProcessError as e:
+             msg = "Command '{0}' returned {1}:\n{2}".format(" ".join(e.cmd), e.returncode, e.output.decode("utf-8"))
+             raise RuntimeError(msg)
+ 
+-    def discard_running_state(self, state_handle):
+-        self._terminate_current_running_container_if_applicable()
+-
+     def _local_oscap_check_base_arguments(self):
+-        raise NotImplementedError
+-
+-    def offline_scan(self, args, verbose_path):
+         raise NotImplementedError("OpenSCAP doesn't support offline scanning of Podman Containers")
+
+From cbc93c8cf4320f81e00061492e5e2d76cc733c6f Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Jan=20=C4=8Cern=C3=BD?= <jcerny@redhat.com>
+Date: Wed, 16 Jan 2019 16:28:43 +0100
+Subject: [PATCH 5/7] Import docker only if needed
+
+If people use only other backends than Docker they don't need to
+install docker Python module.
+---
+ tests/ssg_test_suite/test_env.py | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/tests/ssg_test_suite/test_env.py b/tests/ssg_test_suite/test_env.py
+index 1b11f4888b..1bbc955f7d 100644
+--- a/tests/ssg_test_suite/test_env.py
++++ b/tests/ssg_test_suite/test_env.py
+@@ -6,8 +6,6 @@
+ import time
+ import subprocess
+ 
+-import docker
+-
+ import ssg_test_suite
+ from ssg_test_suite.virt import SnapshotStack
+ from ssg_test_suite import common
+@@ -273,6 +271,10 @@ class DockerTestEnv(ContainerTestEnv):
+ 
+     def __init__(self, mode, image_name):
+         super(DockerTestEnv, self).__init__(mode, image_name)
++        try:
++            import docker
++        except ImportError:
++            raise RuntimeError("Can't import Docker, Docker backend will not work.")
+         try:
+             self.client = docker.from_env(version="auto")
+             self.client.ping()
+
+From 5e76fd5ec49eabc7ef378d63fd86caeb2afb3b48 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Jan=20=C4=8Cern=C3=BD?= <jcerny@redhat.com>
+Date: Thu, 17 Jan 2019 14:12:14 +0100
+Subject: [PATCH 6/7] Remove unused method discard_running_state
+
+---
+ tests/ssg_test_suite/test_env.py | 6 ------
+ 1 file changed, 6 deletions(-)
+
+diff --git a/tests/ssg_test_suite/test_env.py b/tests/ssg_test_suite/test_env.py
+index 1bbc955f7d..2590102217 100644
+--- a/tests/ssg_test_suite/test_env.py
++++ b/tests/ssg_test_suite/test_env.py
+@@ -151,9 +151,6 @@ def reset_state_to(self, state_name, new_running_state_name):
+         state = self.snapshot_stack.revert(delete=False)
+         return state
+ 
+-    def discard_running_state(self, state_handle):
+-        pass
+-
+     def _save_state(self, state_name):
+         state = self.snapshot_stack.create(state_name)
+         return state
+@@ -239,9 +236,6 @@ def _delete_saved_state(self, image):
+         assert associated_image == image
+         self._remove_image(associated_image)
+ 
+-    def discard_running_state(self, state_handle):
+-        self._terminate_current_running_container_if_applicable()
+-
+     def offline_scan(self, args, verbose_path):
+         command_list = self._local_oscap_check_base_arguments() + args
+ 
+
+From 50bfbaacb237e7f04a7f0d58a1468d4663889d25 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Jan=20=C4=8Cern=C3=BD?= <jcerny@redhat.com>
+Date: Fri, 18 Jan 2019 15:07:11 +0100
+Subject: [PATCH 7/7] Raise NotImplementedError in ContainerTestEnv
+
+---
+ tests/ssg_test_suite/test_env.py | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/tests/ssg_test_suite/test_env.py b/tests/ssg_test_suite/test_env.py
+index 2590102217..34da74b0a5 100644
+--- a/tests/ssg_test_suite/test_env.py
++++ b/tests/ssg_test_suite/test_env.py
+@@ -242,22 +242,22 @@ def offline_scan(self, args, verbose_path):
+         return common.run_cmd_local(command_list, verbose_path)
+ 
+     def _commit(self, container, image):
+-        pass
++        raise NotImplementedError
+ 
+     def _new_container_from_image(self, image_name, container_name):
+-        pass
++        raise NotImplementedError
+ 
+     def _get_container_ip(self, container):
+-        pass
++        raise NotImplementedError
+ 
+     def _terminate_current_running_container_if_applicable(self):
+-        pass
++        raise NotImplementedError
+ 
+     def _remove_image(self, image):
+-        pass
++        raise NotImplementedError
+ 
+     def _local_oscap_check_base_arguments(self):
+-        pass
++        raise NotImplementedError
+ 
+ 
+ class DockerTestEnv(ContainerTestEnv):

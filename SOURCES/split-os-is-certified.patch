@@ -1,0 +1,337 @@
+From 6f72c4bda4825293c39d32373040b4c049a0615b Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Jan=20=C4=8Cern=C3=BD?= <jcerny@redhat.com>
+Date: Wed, 5 Dec 2018 10:47:34 +0100
+Subject: [PATCH] Split rule installed_OS_is certified
+
+Split rule installed_OS_is certified to 2 rules:
+ * installed OS is vendor supported (is RHEL)
+ * installed OS has received FIPS certification
+The original intention of the rule installed_OS_is_certified was to
+serve as dependency for FIPS-related checks such as
+grub2_enable_FIPS_mode. Over the time new requirements have been added
+to ensure Red Hat Enterprise Linux is evaluated (and not CentOS).
+The rules that require FIPS certification will now depend on
+'installed_OS_is_FIPS_certified'. The profiles will contain
+'installed_OS_is_vendor_supported'
+---
+ fedora/profiles/ospp.profile                  |  2 +-
+ .../sshd_use_approved_ciphers/oval/shared.xml |  2 +-
+ .../sshd_use_approved_macs/oval/shared.xml    |  2 +-
+ .../oval/shared.xml                           | 11 +++--
+ .../installed_OS_is_FIPS_certified/rule.yml   | 44 +++++++++++++++++++
+ .../oval/shared.xml                           | 21 +++++++++
+ .../rule.yml                                  | 25 +++++------
+ .../grub2_enable_fips_mode/oval/shared.xml    |  2 +-
+ .../oval/shared.xml                           |  2 +-
+ .../aide/aide_use_fips_hashes/oval/shared.xml |  2 +-
+ rhel7/profiles/ospp.profile                   |  2 +-
+ rhel7/profiles/ospp42.profile                 |  2 +-
+ rhel7/profiles/stig-rhel7-disa.profile        |  2 +-
+ rhel8/profiles/ospp.profile                   |  2 +-
+ 14 files changed, 90 insertions(+), 31 deletions(-)
+ rename linux_os/guide/system/software/integrity/certified-vendor/{installed_OS_is_certified => installed_OS_is_FIPS_certified}/oval/shared.xml (69%)
+ create mode 100644 linux_os/guide/system/software/integrity/certified-vendor/installed_OS_is_FIPS_certified/rule.yml
+ create mode 100644 linux_os/guide/system/software/integrity/certified-vendor/installed_OS_is_vendor_supported/oval/shared.xml
+ rename linux_os/guide/system/software/integrity/certified-vendor/{installed_OS_is_certified => installed_OS_is_vendor_supported}/rule.yml (54%)
+
+diff --git a/fedora/profiles/ospp.profile b/fedora/profiles/ospp.profile
+index c115ab6bce..0ba407bfc8 100644
+--- a/fedora/profiles/ospp.profile
++++ b/fedora/profiles/ospp.profile
+@@ -13,7 +13,7 @@ description: |-
+     similar to the one mandated by US National Security Systems.
+ 
+ selections:
+-    - installed_OS_is_certified
++    - installed_OS_is_vendor_supported
+     - grub2_audit_argument
+     - grub2_audit_backlog_limit_argument
+     - service_auditd_enabled
+diff --git a/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_ciphers/oval/shared.xml b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_ciphers/oval/shared.xml
+index 5a4e3a1f9b..0e66bbee28 100644
+--- a/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_ciphers/oval/shared.xml
++++ b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_ciphers/oval/shared.xml
+@@ -8,7 +8,7 @@
+       <description>Limit the ciphers to those which are FIPS-approved.</description>
+     </metadata>
+     <criteria operator="AND">
+-      <extend_definition comment="Installed OS is certified" definition_ref="installed_OS_is_certified" />
++      <extend_definition comment="Installed OS is FIPS certified" definition_ref="installed_OS_is_FIPS_certified" />
+       <criteria comment="SSH is configured correctly or is not installed"
+       operator="OR">
+         <criteria comment="sshd is not installed" operator="AND">
+diff --git a/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs/oval/shared.xml b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs/oval/shared.xml
+index 2aed2ec9ad..0e6d1e88ce 100644
+--- a/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs/oval/shared.xml
++++ b/linux_os/guide/services/ssh/ssh_server/sshd_use_approved_macs/oval/shared.xml
+@@ -9,7 +9,7 @@
+       <description>Limit the Message Authentication Codes (MACs) to those which are FIPS-approved.</description>
+     </metadata>
+     <criteria operator="AND">
+-      <extend_definition comment="Installed OS is certified" definition_ref="installed_OS_is_certified" />
++      <extend_definition comment="Installed OS is FIPS certified" definition_ref="installed_OS_is_FIPS_certified" />
+       <criteria comment="SSH is configured correctly or is not installed"
+       operator="OR">
+         <criteria comment="sshd is not installed" operator="AND">
+diff --git a/linux_os/guide/system/software/integrity/certified-vendor/installed_OS_is_certified/oval/shared.xml b/linux_os/guide/system/software/integrity/certified-vendor/installed_OS_is_FIPS_certified/oval/shared.xml
+similarity index 69%
+rename from linux_os/guide/system/software/integrity/certified-vendor/installed_OS_is_certified/oval/shared.xml
+rename to linux_os/guide/system/software/integrity/certified-vendor/installed_OS_is_FIPS_certified/oval/shared.xml
+index 256c3b289c..6599c3eeee 100644
+--- a/linux_os/guide/system/software/integrity/certified-vendor/installed_OS_is_certified/oval/shared.xml
++++ b/linux_os/guide/system/software/integrity/certified-vendor/installed_OS_is_FIPS_certified/oval/shared.xml
+@@ -1,16 +1,15 @@
+ <def-group>
+-  <definition class="compliance"
+-  id="installed_OS_is_certified" version="1">
++  <definition class="compliance" id="installed_OS_is_FIPS_certified" version="1">
+     <metadata>
+-      <title>Vendor Certified Operating System</title>
++      <title>FIPS 140-2 Certified Operating System</title>
+       <affected family="unix">
+         <platform>multi_platform_rhel</platform>
+         <platform>multi_platform_rhosp</platform>
+         <platform>multi_platform_fedora</platform>
+       </affected>
+-      <description>The operating system installed on the system is
+-      a certified vendor operating system and meets government
+-      requirements/certifications such as FIPS, NIAP, etc.</description>
++      <description>
++          The operating system installed on the system is a certified operating system that meets FIPS 140-2 requirements.
++      </description>
+     </metadata>
+     <criteria comment="Installed operating system is a certified operating system" operator="OR">
+       <extend_definition comment="Installed OS is RHEL6" definition_ref="installed_OS_is_rhel6" />
+diff --git a/linux_os/guide/system/software/integrity/certified-vendor/installed_OS_is_FIPS_certified/rule.yml b/linux_os/guide/system/software/integrity/certified-vendor/installed_OS_is_FIPS_certified/rule.yml
+new file mode 100644
+index 0000000000..ffdc4825d6
+--- /dev/null
++++ b/linux_os/guide/system/software/integrity/certified-vendor/installed_OS_is_FIPS_certified/rule.yml
+@@ -0,0 +1,44 @@
++documentation_complete: true
++
++prodtype: rhel6,rhel7,rhel8,fedora,ol7
++
++title: 'The Installed Operating System Is FIPS 140-2 Certified'
++
++description: |-
++    To enable processing of sensitive information the operating system must
++    provide certified cryptographic modules compliant with FIPS 140-2
++    standard.
++    {{% if product in ["rhel6", "rhel7"] %}}
++    Red Hat Enterprise Linux is supported by Red Hat, Inc. As the Red Hat Enterprise
++    Linux vendor, Red Hat, Inc. is responsible for maintaining government certifications and standards.
++    {{% endif %}}
++
++rationale: |-
++    The Federal Information Processing Standard (FIPS) Publication 140-2, (FIPS
++    PUB 140-2) is a computer security standard. The standard specifies security
++    requirements for cryptographic modules used to protect sensitive
++    unclassified information.  Refer to the full FIPS 140-2 standard at
++    {{{ weblink(link="http://csrc.nist.gov/publications/fips/fips140-2/fips1402.pdf") }}}
++    for further details on the requirements.
++    FIPS 140-2 validation is required by U.S. law when information systems use
++    cryptography to protect sensitive government information. In order to
++    achieve FIPS 140-2 certification, cryptographic modules are subject to
++    extensive testing by independent laboratories, accredited by National
++    Institute of Standards and Technology (NIST).
++
++warnings:
++    - general: |-
++        There is no remediation besides switching to a different operating system.
++
++severity: high
++
++ocil_clause: 'the installed operating system is not FIPS 140-2 certified'
++
++{{% if product in ["rhel6", "rhel7"] %}}
++ocil: |-
++    To verify that the installed operating system is supported or certified, run
++    the following command:
++    <pre>$ grep -i "red hat" /etc/redhat-release</pre>
++    The output should contain something similar to:
++    <pre>{{{ full_name }}}</pre>
++{{% endif %}}
+diff --git a/linux_os/guide/system/software/integrity/certified-vendor/installed_OS_is_vendor_supported/oval/shared.xml b/linux_os/guide/system/software/integrity/certified-vendor/installed_OS_is_vendor_supported/oval/shared.xml
+new file mode 100644
+index 0000000000..37f55dfa8c
+--- /dev/null
++++ b/linux_os/guide/system/software/integrity/certified-vendor/installed_OS_is_vendor_supported/oval/shared.xml
+@@ -0,0 +1,21 @@
++<def-group>
++  <definition class="compliance" id="installed_OS_is_vendor_supported" version="1">
++    <metadata>
++      <title>Vendor Supported Operating System</title>
++      <affected family="unix">
++        <platform>multi_platform_rhel</platform>
++        <platform>multi_platform_rhosp</platform>
++        <platform>multi_platform_fedora</platform>
++      </affected>
++     <description>
++        The operating system installed on the system is supported by a vendor that provides security patches.
++      </description>
++    </metadata>
++    <criteria comment="Installed operating system is supported by a vendor" operator="OR">
++      <extend_definition comment="Installed OS is RHEL6" definition_ref="installed_OS_is_rhel6" />
++      <extend_definition comment="Installed OS is RHEL7" definition_ref="installed_OS_is_rhel7" />
++      <extend_definition comment="Installed OS is RHEL8" definition_ref="installed_OS_is_rhel8" />
++    </criteria>
++  </definition>
++
++</def-group>
+diff --git a/linux_os/guide/system/software/integrity/certified-vendor/installed_OS_is_certified/rule.yml b/linux_os/guide/system/software/integrity/certified-vendor/installed_OS_is_vendor_supported/rule.yml
+similarity index 54%
+rename from linux_os/guide/system/software/integrity/certified-vendor/installed_OS_is_certified/rule.yml
+rename to linux_os/guide/system/software/integrity/certified-vendor/installed_OS_is_vendor_supported/rule.yml
+index bfec874ff7..6c5afede5d 100644
+--- a/linux_os/guide/system/software/integrity/certified-vendor/installed_OS_is_certified/rule.yml
++++ b/linux_os/guide/system/software/integrity/certified-vendor/installed_OS_is_vendor_supported/rule.yml
+@@ -2,26 +2,24 @@ documentation_complete: true
+ 
+ prodtype: rhel6,rhel7,rhel8,fedora,ol7
+ 
+-title: 'The Installed Operating System Is Vendor Supported and Certified'
++title: 'The Installed Operating System Is Vendor Supported'
+ 
+ description: |-
+-    The installed operating system must be maintained and certified by a vendor.
++    The installed operating system must be maintained by a vendor.
+     {{% if product == "ol7" %}}
+     Oracle Linux is supported by Oracle Corporation. As the Oracle
+-    Linux vendor, Oracle Corporation is responsible for providing security patches as well
+-    as meeting and maintaining goverment certifications and standards.
++    Linux vendor, Oracle Corporation is responsible for providing security patches.
+     {{% else %}}
+     Red Hat Enterprise Linux is supported by Red Hat, Inc. As the Red Hat Enterprise
+-    Linux vendor, Red Hat, Inc. is responsible for providing security patches as well
+-    as meeting and maintaining goverment certifications and standards.
++    Linux vendor, Red Hat, Inc. is responsible for providing security patches.
+     {{% endif %}}
+ 
+ 
+ rationale: |-
+-    An operating system is considered "supported" if the vendor continues to provide
+-    security patches for the product as well as maintain government certification requirements.
+-    With an unsupported release, it will not be possible to resolve security issue discovered in
+-    the system software as well as meet government certifications.
++    An operating system is considered "supported" if the vendor continues to
++    provide security patches for the product.  With an unsupported release, it
++    will not be possible to resolve any security issue discovered in the system
++    software.
+ 
+ warnings:
+     - general: |-
+@@ -29,20 +27,17 @@ warnings:
+ 
+ severity: high
+ 
+-identifiers:
+-    cce@rhel7: 80349-4
+-
+ references:
+     disa: "366"
+     nist: SI-2(c)
+     srg: SRG-OS-000480-GPOS-00227
+     stigid@rhel7: "020250"
+ 
+-ocil_clause: 'the installed operating system is not supported or certified'
++ocil_clause: 'the installed operating system is not supported'
+ 
+ {{% if product in ["rhel6", "rhel7"] %}}
+ ocil: |-
+-    To verify that the installed operating system is supported or certified, run
++    To verify that the installed operating system is supported, run
+     the following command:
+     <pre>$ grep -i "red hat" /etc/redhat-release</pre>
+     The output should contain something similar to:
+diff --git a/linux_os/guide/system/software/integrity/fips/grub2_enable_fips_mode/oval/shared.xml b/linux_os/guide/system/software/integrity/fips/grub2_enable_fips_mode/oval/shared.xml
+index b8f84e32d3..0ce11f6eef 100644
+--- a/linux_os/guide/system/software/integrity/fips/grub2_enable_fips_mode/oval/shared.xml
++++ b/linux_os/guide/system/software/integrity/fips/grub2_enable_fips_mode/oval/shared.xml
+@@ -10,7 +10,7 @@
+       <description>Look for argument fips=1 in the kernel line in /etc/default/grub.</description>
+     </metadata>
+     <criteria operator="AND">
+-      <extend_definition comment="Installed OS is certified" definition_ref="installed_OS_is_certified" />
++      <extend_definition comment="Installed OS is FIPS certified" definition_ref="installed_OS_is_FIPS_certified" />
+       <extend_definition comment="prelink disabled" definition_ref="disable_prelink" />
+       <extend_definition comment="package dracut-fips installed" definition_ref="package_dracut-fips_installed" />
+       <criteria operator="OR">
+diff --git a/linux_os/guide/system/software/integrity/fips/package_dracut-fips_installed/oval/shared.xml b/linux_os/guide/system/software/integrity/fips/package_dracut-fips_installed/oval/shared.xml
+index 1483429a6a..69a42f9a11 100644
+--- a/linux_os/guide/system/software/integrity/fips/package_dracut-fips_installed/oval/shared.xml
++++ b/linux_os/guide/system/software/integrity/fips/package_dracut-fips_installed/oval/shared.xml
+@@ -14,7 +14,7 @@
+       <description>The RPM package dracut-fips should be installed.</description>
+     </metadata>
+     <criteria>
+-      <extend_definition comment="Installed OS is certified" definition_ref="installed_OS_is_certified" />
++      <extend_definition comment="Installed OS is FIPS certified" definition_ref="installed_OS_is_FIPS_certified" />
+       <criterion comment="package dracut-fips is installed"
+       test_ref="test_package_dracut-fips_installed" />
+     </criteria>
+diff --git a/linux_os/guide/system/software/integrity/software-integrity/aide/aide_use_fips_hashes/oval/shared.xml b/linux_os/guide/system/software/integrity/software-integrity/aide/aide_use_fips_hashes/oval/shared.xml
+index 037b22e945..de1bba8c27 100644
+--- a/linux_os/guide/system/software/integrity/software-integrity/aide/aide_use_fips_hashes/oval/shared.xml
++++ b/linux_os/guide/system/software/integrity/software-integrity/aide/aide_use_fips_hashes/oval/shared.xml
+@@ -9,7 +9,7 @@
+       cryptographic hashes.</description>
+     </metadata>
+     <criteria operator="AND">
+-      <extend_definition comment="Installed OS is certified" definition_ref="installed_OS_is_certified" />
++      <extend_definition comment="Installed OS is FIPS certified" definition_ref="installed_OS_is_FIPS_certified" />
+       <extend_definition comment="Aide is installed" definition_ref="package_aide_installed" />
+       <criterion comment="non-FIPS hashes are not configured" test_ref="test_aide_non_fips_hashes" />
+       <criterion comment="FIPS hashes are configured" test_ref="test_aide_use_fips_hashes" />
+diff --git a/rhel7/profiles/ospp.profile b/rhel7/profiles/ospp.profile
+index e0d9b02c38..d978c16a21 100644
+--- a/rhel7/profiles/ospp.profile
++++ b/rhel7/profiles/ospp.profile
+@@ -33,7 +33,7 @@ description: |-
+     consensus and release processes.
+ 
+ selections:
+-    - installed_OS_is_certified
++    - installed_OS_is_vendor_supported
+     - login_banner_text=usgcb_default
+     - inactivity_timeout_value=15_minutes
+     - var_password_pam_minlen=15
+diff --git a/rhel7/profiles/ospp42.profile b/rhel7/profiles/ospp42.profile
+index dd157a6e5b..dbd19355ac 100644
+--- a/rhel7/profiles/ospp42.profile
++++ b/rhel7/profiles/ospp42.profile
+@@ -13,7 +13,7 @@ description: |-
+     in US National Security Systems.
+ 
+ selections:
+-    - installed_OS_is_certified
++    - installed_OS_is_vendor_supported
+     - grub2_audit_argument
+     - grub2_audit_backlog_limit_argument
+     - service_auditd_enabled
+diff --git a/rhel7/profiles/stig-rhel7-disa.profile b/rhel7/profiles/stig-rhel7-disa.profile
+index 3fe2869f69..7200e9dc8a 100644
+--- a/rhel7/profiles/stig-rhel7-disa.profile
++++ b/rhel7/profiles/stig-rhel7-disa.profile
+@@ -119,7 +119,7 @@ selections:
+     - selinux_policytype
+     - disable_ctrlaltdel_reboot
+     - accounts_umask_etc_login_defs
+-    - installed_OS_is_certified
++    - installed_OS_is_vendor_supported
+     - security_patches_up_to_date
+     - gid_passwd_group_same
+     - accounts_no_uid_except_zero
+diff --git a/rhel8/profiles/ospp.profile b/rhel8/profiles/ospp.profile
+index 27613eee55..ee1dcbe227 100644
+--- a/rhel8/profiles/ospp.profile
++++ b/rhel8/profiles/ospp.profile
+@@ -8,7 +8,7 @@ description: |-
+     Operating Systems (Protection Profile Version 4.2).
+ 
+ selections:
+-    - installed_OS_is_certified
++    - installed_OS_is_vendor_supported
+     - grub2_audit_argument
+     - grub2_audit_backlog_limit_argument
+     - service_auditd_enabled

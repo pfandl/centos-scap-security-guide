@@ -1,0 +1,315 @@
+From 23204bd31684333b786ab922801dfa58dfbab80e Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Fri, 4 Jan 2019 16:29:31 +0100
+Subject: [PATCH 1/4] Pass rule configure_bind_crypto_policy if bind is not
+ installed
+
+OVAL definition and tests are updated.
+---
+ .../crypto/configure_bind_crypto_policy/oval/shared.xml      | 5 +++--
+ .../integrity/crypto/configure_bind_crypto_policy/rule.yml   | 2 ++
+ .../rule_configure_bind_crypto_policy/absent.fail.sh         | 2 ++
+ .../bind_not_installed.pass.sh                               | 4 ++++
+ .../rule_configure_bind_crypto_policy/no_config_file.fail.sh | 2 ++
+ .../rule_configure_bind_crypto_policy/ok.pass.sh             | 2 ++
+ .../rule_configure_bind_crypto_policy/overrides.fail.sh      | 2 ++
+ 7 files changed, 17 insertions(+), 2 deletions(-)
+ create mode 100644 tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_bind_crypto_policy/bind_not_installed.pass.sh
+
+diff --git a/linux_os/guide/system/software/integrity/crypto/configure_bind_crypto_policy/oval/shared.xml b/linux_os/guide/system/software/integrity/crypto/configure_bind_crypto_policy/oval/shared.xml
+index a77a17de24..0a4044709f 100644
+--- a/linux_os/guide/system/software/integrity/crypto/configure_bind_crypto_policy/oval/shared.xml
++++ b/linux_os/guide/system/software/integrity/crypto/configure_bind_crypto_policy/oval/shared.xml
+@@ -6,9 +6,10 @@
+         <platform>multi_platform_fedora</platform>
+         <platform>Red Hat Enterprise Linux 8</platform>
+       </affected>
+-      <description>BIND should be configured to use the system-wide crypto policy setting.</description>
++      <description>BIND is not installed or is configured to use the system-wide crypto policy setting.</description>
+     </metadata>
+-    <criteria>
++    <criteria operator="OR">
++      <extend_definition comment="Check if package bind is not installed" definition_ref="package_bind_removed" />
+       <criterion test_ref="test_configure_bind_crypto_policy"
+       comment="Check that the configuration includes the policy config file." />
+     </criteria>
+diff --git a/linux_os/guide/system/software/integrity/crypto/configure_bind_crypto_policy/rule.yml b/linux_os/guide/system/software/integrity/crypto/configure_bind_crypto_policy/rule.yml
+index 77fdbb9f9c..b0f48ec4b1 100644
+--- a/linux_os/guide/system/software/integrity/crypto/configure_bind_crypto_policy/rule.yml
++++ b/linux_os/guide/system/software/integrity/crypto/configure_bind_crypto_policy/rule.yml
+@@ -9,6 +9,8 @@ description: |-
+     BIND is supported by crypto policy, but the BIND configuration may be
+     set up to ignore it.
+ 
++    Either BIND is not installed, or it is configured to use the system-wide defined crypto policy.
++
+     To check that Crypto Policies settings are configured correctly, ensure that the <tt>/etc/named.conf</tt>
+     includes the appropriate configuration:
+     In the <tt>options</tt> section of <tt>/etc/named.conf</tt>, make sure that the following line
+diff --git a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_bind_crypto_policy/absent.fail.sh b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_bind_crypto_policy/absent.fail.sh
+index 99f603f1a5..70194db999 100644
+--- a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_bind_crypto_policy/absent.fail.sh
++++ b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_bind_crypto_policy/absent.fail.sh
+@@ -1,6 +1,8 @@
+ #!/bin/bash
+ # profiles = xccdf_org.ssgproject.content_profile_standard
+ 
++yum install -y bind
++
+ BIND_CONF='/etc/named.conf'
+ 
+ cat << EOF > "$BIND_CONF"
+diff --git a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_bind_crypto_policy/bind_not_installed.pass.sh b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_bind_crypto_policy/bind_not_installed.pass.sh
+new file mode 100644
+index 0000000000..a81415df04
+--- /dev/null
++++ b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_bind_crypto_policy/bind_not_installed.pass.sh
+@@ -0,0 +1,4 @@
++#!/bin/bash
++# profiles = xccdf_org.ssgproject.content_profile_standard
++
++yum remove -y bind || true
+diff --git a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_bind_crypto_policy/no_config_file.fail.sh b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_bind_crypto_policy/no_config_file.fail.sh
+index 59e45aa260..4fcfc70a5b 100644
+--- a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_bind_crypto_policy/no_config_file.fail.sh
++++ b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_bind_crypto_policy/no_config_file.fail.sh
+@@ -4,6 +4,8 @@
+ # We don't remediate anything if the config file is missing completely.
+ # remediation = none
+ 
++yum install -y bind
++
+ BIND_CONF='/etc/named.conf'
+ 
+ rm -f "$BIND_CONF"
+diff --git a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_bind_crypto_policy/ok.pass.sh b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_bind_crypto_policy/ok.pass.sh
+index 145e25cfa5..cfadd5c156 100644
+--- a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_bind_crypto_policy/ok.pass.sh
++++ b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_bind_crypto_policy/ok.pass.sh
+@@ -3,6 +3,8 @@
+ 
+ BIND_CONF='/etc/named.conf'
+ 
++yum install -y bind
++
+ cat << EOF > "$BIND_CONF"
+ options {
+ 	listen-on port 53 { 127.0.0.1; };
+diff --git a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_bind_crypto_policy/overrides.fail.sh b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_bind_crypto_policy/overrides.fail.sh
+index 79e14c1cc6..28652f8ec2 100644
+--- a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_bind_crypto_policy/overrides.fail.sh
++++ b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_bind_crypto_policy/overrides.fail.sh
+@@ -1,6 +1,8 @@
+ #!/bin/bash
+ # profiles = xccdf_org.ssgproject.content_profile_standard
+ 
++yum install -y bind
++
+ BIND_CONF='/etc/named.conf'
+ 
+ cat << EOF > "$BIND_CONF"
+
+From d10bbdcfc4ff40ab84e9a42c5233894f7ba8b736 Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Fri, 4 Jan 2019 16:58:41 +0100
+Subject: [PATCH 2/4] Pass rule configure_libreswan_crypto_policy if libreswan
+ is not installed
+
+OVAL definition and tests are updated.
+---
+ .../crypto/configure_libreswan_crypto_policy/oval/shared.xml | 5 +++--
+ .../crypto/configure_libreswan_crypto_policy/rule.yml        | 2 ++
+ .../libreswan_not_installed.pass.sh                          | 4 ++++
+ .../line_commented.fail.sh                                   | 2 ++
+ .../line_is_there.pass.sh                                    | 2 ++
+ .../line_not_there.fail.sh                                   | 2 ++
+ .../wrong_value.fail.sh                                      | 2 ++
+ 7 files changed, 17 insertions(+), 2 deletions(-)
+ create mode 100644 tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_libreswan_crypto_policy/libreswan_not_installed.pass.sh
+
+diff --git a/linux_os/guide/system/software/integrity/crypto/configure_libreswan_crypto_policy/oval/shared.xml b/linux_os/guide/system/software/integrity/crypto/configure_libreswan_crypto_policy/oval/shared.xml
+index bf4b1d8b3a..51c2dd67cf 100644
+--- a/linux_os/guide/system/software/integrity/crypto/configure_libreswan_crypto_policy/oval/shared.xml
++++ b/linux_os/guide/system/software/integrity/crypto/configure_libreswan_crypto_policy/oval/shared.xml
+@@ -6,9 +6,10 @@
+         <platform>multi_platform_fedora</platform>
+         <platform>Red Hat Enterprise Linux 8</platform>
+       </affected>
+-      <description>Libreswan should be configured to use the system-wide crypto policy setting.</description>
++      <description>Libreswan is not installed or is configured to use the system-wide crypto policy setting.</description>
+     </metadata>
+-    <criteria>
++    <criteria operator="OR">
++      <extend_definition comment="Check if package libreswan is not installed" definition_ref="package_libreswan_installed" negate="true" />
+       <criterion test_ref="test_configure_libreswan_crypto_policy"
+         comment="Check that the libreswan configuration includes the crypto policy config file" />
+     </criteria>
+diff --git a/linux_os/guide/system/software/integrity/crypto/configure_libreswan_crypto_policy/rule.yml b/linux_os/guide/system/software/integrity/crypto/configure_libreswan_crypto_policy/rule.yml
+index fc61e29bd7..51a8aed38f 100644
+--- a/linux_os/guide/system/software/integrity/crypto/configure_libreswan_crypto_policy/rule.yml
++++ b/linux_os/guide/system/software/integrity/crypto/configure_libreswan_crypto_policy/rule.yml
+@@ -9,6 +9,8 @@ description: |-
+     Libreswan is supported by system crypto policy, but the Libreswan configuration may be
+     set up to ignore it.
+ 
++    Either Libreswan is not installed, or it is configured to use the system-wide defined crypto policy.
++
+     To check that Crypto Policies settings are configured correctly, ensure that the <tt>/etc/ipsec.conf</tt>
+     includes the appropriate configuration file.
+     In <tt>/etc/ipsec.conf</tt>, make sure that the following line
+diff --git a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_libreswan_crypto_policy/libreswan_not_installed.pass.sh b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_libreswan_crypto_policy/libreswan_not_installed.pass.sh
+new file mode 100644
+index 0000000000..69ec02fe13
+--- /dev/null
++++ b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_libreswan_crypto_policy/libreswan_not_installed.pass.sh
+@@ -0,0 +1,4 @@
++#!/bin/bash
++# profiles = xccdf_org.ssgproject.content_profile_standard
++
++yum remove -y libreswan || true
+diff --git a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_libreswan_crypto_policy/line_commented.fail.sh b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_libreswan_crypto_policy/line_commented.fail.sh
+index 053f60dd95..dc72e276c2 100644
+--- a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_libreswan_crypto_policy/line_commented.fail.sh
++++ b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_libreswan_crypto_policy/line_commented.fail.sh
+@@ -1,6 +1,8 @@
+ #!/bin/bash
+ # profiles = xccdf_org.ssgproject.content_profile_standard
+ 
++yum install -y libreswan
++
+ cp ipsec.conf /etc
+ config_file="/etc/ipsec.conf"
+ crypto="/etc/crypto-policies/back-ends/libreswan.config"
+diff --git a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_libreswan_crypto_policy/line_is_there.pass.sh b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_libreswan_crypto_policy/line_is_there.pass.sh
+index bb357a0a6f..0ccb3f7ebf 100644
+--- a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_libreswan_crypto_policy/line_is_there.pass.sh
++++ b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_libreswan_crypto_policy/line_is_there.pass.sh
+@@ -1,6 +1,8 @@
+ #!/bin/bash
+ # profiles = xccdf_org.ssgproject.content_profile_standard
+ 
++yum install -y libreswan
++
+ cp ipsec.conf /etc
+ config_file="/etc/ipsec.conf"
+ if ! grep -P '^\s*include\s+/etc/crypto-policies/back-ends/libreswan.config\s*(?:|(?:#.*))$' "$config_file" ; then
+diff --git a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_libreswan_crypto_policy/line_not_there.fail.sh b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_libreswan_crypto_policy/line_not_there.fail.sh
+index 8756c09dd6..e1760ca4bc 100644
+--- a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_libreswan_crypto_policy/line_not_there.fail.sh
++++ b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_libreswan_crypto_policy/line_not_there.fail.sh
+@@ -1,6 +1,8 @@
+ #!/bin/bash
+ # profiles = xccdf_org.ssgproject.content_profile_standard
+ 
++yum install -y libreswan
++
+ cp ipsec.conf /etc
+ config_file="/etc/ipsec.conf"
+ crypto="/etc/crypto-policies/back-ends/libreswan.config"
+diff --git a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_libreswan_crypto_policy/wrong_value.fail.sh b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_libreswan_crypto_policy/wrong_value.fail.sh
+index 75ba9f4f33..d3aa2d158c 100644
+--- a/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_libreswan_crypto_policy/wrong_value.fail.sh
++++ b/tests/data/group_system/group_software/group_integrity/group_crypto/rule_configure_libreswan_crypto_policy/wrong_value.fail.sh
+@@ -1,6 +1,8 @@
+ #!/bin/bash
+ # profiles = xccdf_org.ssgproject.content_profile_standard
+ 
++yum install -y libreswan
++
+ cp ipsec.conf /etc
+ config_file="/etc/ipsec.conf"
+ crypto="/etc/crypto-policies/back-ends/libreswan.config"
+
+From 462b6bac6630b6b9678dd1281e06487825005491 Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Fri, 4 Jan 2019 17:54:21 +0100
+Subject: [PATCH 3/4] Move message to OCIL clause
+
+Move bind and libreswan package not installed or configured message from
+description to ocil clause.
+---
+ .../integrity/crypto/configure_bind_crypto_policy/rule.yml    | 4 +---
+ .../crypto/configure_libreswan_crypto_policy/rule.yml         | 4 +---
+ 2 files changed, 2 insertions(+), 6 deletions(-)
+
+diff --git a/linux_os/guide/system/software/integrity/crypto/configure_bind_crypto_policy/rule.yml b/linux_os/guide/system/software/integrity/crypto/configure_bind_crypto_policy/rule.yml
+index b0f48ec4b1..b719be52bc 100644
+--- a/linux_os/guide/system/software/integrity/crypto/configure_bind_crypto_policy/rule.yml
++++ b/linux_os/guide/system/software/integrity/crypto/configure_bind_crypto_policy/rule.yml
+@@ -9,8 +9,6 @@ description: |-
+     BIND is supported by crypto policy, but the BIND configuration may be
+     set up to ignore it.
+ 
+-    Either BIND is not installed, or it is configured to use the system-wide defined crypto policy.
+-
+     To check that Crypto Policies settings are configured correctly, ensure that the <tt>/etc/named.conf</tt>
+     includes the appropriate configuration:
+     In the <tt>options</tt> section of <tt>/etc/named.conf</tt>, make sure that the following line
+@@ -24,7 +22,7 @@ rationale: |-
+ severity: unknown
+ 
+ ocil_clause: |-
+-    the BIND config file doesn't contain the
++    BIND is installed and the BIND config file doesn't contain the
+     <pre>include "/etc/crypto-policies/back-ends/bind.config";</pre> directive
+ 
+ ocil: |-
+diff --git a/linux_os/guide/system/software/integrity/crypto/configure_libreswan_crypto_policy/rule.yml b/linux_os/guide/system/software/integrity/crypto/configure_libreswan_crypto_policy/rule.yml
+index 51a8aed38f..0fdb73a809 100644
+--- a/linux_os/guide/system/software/integrity/crypto/configure_libreswan_crypto_policy/rule.yml
++++ b/linux_os/guide/system/software/integrity/crypto/configure_libreswan_crypto_policy/rule.yml
+@@ -9,8 +9,6 @@ description: |-
+     Libreswan is supported by system crypto policy, but the Libreswan configuration may be
+     set up to ignore it.
+ 
+-    Either Libreswan is not installed, or it is configured to use the system-wide defined crypto policy.
+-
+     To check that Crypto Policies settings are configured correctly, ensure that the <tt>/etc/ipsec.conf</tt>
+     includes the appropriate configuration file.
+     In <tt>/etc/ipsec.conf</tt>, make sure that the following line
+@@ -25,7 +23,7 @@ rationale: |-
+ severity: unknown
+ 
+ ocil_clause: |-
+-    <tt>/etc/ipsec.conf</tt> does not contain <tt>include /etc/crypto-policies/back-ends/libreswan.config</tt>
++    Libreswan is installed and <tt>/etc/ipsec.conf</tt> does not contain <tt>include /etc/crypto-policies/back-ends/libreswan.config</tt>
+ 
+ ocil: |-
+     To verify that Libreswan uses the system crypto policy, run the following command:
+
+From 6648e01079c8aaa133b6e0beedb2e4da45527714 Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Mon, 7 Jan 2019 11:05:06 +0100
+Subject: [PATCH 4/4] Revert OVAL check description update
+
+---
+ .../crypto/configure_bind_crypto_policy/oval/shared.xml         | 2 +-
+ .../crypto/configure_libreswan_crypto_policy/oval/shared.xml    | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/linux_os/guide/system/software/integrity/crypto/configure_bind_crypto_policy/oval/shared.xml b/linux_os/guide/system/software/integrity/crypto/configure_bind_crypto_policy/oval/shared.xml
+index 0a4044709f..34c3af14b3 100644
+--- a/linux_os/guide/system/software/integrity/crypto/configure_bind_crypto_policy/oval/shared.xml
++++ b/linux_os/guide/system/software/integrity/crypto/configure_bind_crypto_policy/oval/shared.xml
+@@ -6,7 +6,7 @@
+         <platform>multi_platform_fedora</platform>
+         <platform>Red Hat Enterprise Linux 8</platform>
+       </affected>
+-      <description>BIND is not installed or is configured to use the system-wide crypto policy setting.</description>
++      <description>BIND should be configured to use the system-wide crypto policy setting.</description>
+     </metadata>
+     <criteria operator="OR">
+       <extend_definition comment="Check if package bind is not installed" definition_ref="package_bind_removed" />
+diff --git a/linux_os/guide/system/software/integrity/crypto/configure_libreswan_crypto_policy/oval/shared.xml b/linux_os/guide/system/software/integrity/crypto/configure_libreswan_crypto_policy/oval/shared.xml
+index 51c2dd67cf..cc448c74b1 100644
+--- a/linux_os/guide/system/software/integrity/crypto/configure_libreswan_crypto_policy/oval/shared.xml
++++ b/linux_os/guide/system/software/integrity/crypto/configure_libreswan_crypto_policy/oval/shared.xml
+@@ -6,7 +6,7 @@
+         <platform>multi_platform_fedora</platform>
+         <platform>Red Hat Enterprise Linux 8</platform>
+       </affected>
+-      <description>Libreswan is not installed or is configured to use the system-wide crypto policy setting.</description>
++      <description>Libreswan should be configured to use the system-wide crypto policy setting.</description>
+     </metadata>
+     <criteria operator="OR">
+       <extend_definition comment="Check if package libreswan is not installed" definition_ref="package_libreswan_installed" negate="true" />
