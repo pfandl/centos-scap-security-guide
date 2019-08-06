@@ -1,4 +1,4 @@
-%global		redhatssgversion	40
+%global		redhatssgversion	43
 
 # Somehow, _pkgdocdir is already defined and points to unversioned docs dir
 # RHEL 7.X uses versioned docs dir, hence the definition below
@@ -11,52 +11,36 @@ Summary:	Security guidance and baselines in SCAP formats
 
 Group:		System Environment/Base
 License:	BSD-3-Clause
-URL:		https://github.com/OpenSCAP/scap-security-guide
+URL:		https://github.com/ComplianceAsCode/content
 Source0:	%{name}-%{version}.tar.bz2
-Patch1: 	scap-security-guide-0.1.33-update-upstream-manual-page.patch
-Patch2: 	scap-security-guide-0.1.41-restrict-remediation-for-dev-shm.patch
-Patch3: 	scap-security-guide-0.1.41-drop-dev-cdrom-fix.patch
-Patch4: 	scap-security-guide-0.1.41-install-dracut-fips.patch
-Patch5: 	scap-security-guide-0.1.41-audit_unset_4294967295.patch
-Patch6: 	scap-security-guide-0.1.41-audit_file_deletion.patch
-Patch7: 	scap-security-guide-0.1.41-audit_misc_improvements.patch
-Patch8: 	scap-security-guide-0.1.41-audit_file_ownership.patch
-Patch9: 	scap-security-guide-0.1.41-audit_file_permission.patch
-Patch10: 	scap-security-guide-0.1.41-audit_log_access.patch
-Patch11: 	scap-security-guide-0.1.41-audit_privileged_commands.patch
-Patch12: 	scap-security-guide-0.1.41-audit_file_open.patch
-Patch13: 	scap-security-guide-0.1.41-audit_file_open_ospp.patch
-Patch14:        scap-security-guide-0.1.41-audit_passwd_log_writes.patch
-Patch15: 	scap-security-guide-0.1.41-ospp_enable.patch
-Patch16:        scap-security-guide-0.1.41-template_syscall_rules.patch
-Patch17:        scap-security-guide-0.1.41-template_syscall_rules_ospp.patch
-Patch18:        scap-security-guide-0.1.41-template_watch_path.patch
-Patch19:        scap-security-guide-0.1.41-template_watch_path_build_templates.patch
-Patch20:        scap-security-guide-0.1.41-fix_audit_rules_unsuccessful_file_modification_regex.patch
-Patch21:	scap-security-guide-0.1.41-fix_unauthorized_syscall_regex.patch
-Patch22:        scap-security-guide-0.1.41-fix_syscall_in_last_position.patch
-Patch23:        scap-security-guide-0.1.41-fix_dconf_gnome_screensaver_lock_enabled.patch
-Patch24:        scap-security-guide-0.1.41-untemplate_var_tmp.patch
-Patch25:		scap-security-guide-0.1.41-bash_and_tests_for_grub2_audit_argument.patch
-Patch26:		scap-security-guide-0.1.41-small_bash_fix_for_gnome_screensaver_lock_delay.patch
-Patch27:		scap-security-guide-0.1.41-select_missing_arpc_for_OSPP42.patch
-Patch28:		scap-security-guide-0.1.41-fix_owners_groups.patch
-Patch29:		scap-security-guide-0.1.41-packages_abrt_sendmail_removed.patch
-Patch30:		scap-security-guide-0.1.41-dev_shm_mount_option.patch
-Patch31:		scap-security-guide-0.1.41-sysctl_kernel.patch
-Patch32:		scap-security-guide-0.1.41-kptr_restrict.patch
-Patch33:		scap-security-guide-0.1.41-grub2_bootloader_arguments.patch
-Patch34:		scap-security-guide-0.1.41-profile_title_rename_etc.patch
-Patch35:		scap-security-guide-0.1.42-rule_yml_platform_tag_support.patch
-Patch36:		scap-security-guide-0.1.42-mark_rules_as_machine_only.patch
-Patch37:		scap-security-guide-0.1.45-mark_rules_as_machine_only_v2.patch
-Patch38:		scap-security-guide-0.1.44-cpe-shadow-utils.patch
-Patch39:		scap-security-guide-0.1.44-cpe-pam-systemd-yum.patch
-Patch40:		scap-security-guide-0.1.44-cpe-gdm.patch
-Patch41:		scap-security-guide-0.1.44-cpe-remaining.patch
-Patch42:		scap-security-guide-0.1.44-update-cpe-dictionary.patch
-Patch999:               centos-debranding.patch
-
+Patch1:		scap-security-guide-0.1.44-rule_pcsc-lite_installed.patch
+Patch2:		scap-security-guide-0.1.44-fix_no_direct_root_logins_changed_when.patch
+Patch3:		scap-security-guide-0.1.44-rules_docker_psacct_installed.patch
+Patch4:		scap-security-guide-0.1.44-fix_removed_sebooleans.patch
+Patch5:		scap-security-guide-0.1.44-fix_ansible_sssd_tasks.patch
+Patch6:		scap-security-guide-0.1.44-template_file_permissions_use_regex.patch
+Patch7:		scap-security-guide-0.1.44-fix_rpm_verify_permissions.patch
+Patch8:		scap-security-guide-0.1.44-fix_stig_duplicated_audit_rules.patch
+Patch9:		scap-security-guide-0.1.45-mark_rules_as_machine_only.patch
+Patch10:	scap-security-guide-0.1.44-cpe-shadow-utils.patch
+Patch11:	scap-security-guide-0.1.44-cpe-pam-systemd-yum.patch
+Patch12:	scap-security-guide-0.1.44-cpe-gdm.patch
+Patch13:	scap-security-guide-0.1.44-cpe-remaining.patch
+Patch14:	scap-security-guide-0.1.44-update-cpe-dictionary.patch
+Patch15:	scap-security-guide-0.1.44-mark_selinux_rules_as_machine_only.patch
+Patch16:	scap-security-guide-0.1.44-mark_service_disabled_rules_as_machine_only.patch
+Patch17:	scap-security-guide-0.1.44-remove_gpgcheck_repo_from_profiles.patch
+Patch18:	scap-security-guide-0.1.44-deduplicate_cce_assigned_to_rules.patch
+Patch19:	evaluate_new_package_cpes_to_true.patch
+Patch20:	scap-security-guide-0.1.44-deduplicate_cce_assigned_to_rules2.patch
+Patch21:	scap-security-guide-0.1.45-fix_rule_sssd_ssh_known_hosts_timeout.patch
+Patch22:	add-missing-tags-and-platforms.patch
+Patch23:	scap-security-guide-0.1.45-fix_ansible_sssd_ssh_known_hosts_timeout.patch
+Patch24:	remove_dconf_use_text_backend_rule_from_profiles.patch
+Patch25:	scap-security-guide-0.1.45-aide_not_applicable_to_containers.patch
+Patch26:	scap-security-guide-0.1.45-smartcards_not_applicable_to_containers.patch
+Patch27:	scap-security-guide-0.1.45-add_rule_dconf_db_up_to_date.patch
+Patch28:	scap-security-guide-0.1.45-fix_dconf_remediation.patch
 BuildArch:	noarch
 
 BuildRequires:	libxslt, expat, python, openscap-scanner >= 1.2.16, python-jinja2, cmake >= 2.8, PyYAML
@@ -84,12 +68,14 @@ been generated from XCCDF benchmarks present in %{name} package.
 
 %prep
 %setup -q -n %{name}-%{version}
+# Workaround to remove Python byte cache files from the upstream sources
+# See https://github.com/ComplianceAsCode/content/issues/4042
+find . -name '*.pyc' -exec rm -f {} ';'
 mkdir build
-# Update manual page to drop the part dedicated to Fedora content
-%patch1 -p1 -b .man_page_update
-%patch2 -p1 -b .remediation_for_dev_shm
-%patch3 -p1 -b .remediation_for_dev_cdrom
-%patch4 -p1 -b .install_dracut_fips
+%patch1 -p1
+%patch2 -p1
+%patch3 -p1
+%patch4 -p1
 %patch5 -p1
 %patch6 -p1
 %patch7 -p1
@@ -114,40 +100,34 @@ mkdir build
 %patch26 -p1
 %patch27 -p1
 %patch28 -p1
-%patch29 -p1
-%patch30 -p1
-%patch31 -p1
-%patch32 -p1
-%patch33 -p1
-%patch34 -p1
-%patch35 -p1
-%patch36 -p1
-%patch37 -p1
-%patch38 -p1
-%patch39 -p1
-%patch40 -p1
-%patch41 -p1
-%patch42 -p1
-%patch999 -p1
 
 %build
 mkdir -p build && cd build
 %cmake -D CMAKE_INSTALL_DOCDIR=%{_pkgdocdir} \
+-DSSG_PRODUCT_EXAMPLE:BOOL=OFF \
 -DSSG_PRODUCT_CHROMIUM:BOOL=OFF \
 -DSSG_PRODUCT_DEBIAN8:BOOL=OFF \
 -DSSG_PRODUCT_FEDORA:BOOL=OFF \
+-DSSG_PRODUCT_FIREFOX:BOOL=ON \
 -DSSG_PRODUCT_JBOSS_EAP6:BOOL=OFF \
 -DSSG_PRODUCT_JBOSS_FUSE6:BOOL=OFF \
+-DSSG_PRODUCT_JBOSS_JRE:BOOL=ON \
 -DSSG_PRODUCT_OCP3:BOOL=OFF \
 -DSSG_PRODUCT_OPENSUSE:BOOL=OFF \
--DSSG_PRODUCT_OSP7:BOOL=OFF \
+-DSSG_PRODUCT_OSP13:BOOL=OFF \
+-DSSG_PRODUCT_RHEL6:BOOL=ON \
+-DSSG_PRODUCT_RHEL7:BOOL=ON \
+-DSSG_PRODUCT_RHEL8:BOOL=OFF \
+-DSSG_PRODUCT_RHV4:BOOL=OFF \
 -DSSG_PRODUCT_SUSE11:BOOL=OFF \
 -DSSG_PRODUCT_SUSE12:BOOL=OFF \
 -DSSG_PRODUCT_UBUNTU14:BOOL=OFF \
 -DSSG_PRODUCT_UBUNTU16:BOOL=OFF \
+-DSSG_PRODUCT_UBUNTU18:BOOL=OFF \
 -DSSG_PRODUCT_WRLINUX:BOOL=OFF \
 -DSSG_PRODUCT_OL7:BOOL=OFF \
--DSSG_CENTOS_DERIVATIVES_ENABLED:BOOL=ON \
+-DSSG_PRODUCT_OL8:BOOL=OFF \
+-DSSG_CENTOS_DERIVATIVES_ENABLED:BOOL=OFF \
 -DSSG_SCIENTIFIC_LINUX_DERIVATIVES_ENABLED:BOOL=OFF \
 ../
 make %{?_smp_mflags}
@@ -178,12 +158,51 @@ cd build
 %doc build/guides/ssg-*-guide-*.html
 
 %changelog
-* Tue Apr 23 2019 Johnny Hughes <johnny@centos.org>
-- Manual CentOS Debranding
+* Wed Jun 12 2019 Matěj Týč <matyc@redhat.com> - 0.1.43-13
+- Fixed the shared dconf bash remediation (RHBZ#1631378)
 
-* Thu Apr 11 2019 Gabriel Becker <ggasparb@redhat.com> - 0.1.40-13
-- Added support to platform tag and mark rules as machine only (RHBZ#1698752)
-- Fix content support for UBI-Minimal (RHBZ#1698751)
+* Mon Jun 03 2019 Jan Černý <jcerny@redhat.com> - 0.1.43-12
+- Make aide and smart card rules not applicable to containers (RHBZ#1711893)
+- Added rule dconf_db_up_to_date to ensure dconf databases are up-to-date (RHBZ#1631378)
+
+* Fri May 24 2019 Gabriel Becker <ggasparb@redhat.com> - 0.1.43-11
+- Remove faulty dconf_use_text_backend rule from all profiles (Reverts RHBZ#1631378)
+
+* Thu May 23 2019 Gabriel Becker <ggasparb@redhat.com> - 0.1.43-10
+- Fixed Ansible remediation for sssd_ssh_known_hosts_timeout (RHBZ#1599179)
+
+* Mon May 20 2019 Jan Černý <jcerny@redhat.com> - 0.1.43-9
+- Fixed missing Ansible tags and platform checks (RHBZ#1685950)
+
+* Fri May 17 2019 Gabriel Becker <ggasparb@redhat.com> - 0.1.43-8
+- Fixed OVAL check for sssd_ssh_known_hosts_timeout and added bash remediation (RHBZ#1599179)
+
+* Fri May 10 2019 Watson Yuuma Sato <wsato@redhat.com> - 0.1.43-7
+- Fix handling of package CPE during generation of Ansible playbooks (RHBZ#1647189)
+
+* Fri May 10 2019 Watson Yuuma Sato <wsato@redhat.com> - 0.1.43-6
+- Deduplicated more CCEs assigned to rules (RHBZ#1703092)
+
+* Thu Apr 25 2019 Gabriel Becker <ggasparb@redhat.com> - 0.1.43-5
+- Remove ensure_gpgcheck_repo_metadata rule from profiles (RHBZ#1703010)
+- Deduplicate CCE assigned to rules (RHBZ#1703092)
+
+* Tue Apr 23 2019 Gabriel Becker <ggasparb@redhat.com> - 0.1.43-4
+- Mark SELinux rules as machine only (RHBZ#1630739)
+- Mark service disabled rules as machine only (RHBZ#1630739)
+
+* Mon Apr 08 2019 Gabriel Becker <ggasparb@redhat.com> - 0.1.43-3
+- Mark rules which were not applicable for containers as machine only (RHBZ#1630739)
+- Fix content support for UBI-Minimal (RHBZ#1695213)
+
+* Mon Mar 25 2019 Watson Yuuma Sato <wsato@redhat.com> - 0.1.43-2
+- Fixes for smooth Ansible playbooks run (RHBZ#1647189)
+- Fix Ansible template for file permissions (RHBZ#1686007)
+- Fix remediation of rule rpm_verify_permissions (RHBZ#1686005)
+- Fix remediation of audit rules for privileged commands (RHBZ#1687826)
+
+* Fri Mar 01 2019 Jan Černý <jcerny@redhat.com> - 0.1.43-1
+- Update to the latest upstream release (RHBZ#1684545)
 
 * Tue Sep 25 2018 Watson Yuuma Sato <wsato@redhat.com> - 0.1.40-12
 - Fix malformed patch for removal of abrt and sendmail (RHBZ#1619689)

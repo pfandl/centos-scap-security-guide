@@ -1,0 +1,572 @@
+commit 23e988daddbaec48ad565eef28c45d858587a45c
+Author: Gabriel Becker <ggasparb@redhat.com>
+Date:   Fri May 24 13:56:54 2019 +0200
+
+    Remove dconf_use_text_backend rule from profiles.
+    
+    Rule is faulty and does not fix properly the dconf bugs.
+
+diff --git a/fedora/profiles/ospp.profile b/fedora/profiles/ospp.profile
+index f13f97a..f33d348 100644
+--- a/fedora/profiles/ospp.profile
++++ b/fedora/profiles/ospp.profile
+@@ -43,7 +43,6 @@ selections:
+     - sysctl_kernel_kptr_restrict
+     - sysctl_kernel_kexec_load_disabled
+     - sysctl_kernel_dmesg_restrict
+-    - dconf_use_text_backend
+     - dconf_gnome_screensaver_idle_activation_enabled
+     - dconf_gnome_screensaver_idle_delay
+     - dconf_gnome_screensaver_lock_delay
+diff --git a/fedora/profiles/pci-dss.profile b/fedora/profiles/pci-dss.profile
+index 0e6f543..5e47534 100644
+--- a/fedora/profiles/pci-dss.profile
++++ b/fedora/profiles/pci-dss.profile
+@@ -98,7 +98,6 @@ selections:
+     - account_disable_post_pw_expiration
+     - accounts_passwords_pam_faillock_deny
+     - accounts_passwords_pam_faillock_unlock_time
+-    - dconf_use_text_backend
+     - dconf_gnome_screensaver_idle_delay
+     - dconf_gnome_screensaver_idle_activation_enabled
+     - dconf_gnome_screensaver_lock_enabled
+diff --git a/linux_os/guide/system/software/gnome/gnome_login_screen/dconf_gnome_disable_restart_shutdown/rule.yml b/linux_os/guide/system/software/gnome/gnome_login_screen/dconf_gnome_disable_restart_shutdown/rule.yml
+index c418384..28a39e8 100644
+--- a/linux_os/guide/system/software/gnome/gnome_login_screen/dconf_gnome_disable_restart_shutdown/rule.yml
++++ b/linux_os/guide/system/software/gnome/gnome_login_screen/dconf_gnome_disable_restart_shutdown/rule.yml
+@@ -28,10 +28,6 @@ rationale: |-
+ 
+ severity: high
+ 
+-warnings:
+-    - dependency: |-
+-        {{{ body_of_dconf_warning_about_dependent_rule() }}}
+-
+ identifiers:
+     cce@rhel7: 80107-6
+ 
+diff --git a/linux_os/guide/system/software/gnome/gnome_login_screen/dconf_gnome_disable_user_list/rule.yml b/linux_os/guide/system/software/gnome/gnome_login_screen/dconf_gnome_disable_user_list/rule.yml
+index 1b3a0d3..bc15a48 100644
+--- a/linux_os/guide/system/software/gnome/gnome_login_screen/dconf_gnome_disable_user_list/rule.yml
++++ b/linux_os/guide/system/software/gnome/gnome_login_screen/dconf_gnome_disable_user_list/rule.yml
+@@ -27,10 +27,6 @@ rationale: |-
+ 
+ severity: medium
+ 
+-warnings:
+-    - dependency: |-
+-        {{{ body_of_dconf_warning_about_dependent_rule() }}}
+-
+ identifiers:
+     cce@rhel7: 80106-8
+ 
+diff --git a/linux_os/guide/system/software/gnome/gnome_login_screen/dconf_gnome_enable_smartcard_auth/rule.yml b/linux_os/guide/system/software/gnome/gnome_login_screen/dconf_gnome_enable_smartcard_auth/rule.yml
+index a9d157d..e3f5e79 100644
+--- a/linux_os/guide/system/software/gnome/gnome_login_screen/dconf_gnome_enable_smartcard_auth/rule.yml
++++ b/linux_os/guide/system/software/gnome/gnome_login_screen/dconf_gnome_enable_smartcard_auth/rule.yml
+@@ -26,10 +26,6 @@ rationale: |-
+ 
+ severity: medium
+ 
+-warnings:
+-    - dependency: |-
+-        {{{ body_of_dconf_warning_about_dependent_rule() }}}
+-
+ identifiers:
+     cce@rhel7: 80108-4
+ 
+diff --git a/linux_os/guide/system/software/gnome/gnome_login_screen/dconf_gnome_login_retries/rule.yml b/linux_os/guide/system/software/gnome/gnome_login_screen/dconf_gnome_login_retries/rule.yml
+index f4eed0d..7b02bc1 100644
+--- a/linux_os/guide/system/software/gnome/gnome_login_screen/dconf_gnome_login_retries/rule.yml
++++ b/linux_os/guide/system/software/gnome/gnome_login_screen/dconf_gnome_login_retries/rule.yml
+@@ -27,10 +27,6 @@ rationale: |-
+ 
+ severity: medium
+ 
+-warnings:
+-    - dependency: |-
+-        {{{ body_of_dconf_warning_about_dependent_rule() }}}
+-
+ identifiers:
+     cce@rhel7: 80109-2
+     cce@rhel8: 80771-9
+diff --git a/linux_os/guide/system/software/gnome/gnome_media_settings/dconf_gnome_disable_automount/rule.yml b/linux_os/guide/system/software/gnome/gnome_media_settings/dconf_gnome_disable_automount/rule.yml
+index 7caf212..fbf9578 100644
+--- a/linux_os/guide/system/software/gnome/gnome_media_settings/dconf_gnome_disable_automount/rule.yml
++++ b/linux_os/guide/system/software/gnome/gnome_media_settings/dconf_gnome_disable_automount/rule.yml
+@@ -31,10 +31,6 @@ rationale: |-
+ 
+ severity: unknown
+ 
+-warnings:
+-    - dependency: |-
+-        {{{ body_of_dconf_warning_about_dependent_rule() }}}
+-
+ identifiers:
+     cce@rhel7: 80122-5
+ 
+diff --git a/linux_os/guide/system/software/gnome/gnome_media_settings/dconf_gnome_disable_thumbnailers/rule.yml b/linux_os/guide/system/software/gnome/gnome_media_settings/dconf_gnome_disable_thumbnailers/rule.yml
+index 6081267..e239b46 100644
+--- a/linux_os/guide/system/software/gnome/gnome_media_settings/dconf_gnome_disable_thumbnailers/rule.yml
++++ b/linux_os/guide/system/software/gnome/gnome_media_settings/dconf_gnome_disable_thumbnailers/rule.yml
+@@ -30,10 +30,6 @@ rationale: |-
+ 
+ severity: unknown
+ 
+-warnings:
+-    - dependency: |-
+-        {{{ body_of_dconf_warning_about_dependent_rule() }}}
+-
+ identifiers:
+     cce@rhel7: 80123-3
+ 
+diff --git a/linux_os/guide/system/software/gnome/gnome_network_settings/dconf_gnome_disable_wifi_create/rule.yml b/linux_os/guide/system/software/gnome/gnome_network_settings/dconf_gnome_disable_wifi_create/rule.yml
+index cbfaec0..9b1963b 100644
+--- a/linux_os/guide/system/software/gnome/gnome_network_settings/dconf_gnome_disable_wifi_create/rule.yml
++++ b/linux_os/guide/system/software/gnome/gnome_network_settings/dconf_gnome_disable_wifi_create/rule.yml
+@@ -24,10 +24,6 @@ rationale: |-
+ 
+ severity: medium
+ 
+-warnings:
+-    - dependency: |-
+-        {{{ body_of_dconf_warning_about_dependent_rule() }}}
+-
+ identifiers:
+     cce@rhel7: 80118-3
+ 
+diff --git a/linux_os/guide/system/software/gnome/gnome_network_settings/dconf_gnome_disable_wifi_notification/rule.yml b/linux_os/guide/system/software/gnome/gnome_network_settings/dconf_gnome_disable_wifi_notification/rule.yml
+index 51f29ef..09f50e0 100644
+--- a/linux_os/guide/system/software/gnome/gnome_network_settings/dconf_gnome_disable_wifi_notification/rule.yml
++++ b/linux_os/guide/system/software/gnome/gnome_network_settings/dconf_gnome_disable_wifi_notification/rule.yml
+@@ -24,10 +24,6 @@ rationale: |-
+     Wireless network connections should not be allowed to be configured by general
+     users on a given system as it could open the system to backdoor attacks.
+ 
+-warnings:
+-    - dependency: |-
+-        {{{ body_of_dconf_warning_about_dependent_rule() }}}
+-
+ severity: medium
+ 
+ identifiers:
+diff --git a/linux_os/guide/system/software/gnome/gnome_remote_access_settings/dconf_gnome_remote_access_credential_prompt/rule.yml b/linux_os/guide/system/software/gnome/gnome_remote_access_settings/dconf_gnome_remote_access_credential_prompt/rule.yml
+index a5927e7..872514b 100644
+--- a/linux_os/guide/system/software/gnome/gnome_remote_access_settings/dconf_gnome_remote_access_credential_prompt/rule.yml
++++ b/linux_os/guide/system/software/gnome/gnome_remote_access_settings/dconf_gnome_remote_access_credential_prompt/rule.yml
+@@ -22,10 +22,6 @@ rationale: |-
+     Username and password prompting is required for remote access. Otherwise, non-authorized
+     and nefarious users can access the system freely.
+ 
+-warnings:
+-    - dependency: |-
+-        {{{ body_of_dconf_warning_about_dependent_rule() }}}
+-
+ severity: medium
+ 
+ identifiers:
+diff --git a/linux_os/guide/system/software/gnome/gnome_remote_access_settings/dconf_gnome_remote_access_encryption/rule.yml b/linux_os/guide/system/software/gnome/gnome_remote_access_settings/dconf_gnome_remote_access_encryption/rule.yml
+index 825348f..101b148 100644
+--- a/linux_os/guide/system/software/gnome/gnome_remote_access_settings/dconf_gnome_remote_access_encryption/rule.yml
++++ b/linux_os/guide/system/software/gnome/gnome_remote_access_settings/dconf_gnome_remote_access_encryption/rule.yml
+@@ -22,10 +22,6 @@ rationale: |-
+     Open X displays allow an attacker to capture keystrokes and to execute commands
+     remotely.
+ 
+-warnings:
+-    - dependency: |-
+-        {{{ body_of_dconf_warning_about_dependent_rule() }}}
+-
+ severity: medium
+ 
+ identifiers:
+diff --git a/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_idle_activation_enabled/rule.yml b/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_idle_activation_enabled/rule.yml
+index 730844f..82a88d7 100644
+--- a/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_idle_activation_enabled/rule.yml
++++ b/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_idle_activation_enabled/rule.yml
+@@ -29,10 +29,6 @@ rationale: |-
+     login session does not have administrator rights and the display station is located in a
+     controlled-access area.
+ 
+-warnings:
+-    - dependency: |-
+-        {{{ body_of_dconf_warning_about_dependent_rule() }}}
+-
+ severity: medium
+ 
+ identifiers:
+diff --git a/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_idle_activation_locked/rule.yml b/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_idle_activation_locked/rule.yml
+index da3f041..d2980f0 100644
+--- a/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_idle_activation_locked/rule.yml
++++ b/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_idle_activation_locked/rule.yml
+@@ -16,10 +16,6 @@ rationale: |-
+     A session lock is a temporary action taken when a user stops work and moves away from the immediate physical vicinity
+     of the information system but does not want to logout because of the temporary nature of the absense.
+ 
+-warnings:
+-    - dependency: |-
+-        {{{ body_of_dconf_warning_about_dependent_rule() }}}
+-
+ severity: medium
+ 
+ identifiers:
+diff --git a/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_idle_delay/rule.yml b/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_idle_delay/rule.yml
+index ac6c968..db8dcbb 100644
+--- a/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_idle_delay/rule.yml
++++ b/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_idle_delay/rule.yml
+@@ -26,10 +26,6 @@ rationale: |-
+     system session prior to vacating the vicinity, GNOME3 can be configured to identify when
+     a user's session has idled and take action to initiate a session lock.
+ 
+-warnings:
+-    - dependency: |-
+-        {{{ body_of_dconf_warning_about_dependent_rule() }}}
+-
+ severity: medium
+ 
+ identifiers:
+diff --git a/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_lock_delay/rule.yml b/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_lock_delay/rule.yml
+index 42f0d11..a66c458 100644
+--- a/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_lock_delay/rule.yml
++++ b/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_lock_delay/rule.yml
+@@ -21,10 +21,6 @@ rationale: |-
+     A session lock is a temporary action taken when a user stops work and moves away from the immediate physical vicinity
+     of the information system but does not want to logout because of the temporary nature of the absense.
+ 
+-warnings:
+-    - dependency: |-
+-        {{{ body_of_dconf_warning_about_dependent_rule() }}}
+-
+ severity: medium
+ 
+ identifiers:
+diff --git a/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_lock_enabled/rule.yml b/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_lock_enabled/rule.yml
+index 842bcf4..bf007d3 100644
+--- a/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_lock_enabled/rule.yml
++++ b/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_lock_enabled/rule.yml
+@@ -21,10 +21,6 @@ rationale: |-
+     A session lock is a temporary action taken when a user stops work and moves away from the immediate physical vicinity
+     of the information system but does not want to logout because of the temporary nature of the absense.
+ 
+-warnings:
+-    - dependency: |-
+-        {{{ body_of_dconf_warning_about_dependent_rule() }}}
+-
+ severity: medium
+ 
+ identifiers:
+diff --git a/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_lock_locked/rule.yml b/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_lock_locked/rule.yml
+index da8cbe7..e6b459a 100644
+--- a/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_lock_locked/rule.yml
++++ b/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_lock_locked/rule.yml
+@@ -16,10 +16,6 @@ rationale: |-
+     A session lock is a temporary action taken when a user stops work and moves away from the immediate physical vicinity
+     of the information system but does not want to logout because of the temporary nature of the absense.
+ 
+-warnings:
+-    - dependency: |-
+-        {{{ body_of_dconf_warning_about_dependent_rule() }}}
+-
+ severity: medium
+ 
+ identifiers:
+diff --git a/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_mode_blank/rule.yml b/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_mode_blank/rule.yml
+index e792620..c81ee8e 100644
+--- a/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_mode_blank/rule.yml
++++ b/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_mode_blank/rule.yml
+@@ -21,10 +21,6 @@ rationale: |-
+     Setting the screensaver mode to blank-only conceals the
+     contents of the display from passersby.
+ 
+-warnings:
+-    - dependency: |-
+-        {{{ body_of_dconf_warning_about_dependent_rule() }}}
+-
+ severity: medium
+ 
+ identifiers:
+diff --git a/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_user_info/rule.yml b/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_user_info/rule.yml
+index 3640d34..6ecf953 100644
+--- a/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_user_info/rule.yml
++++ b/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_user_info/rule.yml
+@@ -23,10 +23,6 @@ rationale: |-
+     Setting the splash screen to not reveal the logged in user's name
+     conceals who has access to the system from passersby.
+ 
+-warnings:
+-    - dependency: |-
+-        {{{ body_of_dconf_warning_about_dependent_rule() }}}
+-
+ severity: medium
+ 
+ identifiers:
+diff --git a/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_user_locks/rule.yml b/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_user_locks/rule.yml
+index 30a29ea..87f690b 100644
+--- a/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_user_locks/rule.yml
++++ b/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_screensaver_user_locks/rule.yml
+@@ -19,10 +19,6 @@ rationale: |-
+     GNOME desktops can be configured to identify when a user's session has idled and take action to initiate the
+     session lock. As such, users should not be allowed to change session settings.
+ 
+-warnings:
+-    - dependency: |-
+-        {{{ body_of_dconf_warning_about_dependent_rule() }}}
+-
+ severity: medium
+ 
+ identifiers:
+diff --git a/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_session_idle_user_locks/rule.yml b/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_session_idle_user_locks/rule.yml
+index 9ca213d..0d094ca 100644
+--- a/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_session_idle_user_locks/rule.yml
++++ b/linux_os/guide/system/software/gnome/gnome_screen_locking/dconf_gnome_session_idle_user_locks/rule.yml
+@@ -19,10 +19,6 @@ rationale: |-
+     GNOME desktops can be configured to identify when a user's session has idled and take action to initiate the
+     session lock. As such, users should not be allowed to change session settings.
+ 
+-warnings:
+-    - dependency: |-
+-        {{{ body_of_dconf_warning_about_dependent_rule() }}}
+-
+ severity: medium
+ 
+ identifiers:
+diff --git a/linux_os/guide/system/software/gnome/gnome_system_settings/dconf_gnome_disable_ctrlaltdel_reboot/rule.yml b/linux_os/guide/system/software/gnome/gnome_system_settings/dconf_gnome_disable_ctrlaltdel_reboot/rule.yml
+index e7c5054..e1f3a95 100644
+--- a/linux_os/guide/system/software/gnome/gnome_system_settings/dconf_gnome_disable_ctrlaltdel_reboot/rule.yml
++++ b/linux_os/guide/system/software/gnome/gnome_system_settings/dconf_gnome_disable_ctrlaltdel_reboot/rule.yml
+@@ -26,10 +26,6 @@ rationale: |-
+     the case of mixed OS environment, this can create the risk of short-term
+     loss of availability of systems due to unintentional reboot.
+ 
+-warnings:
+-    - dependency: |-
+-        {{{ body_of_dconf_warning_about_dependent_rule() }}}
+-
+ severity: high
+ 
+ identifiers:
+diff --git a/linux_os/guide/system/software/gnome/gnome_system_settings/dconf_gnome_disable_geolocation/rule.yml b/linux_os/guide/system/software/gnome/gnome_system_settings/dconf_gnome_disable_geolocation/rule.yml
+index 647d024..083d81b 100644
+--- a/linux_os/guide/system/software/gnome/gnome_system_settings/dconf_gnome_disable_geolocation/rule.yml
++++ b/linux_os/guide/system/software/gnome/gnome_system_settings/dconf_gnome_disable_geolocation/rule.yml
+@@ -29,10 +29,6 @@ rationale: |-
+     Enabling power settings on non-mobile devices could have unintended processing
+     consequences on standard systems.
+ 
+-warnings:
+-    - dependency: |-
+-        {{{ body_of_dconf_warning_about_dependent_rule() }}}
+-
+ severity: medium
+ 
+ identifiers:
+diff --git a/linux_os/guide/system/software/gnome/gnome_system_settings/dconf_gnome_disable_power_settings/rule.yml b/linux_os/guide/system/software/gnome/gnome_system_settings/dconf_gnome_disable_power_settings/rule.yml
+index 5a62042..c983409 100644
+--- a/linux_os/guide/system/software/gnome/gnome_system_settings/dconf_gnome_disable_power_settings/rule.yml
++++ b/linux_os/guide/system/software/gnome/gnome_system_settings/dconf_gnome_disable_power_settings/rule.yml
+@@ -24,10 +24,6 @@ rationale: |-
+     Enabling power settings on non-mobile devices could have unintended processing
+     consequences on standard systems.
+ 
+-warnings:
+-    - dependency: |-
+-        {{{ body_of_dconf_warning_about_dependent_rule() }}}
+-
+ severity: medium
+ 
+ identifiers:
+diff --git a/linux_os/guide/system/software/gnome/gnome_system_settings/dconf_gnome_disable_user_admin/rule.yml b/linux_os/guide/system/software/gnome/gnome_system_settings/dconf_gnome_disable_user_admin/rule.yml
+index e521d91..28265ac 100644
+--- a/linux_os/guide/system/software/gnome/gnome_system_settings/dconf_gnome_disable_user_admin/rule.yml
++++ b/linux_os/guide/system/software/gnome/gnome_system_settings/dconf_gnome_disable_user_admin/rule.yml
+@@ -26,10 +26,6 @@ rationale: |-
+     unintended configuration changes as well as a nefarious user the capability to make system
+     changes such as adding new accounts, etc.
+ 
+-warnings:
+-    - dependency: |-
+-        {{{ body_of_dconf_warning_about_dependent_rule() }}}
+-
+ severity: high
+ 
+ identifiers:
+diff --git a/ol7/profiles/pci-dss.profile b/ol7/profiles/pci-dss.profile
+index 8f2a5cc..acfe1be 100644
+--- a/ol7/profiles/pci-dss.profile
++++ b/ol7/profiles/pci-dss.profile
+@@ -108,7 +108,6 @@ selections:
+     - accounts_passwords_pam_faillock_deny
+     - accounts_passwords_pam_faillock_unlock_time
+     - account_unique_name
+-    - dconf_use_text_backend
+     - dconf_gnome_screensaver_idle_activation_enabled
+     - dconf_gnome_screensaver_idle_delay
+     - dconf_gnome_screensaver_lock_enabled
+diff --git a/ol7/profiles/stig-ol7-disa.profile b/ol7/profiles/stig-ol7-disa.profile
+index 0c9cd56..f9d2f4c 100644
+--- a/ol7/profiles/stig-ol7-disa.profile
++++ b/ol7/profiles/stig-ol7-disa.profile
+@@ -109,7 +109,6 @@ selections:
+     - audit_rules_usergroup_modification_opasswd
+     - audit_rules_usergroup_modification_passwd
+     - audit_rules_usergroup_modification_shadow
+-    - dconf_use_text_backend
+     - dconf_gnome_screensaver_idle_activation_enabled
+     - dconf_gnome_screensaver_idle_activation_locked
+     - dconf_gnome_screensaver_idle_delay
+diff --git a/ol8/profiles/ospp.profile b/ol8/profiles/ospp.profile
+index 9309177..9e5b245 100644
+--- a/ol8/profiles/ospp.profile
++++ b/ol8/profiles/ospp.profile
+@@ -42,7 +42,6 @@ selections:
+     - sysctl_kernel_kptr_restrict
+     - sysctl_kernel_kexec_load_disabled
+     - sysctl_kernel_dmesg_restrict
+-    - dconf_use_text_backend
+     - dconf_gnome_screensaver_idle_activation_enabled
+     - dconf_gnome_screensaver_idle_delay
+     - dconf_gnome_screensaver_lock_delay
+diff --git a/ol8/profiles/pci-dss.profile b/ol8/profiles/pci-dss.profile
+index d7d5909..ef6c60f 100644
+--- a/ol8/profiles/pci-dss.profile
++++ b/ol8/profiles/pci-dss.profile
+@@ -122,7 +122,6 @@ selections:
+     - accounts_passwords_pam_faillock_deny
+     - accounts_passwords_pam_faillock_unlock_time
+     - account_unique_name
+-    - dconf_use_text_backend
+     - dconf_gnome_screensaver_idle_activation_enabled
+     - dconf_gnome_screensaver_idle_delay
+     - dconf_gnome_screensaver_lock_enabled
+diff --git a/rhel7/profiles/C2S.profile b/rhel7/profiles/C2S.profile
+index 3d6b4f3..6580595 100644
+--- a/rhel7/profiles/C2S.profile
++++ b/rhel7/profiles/C2S.profile
+@@ -70,7 +70,6 @@ selections:
+     - selinux_confinement_of_daemons
+     - banner_etc_issue
+     - login_banner_text=usgcb_default
+-    - dconf_use_text_backend
+     - dconf_gnome_login_banner_text
+     - dconf_gnome_banner_enabled
+     - security_patches_up_to_date
+diff --git a/rhel7/profiles/cjis.profile b/rhel7/profiles/cjis.profile
+index 1bf4006..a7f8c0b 100644
+--- a/rhel7/profiles/cjis.profile
++++ b/rhel7/profiles/cjis.profile
+@@ -86,7 +86,6 @@ selections:
+     - var_password_pam_retry=5
+     - var_accounts_passwords_pam_faillock_deny=5
+     - var_accounts_passwords_pam_faillock_unlock_time=600
+-    - dconf_use_text_backend
+     - dconf_gnome_screensaver_idle_delay
+     - dconf_gnome_screensaver_idle_activation_enabled
+     - dconf_gnome_screensaver_lock_enabled
+diff --git a/rhel7/profiles/hipaa.profile b/rhel7/profiles/hipaa.profile
+index 719093b..76fb4a8 100644
+--- a/rhel7/profiles/hipaa.profile
++++ b/rhel7/profiles/hipaa.profile
+@@ -28,7 +28,6 @@ selections:
+     - service_debug-shell_disabled
+     - disable_ctrlaltdel_reboot
+     - disable_ctrlaltdel_burstaction
+-    - dconf_use_text_backend
+     - dconf_gnome_remote_access_credential_prompt
+     - dconf_gnome_remote_access_encryption
+     - sshd_disable_empty_passwords
+diff --git a/rhel7/profiles/ospp.profile b/rhel7/profiles/ospp.profile
+index a4357a6..36e5d7e 100644
+--- a/rhel7/profiles/ospp.profile
++++ b/rhel7/profiles/ospp.profile
+@@ -401,7 +401,6 @@ selections:
+     - network_sniffer_disabled
+     - network_ipv6_disable_rpc
+     - network_ipv6_privacy_extensions
+-    - dconf_use_text_backend
+     - dconf_gnome_banner_enabled
+     - dconf_gnome_disable_automount
+     - dconf_gnome_disable_ctrlaltdel_reboot
+diff --git a/rhel7/profiles/ospp42.profile b/rhel7/profiles/ospp42.profile
+index e2173c9..dbd1935 100644
+--- a/rhel7/profiles/ospp42.profile
++++ b/rhel7/profiles/ospp42.profile
+@@ -42,7 +42,6 @@ selections:
+     - sysctl_kernel_kptr_restrict
+     - sysctl_kernel_kexec_load_disabled
+     - sysctl_kernel_dmesg_restrict
+-    - dconf_use_text_backend
+     - dconf_gnome_screensaver_idle_activation_enabled
+     - dconf_gnome_screensaver_idle_delay
+     - dconf_gnome_screensaver_lock_delay
+diff --git a/rhel7/profiles/pci-dss.profile b/rhel7/profiles/pci-dss.profile
+index 7ba7873..da56ff1 100644
+--- a/rhel7/profiles/pci-dss.profile
++++ b/rhel7/profiles/pci-dss.profile
+@@ -79,7 +79,6 @@ selections:
+     - account_disable_post_pw_expiration
+     - accounts_passwords_pam_faillock_deny
+     - accounts_passwords_pam_faillock_unlock_time
+-    - dconf_use_text_backend
+     - dconf_gnome_screensaver_idle_delay
+     - dconf_gnome_screensaver_idle_activation_enabled
+     - dconf_gnome_screensaver_lock_enabled
+diff --git a/rhel7/profiles/stig-rhel7-disa.profile b/rhel7/profiles/stig-rhel7-disa.profile
+index 9f8e9ab..245efd7 100644
+--- a/rhel7/profiles/stig-rhel7-disa.profile
++++ b/rhel7/profiles/stig-rhel7-disa.profile
+@@ -56,7 +56,6 @@ selections:
+     - rpm_verify_permissions
+     - rpm_verify_ownership
+     - rpm_verify_hashes
+-    - dconf_use_text_backend
+     - dconf_gnome_banner_enabled
+     - dconf_gnome_login_banner_text
+     - banner_etc_issue
+diff --git a/rhel8/profiles/cjis.profile b/rhel8/profiles/cjis.profile
+index 288fbf0..ec225d8 100644
+--- a/rhel8/profiles/cjis.profile
++++ b/rhel8/profiles/cjis.profile
+@@ -86,7 +86,6 @@ selections:
+     - var_password_pam_retry=5
+     - var_accounts_passwords_pam_faillock_deny=5
+     - var_accounts_passwords_pam_faillock_unlock_time=600
+-    - dconf_use_text_backend
+     - dconf_gnome_screensaver_idle_delay
+     - dconf_gnome_screensaver_idle_activation_enabled
+     - dconf_gnome_screensaver_lock_enabled
+diff --git a/rhel8/profiles/hipaa.profile b/rhel8/profiles/hipaa.profile
+index f5533f1..d44960d 100644
+--- a/rhel8/profiles/hipaa.profile
++++ b/rhel8/profiles/hipaa.profile
+@@ -28,7 +28,6 @@ selections:
+     - service_debug-shell_disabled
+     - disable_ctrlaltdel_reboot
+     - disable_ctrlaltdel_burstaction
+-    - dconf_use_text_backend
+     - dconf_gnome_remote_access_credential_prompt
+     - dconf_gnome_remote_access_encryption
+     - sshd_disable_empty_passwords
+diff --git a/rhel8/profiles/ospp.profile b/rhel8/profiles/ospp.profile
+index 3c6e193..31b4be5 100644
+--- a/rhel8/profiles/ospp.profile
++++ b/rhel8/profiles/ospp.profile
+@@ -219,7 +219,6 @@ selections:
+     ### FMT_MOF_EXT.1 / AC-11(a)
+     ### Enable Screen Lock
+     - package_tmux_installed
+-    - dconf_use_text_backend
+     - dconf_gnome_screensaver_idle_activation_enabled
+     - dconf_gnome_screensaver_idle_delay
+     - dconf_gnome_screensaver_lock_delay
+diff --git a/rhel8/profiles/pci-dss.profile b/rhel8/profiles/pci-dss.profile
+index 6b73cd8..3894da0 100644
+--- a/rhel8/profiles/pci-dss.profile
++++ b/rhel8/profiles/pci-dss.profile
+@@ -98,7 +98,6 @@ selections:
+     - account_disable_post_pw_expiration
+     - accounts_passwords_pam_faillock_deny
+     - accounts_passwords_pam_faillock_unlock_time
+-    - dconf_use_text_backend
+     - dconf_gnome_screensaver_idle_delay
+     - dconf_gnome_screensaver_idle_activation_enabled
+     - dconf_gnome_screensaver_lock_enabled

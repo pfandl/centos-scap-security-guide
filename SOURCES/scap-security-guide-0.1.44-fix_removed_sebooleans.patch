@@ -1,0 +1,707 @@
+From ca2288e312d232d058d6985d541353719a1800e9 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Jan=20=C4=8Cern=C3=BD?= <jcerny@redhat.com>
+Date: Tue, 12 Mar 2019 08:47:50 +0100
+Subject: [PATCH 1/6] Rename SELinux Boolean docker_connect_any
+
+The SELinux Boolean docker_connect_any has been renamed to
+container_connect_any in both RHEL7 and RHEL8.
+---
+ .../sebool_container_connect_any/rule.yml        | 16 ++++++++++++++++
+ .../sebool_docker_connect_any/rule.yml           | 16 ----------------
+ ...ect_any.var => var_container_connect_any.var} |  2 +-
+ rhel7/templates/csv/selinux_booleans.csv         |  2 +-
+ rhv4/templates/csv/selinux_booleans.csv          |  2 +-
+ 5 files changed, 19 insertions(+), 19 deletions(-)
+ create mode 100644 linux_os/guide/system/selinux/selinux-booleans/sebool_container_connect_any/rule.yml
+ delete mode 100644 linux_os/guide/system/selinux/selinux-booleans/sebool_docker_connect_any/rule.yml
+ rename linux_os/guide/system/selinux/selinux-booleans/{var_docker_connect_any.var => var_container_connect_any.var} (86%)
+
+diff --git a/linux_os/guide/system/selinux/selinux-booleans/sebool_container_connect_any/rule.yml b/linux_os/guide/system/selinux/selinux-booleans/sebool_container_connect_any/rule.yml
+new file mode 100644
+index 0000000000..cb715fa66e
+--- /dev/null
++++ b/linux_os/guide/system/selinux/selinux-booleans/sebool_container_connect_any/rule.yml
+@@ -0,0 +1,16 @@
++documentation_complete: true
++
++prodtype: rhel7,rhel8
++
++title: 'Disable the container_connect_any SELinux Boolean'
++
++description: |-
++    By default, the SELinux boolean <tt>container_connect_any</tt> is disabled.
++    If this setting is enabled, it should be disabled.
++    {{{ describe_sebool_disable(sebool="container_connect_any") }}}
++
++rationale: ""
++
++severity: medium
++
++{{{ complete_ocil_entry_sebool_disabled(sebool="container_connect_any") }}}
+diff --git a/linux_os/guide/system/selinux/selinux-booleans/sebool_docker_connect_any/rule.yml b/linux_os/guide/system/selinux/selinux-booleans/sebool_docker_connect_any/rule.yml
+deleted file mode 100644
+index 7c2a65d076..0000000000
+--- a/linux_os/guide/system/selinux/selinux-booleans/sebool_docker_connect_any/rule.yml
++++ /dev/null
+@@ -1,16 +0,0 @@
+-documentation_complete: true
+-
+-prodtype: rhel7,rhel8
+-
+-title: 'Disable the docker_connect_any SELinux Boolean'
+-
+-description: |-
+-    By default, the SELinux boolean <tt>docker_connect_any</tt> is disabled.
+-    If this setting is enabled, it should be disabled.
+-    {{{ describe_sebool_disable(sebool="docker_connect_any") }}}
+-
+-rationale: ""
+-
+-severity: medium
+-
+-{{{ complete_ocil_entry_sebool_disabled(sebool="docker_connect_any") }}}
+diff --git a/linux_os/guide/system/selinux/selinux-booleans/var_docker_connect_any.var b/linux_os/guide/system/selinux/selinux-booleans/var_container_connect_any.var
+similarity index 86%
+rename from linux_os/guide/system/selinux/selinux-booleans/var_docker_connect_any.var
+rename to linux_os/guide/system/selinux/selinux-booleans/var_container_connect_any.var
+index 24af7183da..baad46a636 100644
+--- a/linux_os/guide/system/selinux/selinux-booleans/var_docker_connect_any.var
++++ b/linux_os/guide/system/selinux/selinux-booleans/var_container_connect_any.var
+@@ -1,6 +1,6 @@
+ documentation_complete: true
+ 
+-title: 'docker_connect_any SELinux Boolean'
++title: 'container_connect_any SELinux Boolean'
+ 
+ description: |-
+     default - Default SELinux boolean setting.
+diff --git a/rhel7/templates/csv/selinux_booleans.csv b/rhel7/templates/csv/selinux_booleans.csv
+index af220ed80a..fb0fc958c5 100644
+--- a/rhel7/templates/csv/selinux_booleans.csv
++++ b/rhel7/templates/csv/selinux_booleans.csv
+@@ -38,7 +38,7 @@ deny_execmem,use_var
+ deny_ptrace,use_var
+ dhcpc_exec_iptables,use_var
+ dhcpd_use_ldap,use_var
+-docker_connect_any,use_var
++container_connect_any,use_var
+ docker_transition_unconfined,use_var
+ domain_fd_use,use_var
+ domain_kernel_load_modules,use_var
+diff --git a/rhv4/templates/csv/selinux_booleans.csv b/rhv4/templates/csv/selinux_booleans.csv
+index af220ed80a..fb0fc958c5 100644
+--- a/rhv4/templates/csv/selinux_booleans.csv
++++ b/rhv4/templates/csv/selinux_booleans.csv
+@@ -38,7 +38,7 @@ deny_execmem,use_var
+ deny_ptrace,use_var
+ dhcpc_exec_iptables,use_var
+ dhcpd_use_ldap,use_var
+-docker_connect_any,use_var
++container_connect_any,use_var
+ docker_transition_unconfined,use_var
+ domain_fd_use,use_var
+ domain_kernel_load_modules,use_var
+
+From 8707ae7560c1a786b702281592968df28a743a01 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Jan=20=C4=8Cern=C3=BD?= <jcerny@redhat.com>
+Date: Tue, 12 Mar 2019 08:57:23 +0100
+Subject: [PATCH 2/6] Remove SELinux boolean docker_transition_unconfined
+
+The SELinux boolean docker_transition_unconfined has been
+completely removed from SELinux without any replacement.
+---
+ .../rule.yml                                  | 16 ----------------
+ .../var_docker_transition_unconfined.var      | 19 -------------------
+ rhel7/templates/csv/selinux_booleans.csv      |  1 -
+ rhv4/templates/csv/selinux_booleans.csv       |  1 -
+ 4 files changed, 37 deletions(-)
+ delete mode 100644 linux_os/guide/system/selinux/selinux-booleans/sebool_docker_transition_unconfined/rule.yml
+ delete mode 100644 linux_os/guide/system/selinux/selinux-booleans/var_docker_transition_unconfined.var
+
+diff --git a/linux_os/guide/system/selinux/selinux-booleans/sebool_docker_transition_unconfined/rule.yml b/linux_os/guide/system/selinux/selinux-booleans/sebool_docker_transition_unconfined/rule.yml
+deleted file mode 100644
+index 16792a395b..0000000000
+--- a/linux_os/guide/system/selinux/selinux-booleans/sebool_docker_transition_unconfined/rule.yml
++++ /dev/null
+@@ -1,16 +0,0 @@
+-documentation_complete: true
+-
+-prodtype: rhel7,rhel8
+-
+-title: 'Enable the docker_transition_unconfined SELinux Boolean'
+-
+-description: |-
+-    By default, the SELinux boolean <tt>docker_transition_unconfined</tt> is enabled.
+-    If this setting is disabled, it should be enabled.
+-    {{{ describe_sebool_enable(sebool="docker_transition_unconfined") }}}
+-
+-rationale: ""
+-
+-severity: medium
+-
+-{{{ complete_ocil_entry_sebool_enabled(sebool="docker_transition_unconfined") }}}
+diff --git a/linux_os/guide/system/selinux/selinux-booleans/var_docker_transition_unconfined.var b/linux_os/guide/system/selinux/selinux-booleans/var_docker_transition_unconfined.var
+deleted file mode 100644
+index cf66e5e915..0000000000
+--- a/linux_os/guide/system/selinux/selinux-booleans/var_docker_transition_unconfined.var
++++ /dev/null
+@@ -1,19 +0,0 @@
+-documentation_complete: true
+-
+-title: 'docker_transition_unconfined SELinux Boolean'
+-
+-description: |-
+-    default - Default SELinux boolean setting.
+-    <br />on - SELinux boolean is enabled.
+-    <br />off - SELinux boolean is disabled.
+-
+-type: boolean
+-
+-operator: equals
+-
+-interactive: false
+-
+-options:
+-    default: true
+-    off: false
+-    on: true
+diff --git a/rhel7/templates/csv/selinux_booleans.csv b/rhel7/templates/csv/selinux_booleans.csv
+index fb0fc958c5..8a5d34cffa 100644
+--- a/rhel7/templates/csv/selinux_booleans.csv
++++ b/rhel7/templates/csv/selinux_booleans.csv
+@@ -39,7 +39,6 @@ deny_ptrace,use_var
+ dhcpc_exec_iptables,use_var
+ dhcpd_use_ldap,use_var
+ container_connect_any,use_var
+-docker_transition_unconfined,use_var
+ domain_fd_use,use_var
+ domain_kernel_load_modules,use_var
+ entropyd_use_audio,use_var
+diff --git a/rhv4/templates/csv/selinux_booleans.csv b/rhv4/templates/csv/selinux_booleans.csv
+index fb0fc958c5..8a5d34cffa 100644
+--- a/rhv4/templates/csv/selinux_booleans.csv
++++ b/rhv4/templates/csv/selinux_booleans.csv
+@@ -39,7 +39,6 @@ deny_ptrace,use_var
+ dhcpc_exec_iptables,use_var
+ dhcpd_use_ldap,use_var
+ container_connect_any,use_var
+-docker_transition_unconfined,use_var
+ domain_fd_use,use_var
+ domain_kernel_load_modules,use_var
+ entropyd_use_audio,use_var
+
+From a794b4a365001fbe6b5aed4bf9b8169a6a9dea53 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Jan=20=C4=8Cern=C3=BD?= <jcerny@redhat.com>
+Date: Tue, 12 Mar 2019 09:02:59 +0100
+Subject: [PATCH 3/6] Remove SELinux boolean ftp_home_dir
+
+The SELinux boolean ftp_home_dir has been
+completely removed from SELinux without any replacement.
+---
+ .../sebool_ftp_home_dir/rule.yml              | 16 ----------------
+ .../selinux-booleans/var_ftp_home_dir.var     | 19 -------------------
+ rhel7/templates/csv/selinux_booleans.csv      |  1 -
+ rhv4/templates/csv/selinux_booleans.csv       |  1 -
+ 4 files changed, 37 deletions(-)
+ delete mode 100644 linux_os/guide/system/selinux/selinux-booleans/sebool_ftp_home_dir/rule.yml
+ delete mode 100644 linux_os/guide/system/selinux/selinux-booleans/var_ftp_home_dir.var
+
+diff --git a/linux_os/guide/system/selinux/selinux-booleans/sebool_ftp_home_dir/rule.yml b/linux_os/guide/system/selinux/selinux-booleans/sebool_ftp_home_dir/rule.yml
+deleted file mode 100644
+index 1836bc059e..0000000000
+--- a/linux_os/guide/system/selinux/selinux-booleans/sebool_ftp_home_dir/rule.yml
++++ /dev/null
+@@ -1,16 +0,0 @@
+-documentation_complete: true
+-
+-prodtype: rhel7,rhel8
+-
+-title: 'Disable the ftp_home_dir SELinux Boolean'
+-
+-description: |-
+-    By default, the SELinux boolean <tt>ftp_home_dir</tt> is disabled.
+-    If this setting is enabled, it should be disabled.
+-    {{{ describe_sebool_disable(sebool="ftp_home_dir") }}}
+-
+-rationale: ""
+-
+-severity: medium
+-
+-{{{ complete_ocil_entry_sebool_disabled(sebool="ftp_home_dir") }}}
+diff --git a/linux_os/guide/system/selinux/selinux-booleans/var_ftp_home_dir.var b/linux_os/guide/system/selinux/selinux-booleans/var_ftp_home_dir.var
+deleted file mode 100644
+index 5da7175f65..0000000000
+--- a/linux_os/guide/system/selinux/selinux-booleans/var_ftp_home_dir.var
++++ /dev/null
+@@ -1,19 +0,0 @@
+-documentation_complete: true
+-
+-title: 'ftp_home_dir SELinux Boolean'
+-
+-description: |-
+-    default - Default SELinux boolean setting.
+-    <br />on - SELinux boolean is enabled.
+-    <br />off - SELinux boolean is disabled.
+-
+-type: boolean
+-
+-operator: equals
+-
+-interactive: false
+-
+-options:
+-    default: false
+-    off: false
+-    on: true
+diff --git a/rhel7/templates/csv/selinux_booleans.csv b/rhel7/templates/csv/selinux_booleans.csv
+index 8a5d34cffa..17a1f51403 100644
+--- a/rhel7/templates/csv/selinux_booleans.csv
++++ b/rhel7/templates/csv/selinux_booleans.csv
+@@ -57,7 +57,6 @@ ftpd_use_cifs,use_var
+ ftpd_use_fusefs,use_var
+ ftpd_use_nfs,use_var
+ ftpd_use_passive_mode,use_var
+-ftp_home_dir,use_var
+ git_cgi_enable_homedirs,use_var
+ git_cgi_use_cifs,use_var
+ git_cgi_use_nfs,use_var
+diff --git a/rhv4/templates/csv/selinux_booleans.csv b/rhv4/templates/csv/selinux_booleans.csv
+index 8a5d34cffa..17a1f51403 100644
+--- a/rhv4/templates/csv/selinux_booleans.csv
++++ b/rhv4/templates/csv/selinux_booleans.csv
+@@ -57,7 +57,6 @@ ftpd_use_cifs,use_var
+ ftpd_use_fusefs,use_var
+ ftpd_use_nfs,use_var
+ ftpd_use_passive_mode,use_var
+-ftp_home_dir,use_var
+ git_cgi_enable_homedirs,use_var
+ git_cgi_use_cifs,use_var
+ git_cgi_use_nfs,use_var
+
+From f71a5f81abad89505ac4e4404249cebc5cf39c89 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Jan=20=C4=8Cern=C3=BD?= <jcerny@redhat.com>
+Date: Tue, 12 Mar 2019 09:19:03 +0100
+Subject: [PATCH 4/6] Remove SELinux boolean virt_sandbox_use_nfs
+
+The SELinux boolean virt_sandbox_use_nfs has been removed and
+is superseded by virt_use_nfs which we already have in other
+rule.
+---
+ .../sebool_virt_sandbox_use_nfs/rule.yml      | 16 ----------------
+ .../var_virt_sandbox_use_nfs.var              | 19 -------------------
+ rhel7/templates/csv/selinux_booleans.csv      |  1 -
+ rhv4/templates/csv/selinux_booleans.csv       |  1 -
+ 4 files changed, 37 deletions(-)
+ delete mode 100644 linux_os/guide/system/selinux/selinux-booleans/sebool_virt_sandbox_use_nfs/rule.yml
+ delete mode 100644 linux_os/guide/system/selinux/selinux-booleans/var_virt_sandbox_use_nfs.var
+
+diff --git a/linux_os/guide/system/selinux/selinux-booleans/sebool_virt_sandbox_use_nfs/rule.yml b/linux_os/guide/system/selinux/selinux-booleans/sebool_virt_sandbox_use_nfs/rule.yml
+deleted file mode 100644
+index 7d553a85de..0000000000
+--- a/linux_os/guide/system/selinux/selinux-booleans/sebool_virt_sandbox_use_nfs/rule.yml
++++ /dev/null
+@@ -1,16 +0,0 @@
+-documentation_complete: true
+-
+-prodtype: rhel7,rhel8
+-
+-title: 'Disable the virt_sandbox_use_nfs SELinux Boolean'
+-
+-description: |-
+-    By default, the SELinux boolean <tt>virt_sandbox_use_nfs</tt> is disabled.
+-    If this setting is enabled, it should be disabled.
+-    {{{ describe_sebool_disable(sebool="virt_sandbox_use_nfs") }}}
+-
+-rationale: ""
+-
+-severity: medium
+-
+-{{{ complete_ocil_entry_sebool_disabled(sebool="virt_sandbox_use_nfs") }}}
+diff --git a/linux_os/guide/system/selinux/selinux-booleans/var_virt_sandbox_use_nfs.var b/linux_os/guide/system/selinux/selinux-booleans/var_virt_sandbox_use_nfs.var
+deleted file mode 100644
+index f7a0cd0679..0000000000
+--- a/linux_os/guide/system/selinux/selinux-booleans/var_virt_sandbox_use_nfs.var
++++ /dev/null
+@@ -1,19 +0,0 @@
+-documentation_complete: true
+-
+-title: 'virt_sandbox_use_nfs SELinux Boolean'
+-
+-description: |-
+-    default - Default SELinux boolean setting.
+-    <br />on - SELinux boolean is enabled.
+-    <br />off - SELinux boolean is disabled.
+-
+-type: boolean
+-
+-operator: equals
+-
+-interactive: false
+-
+-options:
+-    default: false
+-    off: false
+-    on: true
+diff --git a/rhel7/templates/csv/selinux_booleans.csv b/rhel7/templates/csv/selinux_booleans.csv
+index 17a1f51403..aaf2e1a34f 100644
+--- a/rhel7/templates/csv/selinux_booleans.csv
++++ b/rhel7/templates/csv/selinux_booleans.csv
+@@ -268,7 +268,6 @@ virt_sandbox_use_all_caps,use_var
+ virt_sandbox_use_audit,use_var
+ virt_sandbox_use_mknod,use_var
+ virt_sandbox_use_netlink,use_var
+-virt_sandbox_use_nfs,use_var
+ virt_sandbox_use_samba,use_var
+ virt_sandbox_use_sys_admin,use_var
+ virt_transition_userdomain,use_var
+diff --git a/rhv4/templates/csv/selinux_booleans.csv b/rhv4/templates/csv/selinux_booleans.csv
+index 17a1f51403..aaf2e1a34f 100644
+--- a/rhv4/templates/csv/selinux_booleans.csv
++++ b/rhv4/templates/csv/selinux_booleans.csv
+@@ -268,7 +268,6 @@ virt_sandbox_use_all_caps,use_var
+ virt_sandbox_use_audit,use_var
+ virt_sandbox_use_mknod,use_var
+ virt_sandbox_use_netlink,use_var
+-virt_sandbox_use_nfs,use_var
+ virt_sandbox_use_samba,use_var
+ virt_sandbox_use_sys_admin,use_var
+ virt_transition_userdomain,use_var
+
+From 7afaf886cd99437a09b6aedd9e375ee1162155c6 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Jan=20=C4=8Cern=C3=BD?= <jcerny@redhat.com>
+Date: Tue, 12 Mar 2019 09:27:35 +0100
+Subject: [PATCH 5/6] Remove SELinux boolean virt_sandbox_use_samba
+
+The SELinux boolean virt_sandbox_use_samba has been removed and
+is superseded by virt_use_samba which we already have in other
+rule.
+---
+ .../sebool_virt_sandbox_use_samba/rule.yml    | 16 ----------------
+ .../var_virt_sandbox_use_samba.var            | 19 -------------------
+ rhel7/templates/csv/selinux_booleans.csv      |  1 -
+ rhv4/templates/csv/selinux_booleans.csv       |  1 -
+ 4 files changed, 37 deletions(-)
+ delete mode 100644 linux_os/guide/system/selinux/selinux-booleans/sebool_virt_sandbox_use_samba/rule.yml
+ delete mode 100644 linux_os/guide/system/selinux/selinux-booleans/var_virt_sandbox_use_samba.var
+
+diff --git a/linux_os/guide/system/selinux/selinux-booleans/sebool_virt_sandbox_use_samba/rule.yml b/linux_os/guide/system/selinux/selinux-booleans/sebool_virt_sandbox_use_samba/rule.yml
+deleted file mode 100644
+index b3ce5feb9e..0000000000
+--- a/linux_os/guide/system/selinux/selinux-booleans/sebool_virt_sandbox_use_samba/rule.yml
++++ /dev/null
+@@ -1,16 +0,0 @@
+-documentation_complete: true
+-
+-prodtype: rhel7,rhel8
+-
+-title: 'Disable the virt_sandbox_use_samba SELinux Boolean'
+-
+-description: |-
+-    By default, the SELinux boolean <tt>virt_sandbox_use_samba</tt> is disabled.
+-    If this setting is enabled, it should be disabled.
+-    {{{ describe_sebool_disable(sebool="virt_sandbox_use_samba") }}}
+-
+-rationale: ""
+-
+-severity: medium
+-
+-{{{ complete_ocil_entry_sebool_disabled(sebool="virt_sandbox_use_samba") }}}
+diff --git a/linux_os/guide/system/selinux/selinux-booleans/var_virt_sandbox_use_samba.var b/linux_os/guide/system/selinux/selinux-booleans/var_virt_sandbox_use_samba.var
+deleted file mode 100644
+index de370465dd..0000000000
+--- a/linux_os/guide/system/selinux/selinux-booleans/var_virt_sandbox_use_samba.var
++++ /dev/null
+@@ -1,19 +0,0 @@
+-documentation_complete: true
+-
+-title: 'virt_sandbox_use_samba SELinux Boolean'
+-
+-description: |-
+-    default - Default SELinux boolean setting.
+-    <br />on - SELinux boolean is enabled.
+-    <br />off - SELinux boolean is disabled.
+-
+-type: boolean
+-
+-operator: equals
+-
+-interactive: false
+-
+-options:
+-    default: false
+-    off: false
+-    on: true
+diff --git a/rhel7/templates/csv/selinux_booleans.csv b/rhel7/templates/csv/selinux_booleans.csv
+index aaf2e1a34f..19a27493db 100644
+--- a/rhel7/templates/csv/selinux_booleans.csv
++++ b/rhel7/templates/csv/selinux_booleans.csv
+@@ -268,7 +268,6 @@ virt_sandbox_use_all_caps,use_var
+ virt_sandbox_use_audit,use_var
+ virt_sandbox_use_mknod,use_var
+ virt_sandbox_use_netlink,use_var
+-virt_sandbox_use_samba,use_var
+ virt_sandbox_use_sys_admin,use_var
+ virt_transition_userdomain,use_var
+ virt_use_comm,use_var
+diff --git a/rhv4/templates/csv/selinux_booleans.csv b/rhv4/templates/csv/selinux_booleans.csv
+index aaf2e1a34f..19a27493db 100644
+--- a/rhv4/templates/csv/selinux_booleans.csv
++++ b/rhv4/templates/csv/selinux_booleans.csv
+@@ -268,7 +268,6 @@ virt_sandbox_use_all_caps,use_var
+ virt_sandbox_use_audit,use_var
+ virt_sandbox_use_mknod,use_var
+ virt_sandbox_use_netlink,use_var
+-virt_sandbox_use_samba,use_var
+ virt_sandbox_use_sys_admin,use_var
+ virt_transition_userdomain,use_var
+ virt_use_comm,use_var
+
+From e0287da5af28c3357fa920a16d538ab424bd5392 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Jan=20=C4=8Cern=C3=BD?= <jcerny@redhat.com>
+Date: Tue, 12 Mar 2019 10:13:10 +0100
+Subject: [PATCH 6/6] Remove sftpd_.* SELinux booleans
+
+SELinux booleans sftpd_anon_write, sftpd_enable_homedirs,
+sftpd_full_access, sftpd_write_ssh_home have been removed from SELinux
+because they were useless because openssh doesn't use sftpd_t type
+anymore and it uses user's type for sftpd sessions. They haven't been
+superseded by anything else.
+---
+ .../sebool_sftpd_anon_write/rule.yml          | 16 ----------------
+ .../sebool_sftpd_enable_homedirs/rule.yml     | 16 ----------------
+ .../sebool_sftpd_full_access/rule.yml         | 16 ----------------
+ .../sebool_sftpd_write_ssh_home/rule.yml      | 16 ----------------
+ .../selinux-booleans/var_sftpd_anon_write.var | 19 -------------------
+ .../var_sftpd_enable_homedirs.var             | 19 -------------------
+ .../var_sftpd_full_access.var                 | 19 -------------------
+ .../var_sftpd_write_ssh_home.var              | 19 -------------------
+ rhel7/templates/csv/selinux_booleans.csv      |  4 ----
+ rhv4/templates/csv/selinux_booleans.csv       |  4 ----
+ 10 files changed, 148 deletions(-)
+ delete mode 100644 linux_os/guide/system/selinux/selinux-booleans/sebool_sftpd_anon_write/rule.yml
+ delete mode 100644 linux_os/guide/system/selinux/selinux-booleans/sebool_sftpd_enable_homedirs/rule.yml
+ delete mode 100644 linux_os/guide/system/selinux/selinux-booleans/sebool_sftpd_full_access/rule.yml
+ delete mode 100644 linux_os/guide/system/selinux/selinux-booleans/sebool_sftpd_write_ssh_home/rule.yml
+ delete mode 100644 linux_os/guide/system/selinux/selinux-booleans/var_sftpd_anon_write.var
+ delete mode 100644 linux_os/guide/system/selinux/selinux-booleans/var_sftpd_enable_homedirs.var
+ delete mode 100644 linux_os/guide/system/selinux/selinux-booleans/var_sftpd_full_access.var
+ delete mode 100644 linux_os/guide/system/selinux/selinux-booleans/var_sftpd_write_ssh_home.var
+
+diff --git a/linux_os/guide/system/selinux/selinux-booleans/sebool_sftpd_anon_write/rule.yml b/linux_os/guide/system/selinux/selinux-booleans/sebool_sftpd_anon_write/rule.yml
+deleted file mode 100644
+index a5327110f8..0000000000
+--- a/linux_os/guide/system/selinux/selinux-booleans/sebool_sftpd_anon_write/rule.yml
++++ /dev/null
+@@ -1,16 +0,0 @@
+-documentation_complete: true
+-
+-prodtype: rhel7,rhel8
+-
+-title: 'Disable the sftpd_anon_write SELinux Boolean'
+-
+-description: |-
+-    By default, the SELinux boolean <tt>sftpd_anon_write</tt> is disabled.
+-    If this setting is enabled, it should be disabled.
+-    {{{ describe_sebool_disable(sebool="sftpd_anon_write") }}}
+-
+-rationale: ""
+-
+-severity: medium
+-
+-{{{ complete_ocil_entry_sebool_disabled(sebool="sftpd_anon_write") }}}
+diff --git a/linux_os/guide/system/selinux/selinux-booleans/sebool_sftpd_enable_homedirs/rule.yml b/linux_os/guide/system/selinux/selinux-booleans/sebool_sftpd_enable_homedirs/rule.yml
+deleted file mode 100644
+index ac52da2773..0000000000
+--- a/linux_os/guide/system/selinux/selinux-booleans/sebool_sftpd_enable_homedirs/rule.yml
++++ /dev/null
+@@ -1,16 +0,0 @@
+-documentation_complete: true
+-
+-prodtype: rhel7,rhel8
+-
+-title: 'Disable the sftpd_enable_homedirs SELinux Boolean'
+-
+-description: |-
+-    By default, the SELinux boolean <tt>sftpd_enable_homedirs</tt> is disabled.
+-    If this setting is enabled, it should be disabled.
+-    {{{ describe_sebool_disable(sebool="sftpd_enable_homedirs") }}}
+-
+-rationale: ""
+-
+-severity: medium
+-
+-{{{ complete_ocil_entry_sebool_disabled(sebool="sftpd_enable_homedirs") }}}
+diff --git a/linux_os/guide/system/selinux/selinux-booleans/sebool_sftpd_full_access/rule.yml b/linux_os/guide/system/selinux/selinux-booleans/sebool_sftpd_full_access/rule.yml
+deleted file mode 100644
+index fff440ff7e..0000000000
+--- a/linux_os/guide/system/selinux/selinux-booleans/sebool_sftpd_full_access/rule.yml
++++ /dev/null
+@@ -1,16 +0,0 @@
+-documentation_complete: true
+-
+-prodtype: rhel7,rhel8
+-
+-title: 'Disable the sftpd_full_access SELinux Boolean'
+-
+-description: |-
+-    By default, the SELinux boolean <tt>sftpd_full_access</tt> is disabled.
+-    If this setting is enabled, it should be disabled.
+-    {{{ describe_sebool_disable(sebool="sftpd_full_access") }}}
+-
+-rationale: ""
+-
+-severity: medium
+-
+-{{{ complete_ocil_entry_sebool_disabled(sebool="sftpd_full_access") }}}
+diff --git a/linux_os/guide/system/selinux/selinux-booleans/sebool_sftpd_write_ssh_home/rule.yml b/linux_os/guide/system/selinux/selinux-booleans/sebool_sftpd_write_ssh_home/rule.yml
+deleted file mode 100644
+index 7b67579eb5..0000000000
+--- a/linux_os/guide/system/selinux/selinux-booleans/sebool_sftpd_write_ssh_home/rule.yml
++++ /dev/null
+@@ -1,16 +0,0 @@
+-documentation_complete: true
+-
+-prodtype: rhel7,rhel8
+-
+-title: 'Disable the sftpd_write_ssh_home SELinux Boolean'
+-
+-description: |-
+-    By default, the SELinux boolean <tt>sftpd_write_ssh_home</tt> is disabled.
+-    If this setting is enabled, it should be disabled.
+-    {{{ describe_sebool_disable(sebool="sftpd_write_ssh_home") }}}
+-
+-rationale: ""
+-
+-severity: medium
+-
+-{{{ complete_ocil_entry_sebool_disabled(sebool="sftpd_write_ssh_home") }}}
+diff --git a/linux_os/guide/system/selinux/selinux-booleans/var_sftpd_anon_write.var b/linux_os/guide/system/selinux/selinux-booleans/var_sftpd_anon_write.var
+deleted file mode 100644
+index ec43879c93..0000000000
+--- a/linux_os/guide/system/selinux/selinux-booleans/var_sftpd_anon_write.var
++++ /dev/null
+@@ -1,19 +0,0 @@
+-documentation_complete: true
+-
+-title: 'sftpd_anon_write SELinux Boolean'
+-
+-description: |-
+-    default - Default SELinux boolean setting.
+-    <br />on - SELinux boolean is enabled.
+-    <br />off - SELinux boolean is disabled.
+-
+-type: boolean
+-
+-operator: equals
+-
+-interactive: false
+-
+-options:
+-    default: false
+-    off: false
+-    on: true
+diff --git a/linux_os/guide/system/selinux/selinux-booleans/var_sftpd_enable_homedirs.var b/linux_os/guide/system/selinux/selinux-booleans/var_sftpd_enable_homedirs.var
+deleted file mode 100644
+index 1ebd92f562..0000000000
+--- a/linux_os/guide/system/selinux/selinux-booleans/var_sftpd_enable_homedirs.var
++++ /dev/null
+@@ -1,19 +0,0 @@
+-documentation_complete: true
+-
+-title: 'sftpd_enable_homedirs SELinux Boolean'
+-
+-description: |-
+-    default - Default SELinux boolean setting.
+-    <br />on - SELinux boolean is enabled.
+-    <br />off - SELinux boolean is disabled.
+-
+-type: boolean
+-
+-operator: equals
+-
+-interactive: false
+-
+-options:
+-    default: false
+-    off: false
+-    on: true
+diff --git a/linux_os/guide/system/selinux/selinux-booleans/var_sftpd_full_access.var b/linux_os/guide/system/selinux/selinux-booleans/var_sftpd_full_access.var
+deleted file mode 100644
+index a6d1fc9efc..0000000000
+--- a/linux_os/guide/system/selinux/selinux-booleans/var_sftpd_full_access.var
++++ /dev/null
+@@ -1,19 +0,0 @@
+-documentation_complete: true
+-
+-title: 'sftpd_full_access SELinux Boolean'
+-
+-description: |-
+-    default - Default SELinux boolean setting.
+-    <br />on - SELinux boolean is enabled.
+-    <br />off - SELinux boolean is disabled.
+-
+-type: boolean
+-
+-operator: equals
+-
+-interactive: false
+-
+-options:
+-    default: false
+-    off: false
+-    on: true
+diff --git a/linux_os/guide/system/selinux/selinux-booleans/var_sftpd_write_ssh_home.var b/linux_os/guide/system/selinux/selinux-booleans/var_sftpd_write_ssh_home.var
+deleted file mode 100644
+index 67a3f00655..0000000000
+--- a/linux_os/guide/system/selinux/selinux-booleans/var_sftpd_write_ssh_home.var
++++ /dev/null
+@@ -1,19 +0,0 @@
+-documentation_complete: true
+-
+-title: 'sftpd_write_ssh_home SELinux Boolean'
+-
+-description: |-
+-    default - Default SELinux boolean setting.
+-    <br />on - SELinux boolean is enabled.
+-    <br />off - SELinux boolean is disabled.
+-
+-type: boolean
+-
+-operator: equals
+-
+-interactive: false
+-
+-options:
+-    default: false
+-    off: false
+-    on: true
+diff --git a/rhel7/templates/csv/selinux_booleans.csv b/rhel7/templates/csv/selinux_booleans.csv
+index 19a27493db..1b55f6db31 100644
+--- a/rhel7/templates/csv/selinux_booleans.csv
++++ b/rhel7/templates/csv/selinux_booleans.csv
+@@ -224,10 +224,6 @@ selinuxuser_share_music,use_var
+ selinuxuser_tcp_server,use_var
+ selinuxuser_udp_server,use_var
+ selinuxuser_use_ssh_chroot,use_var
+-sftpd_anon_write,use_var
+-sftpd_enable_homedirs,use_var
+-sftpd_full_access,use_var
+-sftpd_write_ssh_home,use_var
+ sge_domain_can_network_connect,use_var
+ sge_use_nfs,use_var
+ smartmon_3ware,use_var
+diff --git a/rhv4/templates/csv/selinux_booleans.csv b/rhv4/templates/csv/selinux_booleans.csv
+index 19a27493db..1b55f6db31 100644
+--- a/rhv4/templates/csv/selinux_booleans.csv
++++ b/rhv4/templates/csv/selinux_booleans.csv
+@@ -224,10 +224,6 @@ selinuxuser_share_music,use_var
+ selinuxuser_tcp_server,use_var
+ selinuxuser_udp_server,use_var
+ selinuxuser_use_ssh_chroot,use_var
+-sftpd_anon_write,use_var
+-sftpd_enable_homedirs,use_var
+-sftpd_full_access,use_var
+-sftpd_write_ssh_home,use_var
+ sge_domain_can_network_connect,use_var
+ sge_use_nfs,use_var
+ smartmon_3ware,use_var

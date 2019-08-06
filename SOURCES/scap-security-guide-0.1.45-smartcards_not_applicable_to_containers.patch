@@ -1,0 +1,31 @@
+From eebf6eaae22d6d993b9351a0ccaad55ca2bff3d6 Mon Sep 17 00:00:00 2001
+From: Marek Haicman <mhaicman@redhat.com>
+Date: Fri, 24 May 2019 12:33:57 +0200
+Subject: [PATCH] Smartcard not applicable to containers
+
+Smartcard configuration make sense on the host, not in general container base.
+---
+ .../accounts-physical/screen_locking/smart_card_login/group.yml | 2 ++
+ .../smart_card_login/service_pcscd_enabled/rule.yml             | 2 --
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/linux_os/guide/system/accounts/accounts-physical/screen_locking/smart_card_login/group.yml b/linux_os/guide/system/accounts/accounts-physical/screen_locking/smart_card_login/group.yml
+index e1ee1122bd..5a2b0728cb 100644
+--- a/linux_os/guide/system/accounts/accounts-physical/screen_locking/smart_card_login/group.yml
++++ b/linux_os/guide/system/accounts/accounts-physical/screen_locking/smart_card_login/group.yml
+@@ -11,3 +11,5 @@ description: |-
+     In Red Hat Enterprise Linux servers and workstations, hardware token login
+     {{% endif %}}
+     is not enabled by default and must be enabled in the system settings.
++
++platform: machine
+diff --git a/linux_os/guide/system/accounts/accounts-physical/screen_locking/smart_card_login/service_pcscd_enabled/rule.yml b/linux_os/guide/system/accounts/accounts-physical/screen_locking/smart_card_login/service_pcscd_enabled/rule.yml
+index 03e37fd889..a49f9e755f 100644
+--- a/linux_os/guide/system/accounts/accounts-physical/screen_locking/smart_card_login/service_pcscd_enabled/rule.yml
++++ b/linux_os/guide/system/accounts/accounts-physical/screen_locking/smart_card_login/service_pcscd_enabled/rule.yml
+@@ -33,5 +33,3 @@ references:
+ ocil_clause: 'the pcscd service is not enabled'
+ 
+ ocil: '{{{ ocil_service_enabled(service="pcscd") }}}'
+-
+-platform: machine

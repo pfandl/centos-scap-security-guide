@@ -1,0 +1,23 @@
+From 568ef0aecb14fc7a12255f207e407130d2980c42 Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Thu, 28 Feb 2019 16:08:41 +0100
+Subject: [PATCH] Do not compare int and str
+
+securetty_empty.stat.size is int type.
+---
+ .../root_logins/no_direct_root_logins/ansible/shared.yml        | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/linux_os/guide/system/accounts/accounts-restrictions/root_logins/no_direct_root_logins/ansible/shared.yml b/linux_os/guide/system/accounts/accounts-restrictions/root_logins/no_direct_root_logins/ansible/shared.yml
+index 397420f979..cf35f07bb4 100644
+--- a/linux_os/guide/system/accounts/accounts-restrictions/root_logins/no_direct_root_logins/ansible/shared.yml
++++ b/linux_os/guide/system/accounts/accounts-restrictions/root_logins/no_direct_root_logins/ansible/shared.yml
+@@ -10,7 +10,7 @@
+ 
+ - name: "Direct root Logins Not Allowed"
+   shell: echo > /etc/securetty
+-  changed_when: securetty_empty.stat.size > "1"
++  changed_when: securetty_empty.stat.size > 1
+   tags:
+     @ANSIBLE_TAGS@
+   @ANSIBLE_ENSURE_PLATFORM@

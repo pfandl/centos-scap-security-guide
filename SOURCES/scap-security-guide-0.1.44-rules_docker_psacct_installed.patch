@@ -1,0 +1,179 @@
+From 6b9120f959480a230579f31d3b428d2d7f99f488 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Jan=20=C4=8Cern=C3=BD?= <jcerny@redhat.com>
+Date: Tue, 5 Mar 2019 15:31:03 +0100
+Subject: [PATCH 1/4] Add rule package_docker_installed
+
+There is a rule service_docker_enabled, but the Ansible remediation
+for this rule failed, because there was no rule that contained
+an Ansible task to install the Docker package.
+---
+ .../docker/package_docker_installed/rule.yml  | 22 +++++++++++++++++++
+ 1 file changed, 22 insertions(+)
+ create mode 100644 linux_os/guide/services/docker/package_docker_installed/rule.yml
+
+diff --git a/linux_os/guide/services/docker/package_docker_installed/rule.yml b/linux_os/guide/services/docker/package_docker_installed/rule.yml
+new file mode 100644
+index 0000000000..69fc172c34
+--- /dev/null
++++ b/linux_os/guide/services/docker/package_docker_installed/rule.yml
+@@ -0,0 +1,22 @@
++documentation_complete: true
++
++prodtype: rhel7
++
++title: 'Install the docker Package'
++
++description: |-
++    The docker package provides necessary software to create containers, which
++    are self-sufficient and self-contained applications using the resource
++    isolation features of the kernel.
++    {{{ describe_package_install(package="docker") }}}
++
++rationale: |-
++    To be able to run the docker service, the docker package has to be installed.
++
++severity: medium
++
++ocil_clause: 'the package is not installed'
++
++ocil: '{{{ ocil_package(package="docker") }}}'
++
++platform: machine
+
+From bdcbb9bf073c915b86a8619b0a1f82307d34f82b Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Jan=20=C4=8Cern=C3=BD?= <jcerny@redhat.com>
+Date: Tue, 5 Mar 2019 15:33:07 +0100
+Subject: [PATCH 2/4] Remove Docker rules from RHEL8 Benchmark
+
+Docker isn't available on RHEL8.
+---
+ .../guide/services/docker/docker_storage_configured/rule.yml    | 2 +-
+ linux_os/guide/services/docker/service_docker_enabled/rule.yml  | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/linux_os/guide/services/docker/docker_storage_configured/rule.yml b/linux_os/guide/services/docker/docker_storage_configured/rule.yml
+index d0000f70f5..a1c90e60f9 100644
+--- a/linux_os/guide/services/docker/docker_storage_configured/rule.yml
++++ b/linux_os/guide/services/docker/docker_storage_configured/rule.yml
+@@ -1,6 +1,6 @@
+ documentation_complete: true
+ 
+-prodtype: rhel7,rhel8
++prodtype: rhel7
+ 
+ title: 'Use direct-lvm with the Device Mapper Storage Driver'
+ 
+diff --git a/linux_os/guide/services/docker/service_docker_enabled/rule.yml b/linux_os/guide/services/docker/service_docker_enabled/rule.yml
+index f0f408b655..309771b828 100644
+--- a/linux_os/guide/services/docker/service_docker_enabled/rule.yml
++++ b/linux_os/guide/services/docker/service_docker_enabled/rule.yml
+@@ -1,6 +1,6 @@
+ documentation_complete: true
+ 
+-prodtype: rhel7,rhel8
++prodtype: rhel7
+ 
+ title: 'Enable the Docker service'
+ 
+
+From 9d20a9f87bc3e3992bd86728de9bd05988a35a8a Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Jan=20=C4=8Cern=C3=BD?= <jcerny@redhat.com>
+Date: Tue, 5 Mar 2019 15:48:37 +0100
+Subject: [PATCH 3/4] Add rule package_docker_installed to Docker host profile
+
+---
+ rhel7/profiles/docker-host.profile | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/rhel7/profiles/docker-host.profile b/rhel7/profiles/docker-host.profile
+index 894b78930b..0d1207bcfa 100644
+--- a/rhel7/profiles/docker-host.profile
++++ b/rhel7/profiles/docker-host.profile
+@@ -10,6 +10,7 @@ description: |-
+     and scap-security-guide@lists.fedorahosted.org.
+ 
+ selections:
++    - package_docker_installed
+     - service_docker_enabled
+     - var_selinux_policy_name=targeted
+     - var_selinux_state=enforcing
+
+From b34bdcf3ddd10542b8e989069779c6ff45385c96 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Jan=20=C4=8Cern=C3=BD?= <jcerny@redhat.com>
+Date: Tue, 5 Mar 2019 15:49:01 +0100
+Subject: [PATCH 4/4] Add rule package_psacct_installed
+
+There is a rule service_psacct_enabled, but the Ansible remediation
+for this rule failed, because there was no rule that contained
+an Ansible task to install the psacct package.
+Also adds the rule package_psacct_installed to all profiles
+where rule service_psacct_enabled is included.
+---
+ .../base/package_psacct_installed/rule.yml    | 32 +++++++++++++++++++
+ rhel6/profiles/CSCF-RHEL6-MLS.profile         |  1 +
+ rhel6/profiles/nist-CL-IL-AL.profile          |  1 +
+ 3 files changed, 34 insertions(+)
+ create mode 100644 linux_os/guide/services/base/package_psacct_installed/rule.yml
+
+diff --git a/linux_os/guide/services/base/package_psacct_installed/rule.yml b/linux_os/guide/services/base/package_psacct_installed/rule.yml
+new file mode 100644
+index 0000000000..abf2a720ee
+--- /dev/null
++++ b/linux_os/guide/services/base/package_psacct_installed/rule.yml
+@@ -0,0 +1,32 @@
++documentation_complete: true
++
++prodtype: rhel6,rhel7,rhel8
++
++title: 'Install the psacct package'
++
++description: |-
++    The process accounting service, <tt>psacct</tt>, works with programs
++    including <tt>acct</tt> and <tt>ac</tt> to allow system administrators to view
++    user activity, such as commands issued by users of the system.
++    {{{ describe_package_install(package="psacct") }}}
++
++rationale: |-
++    The <tt>psacct</tt> service can provide administrators a convenient
++    view into some user activities. However, it should be noted that the auditing
++    system and its audit records provide more authoritative and comprehensive
++    records.
++
++severity: unknown
++
++references:
++    nist: AU-12,CM-7
++    nist-csf: DE.CM-1,DE.CM-3,DE.CM-7,ID.SC-4,PR.IP-1,PR.PT-1,PR.PT-3
++    isa-62443-2013: 'SR 1.1,SR 1.10,SR 1.11,SR 1.12,SR 1.13,SR 1.2,SR 1.3,SR 1.4,SR 1.5,SR 1.6,SR 1.7,SR 1.8,SR 1.9,SR 2.1,SR 2.10,SR 2.11,SR 2.12,SR 2.2,SR 2.3,SR 2.4,SR 2.5,SR 2.6,SR 2.7,SR 2.8,SR 2.9,SR 6.1,SR 6.2,SR 7.6'
++    isa-62443-2009: 4.3.2.6.7,4.3.3.3.9,4.3.3.5.1,4.3.3.5.2,4.3.3.5.3,4.3.3.5.4,4.3.3.5.5,4.3.3.5.6,4.3.3.5.7,4.3.3.5.8,4.3.3.6.1,4.3.3.6.2,4.3.3.6.3,4.3.3.6.4,4.3.3.6.5,4.3.3.6.6,4.3.3.6.7,4.3.3.6.8,4.3.3.6.9,4.3.3.7.1,4.3.3.7.2,4.3.3.7.3,4.3.3.7.4,4.3.4.3.2,4.3.4.3.3,4.3.4.4.7,4.4.2.1,4.4.2.2,4.4.2.4
++    cobit5: APO10.01,APO10.03,APO10.04,APO10.05,APO11.04,BAI03.05,BAI10.01,BAI10.02,BAI10.03,BAI10.05,DSS01.03,DSS03.05,DSS05.02,DSS05.04,DSS05.05,DSS05.07,DSS06.06,MEA01.01,MEA01.02,MEA01.03,MEA01.04,MEA01.05,MEA02.01
++    iso27001-2013: A.12.1.2,A.12.4.1,A.12.4.2,A.12.4.3,A.12.4.4,A.12.5.1,A.12.6.2,A.12.7.1,A.14.2.2,A.14.2.3,A.14.2.4,A.14.2.7,A.15.2.1,A.15.2.2,A.9.1.2
++    cis-csc: 1,11,12,13,14,15,16,2,3,5,6,7,8,9
++
++ocil_clause: 'the package is not installed'
++
++ocil: '{{{ ocil_package(package="psacct") }}}'
+diff --git a/rhel6/profiles/CSCF-RHEL6-MLS.profile b/rhel6/profiles/CSCF-RHEL6-MLS.profile
+index 104ebeadca..49568247cc 100644
+--- a/rhel6/profiles/CSCF-RHEL6-MLS.profile
++++ b/rhel6/profiles/CSCF-RHEL6-MLS.profile
+@@ -207,6 +207,7 @@ selections:
+     - service_ntpdate_disabled
+     - service_oddjobd_disabled
+     - service_portreserve_disabled
++    - package_psacct_installed
+     - service_psacct_enabled
+     - service_qpidd_disabled
+     - service_quota_nld_disabled
+diff --git a/rhel6/profiles/nist-CL-IL-AL.profile b/rhel6/profiles/nist-CL-IL-AL.profile
+index 9f8718329b..8a6e21a106 100644
+--- a/rhel6/profiles/nist-CL-IL-AL.profile
++++ b/rhel6/profiles/nist-CL-IL-AL.profile
+@@ -164,6 +164,7 @@ selections:
+     - service_ntpd_enabled
+     - ntpd_specify_remote_server
+     - ntpd_specify_multiple_servers
++    - package_psacct_installed
+     - service_psacct_enabled
+     - package_aide_installed
+     - disable_prelink

@@ -1,0 +1,50 @@
+From df18c1e1c034cd0162747eb357efdcbbdf22ff1c Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Tue, 19 Mar 2019 16:50:09 +0100
+Subject: [PATCH] Remove --quiet from rpm command
+
+It doesn't work with --setperms.
+See https://bugzilla.redhat.com/show_bug.cgi?id=1690469.
+---
+ .../rpm_verification/rpm_verify_permissions/ansible/shared.yml  | 2 +-
+ .../rpm_verification/rpm_verify_permissions/bash/shared.sh      | 2 +-
+ .../rpm_verification/rpm_verify_permissions/rule.yml            | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/linux_os/guide/system/software/integrity/software-integrity/rpm_verification/rpm_verify_permissions/ansible/shared.yml b/linux_os/guide/system/software/integrity/software-integrity/rpm_verification/rpm_verify_permissions/ansible/shared.yml
+index abce9e17f5..e05696d46c 100644
+--- a/linux_os/guide/system/software/integrity/software-integrity/rpm_verification/rpm_verify_permissions/ansible/shared.yml
++++ b/linux_os/guide/system/software/integrity/software-integrity/rpm_verification/rpm_verify_permissions/ansible/shared.yml
+@@ -13,7 +13,7 @@
+   @ANSIBLE_ENSURE_PLATFORM@
+ 
+ - name: "Correct file permissions with RPM"
+-  shell: "rpm --quiet --setperms $(rpm -qf '{{ item }}')"
++  shell: "rpm --setperms $(rpm -qf '{{ item }}')"
+   args:
+     warn: False # Ignore ANSIBLE0006, we can't correct permissions using rpm module
+   with_items: "{{ files_with_incorrect_permissions.stdout_lines }}"
+diff --git a/linux_os/guide/system/software/integrity/software-integrity/rpm_verification/rpm_verify_permissions/bash/shared.sh b/linux_os/guide/system/software/integrity/software-integrity/rpm_verification/rpm_verify_permissions/bash/shared.sh
+index 5689b6d84b..7705f0df3b 100644
+--- a/linux_os/guide/system/software/integrity/software-integrity/rpm_verification/rpm_verify_permissions/bash/shared.sh
++++ b/linux_os/guide/system/software/integrity/software-integrity/rpm_verification/rpm_verify_permissions/bash/shared.sh
+@@ -28,5 +28,5 @@ SETPERMS_RPM_LIST=( $(echo "${SETPERMS_RPM_LIST[@]}" | tr ' ' '\n' | sort -u | t
+ # correct values
+ for RPM_PACKAGE in "${SETPERMS_RPM_LIST[@]}"
+ do
+-	rpm --quiet --setperms "${RPM_PACKAGE}"
++	rpm --setperms "${RPM_PACKAGE}"
+ done
+diff --git a/linux_os/guide/system/software/integrity/software-integrity/rpm_verification/rpm_verify_permissions/rule.yml b/linux_os/guide/system/software/integrity/software-integrity/rpm_verification/rpm_verify_permissions/rule.yml
+index e233c8b02f..1d5090894b 100644
+--- a/linux_os/guide/system/software/integrity/software-integrity/rpm_verification/rpm_verify_permissions/rule.yml
++++ b/linux_os/guide/system/software/integrity/software-integrity/rpm_verification/rpm_verify_permissions/rule.yml
+@@ -19,7 +19,7 @@ description: |-
+     <br />
+     Next, run the following command to reset its permissions to
+     the correct values:
+-    <pre>$ sudo rpm --quiet --setperms <i>PACKAGENAME</i></pre>
++    <pre>$ sudo rpm --setperms <i>PACKAGENAME</i></pre>
+ 
+ rationale: |-
+     Permissions on system binaries and configuration files that are too generous

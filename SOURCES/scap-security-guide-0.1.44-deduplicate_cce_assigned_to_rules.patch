@@ -1,0 +1,97 @@
+commit 270af4a39fe2688fafbe3f91c383673f0fdcb2f2
+Author: Gabriel Becker <ggasparb@redhat.com>
+Date:   Thu Apr 25 16:43:30 2019 +0200
+
+    Remove duplicated assigned CCEs from rules and assign new ones to them.
+
+diff --git a/linux_os/guide/system/accounts/accounts-restrictions/account_expiration/account_temp_expire_date/rule.yml b/linux_os/guide/system/accounts/accounts-restrictions/account_expiration/account_temp_expire_date/rule.yml
+index 0b2e278..72b5f77 100644
+--- a/linux_os/guide/system/accounts/accounts-restrictions/account_expiration/account_temp_expire_date/rule.yml
++++ b/linux_os/guide/system/accounts/accounts-restrictions/account_expiration/account_temp_expire_date/rule.yml
+@@ -29,7 +29,7 @@ severity: unknown
+ 
+ identifiers:
+     cce@rhel6: 27474-6
+-    cce@rhel7: 27498-5
++    cce@rhel7: 81000-2
+ 
+ references:
+     stigid@rhel6: RHEL-06-000297
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_deletion_events/audit_rules_file_deletion_events_rename/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_deletion_events/audit_rules_file_deletion_events_rename/rule.yml
+index c25cfbb..31338ea 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_deletion_events/audit_rules_file_deletion_events_rename/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_deletion_events/audit_rules_file_deletion_events_rename/rule.yml
+@@ -26,7 +26,7 @@ rationale: |-
+ severity: medium
+ 
+ identifiers:
+-    cce@rhel7: 27206-2
++    cce@rhel7: 80995-4
+     cce@rhel8: 80703-2
+ 
+ references:
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_deletion_events/audit_rules_file_deletion_events_unlink/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_deletion_events/audit_rules_file_deletion_events_unlink/rule.yml
+index 5b1ff7b..b11acd8 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_deletion_events/audit_rules_file_deletion_events_unlink/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_file_deletion_events/audit_rules_file_deletion_events_unlink/rule.yml
+@@ -26,7 +26,7 @@ rationale: |-
+ severity: medium
+ 
+ identifiers:
+-    cce@rhel7: 27206-2
++    cce@rhel7: 80996-2
+     cce@rhel8: 80706-5
+ 
+ references:
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_login_events/audit_rules_login_events_tallylog/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_login_events/audit_rules_login_events_tallylog/rule.yml
+index 26c31e9..397e0cf 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_login_events/audit_rules_login_events_tallylog/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_login_events/audit_rules_login_events_tallylog/rule.yml
+@@ -25,7 +25,7 @@ rationale: |-
+ severity: medium
+ 
+ identifiers:
+-    cce@rhel7: 80382-5
++    cce@rhel7: 80994-7
+     cce@rhel8: 80720-6
+ 
+ references:
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_system_shutdown/rule.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_system_shutdown/rule.yml
+index 92564b9..f0e2d2e 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_system_shutdown/rule.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_rules_system_shutdown/rule.yml
+@@ -28,7 +28,7 @@ rationale: |-
+ severity: medium
+ 
+ identifiers:
+-    cce@rhel7: 80381-7
++    cce@rhel7: 80997-0
+     cce@rhel8: 80744-6
+ 
+ references:
+diff --git a/linux_os/guide/system/network/network-firewalld/firewalld_activation/service_firewalld_enabled/rule.yml b/linux_os/guide/system/network/network-firewalld/firewalld_activation/service_firewalld_enabled/rule.yml
+index edc747c..6309aee 100644
+--- a/linux_os/guide/system/network/network-firewalld/firewalld_activation/service_firewalld_enabled/rule.yml
++++ b/linux_os/guide/system/network/network-firewalld/firewalld_activation/service_firewalld_enabled/rule.yml
+@@ -14,7 +14,7 @@ rationale: |-
+ severity: medium
+ 
+ identifiers:
+-    cce@rhel7: 27361-5
++    cce@rhel7: 80998-8
+     cce@rhel8: 80877-4
+ 
+ references:
+diff --git a/linux_os/guide/system/network/network-kernel/network_host_parameters/sysctl_net_ipv4_conf_default_send_redirects/rule.yml b/linux_os/guide/system/network/network-kernel/network_host_parameters/sysctl_net_ipv4_conf_default_send_redirects/rule.yml
+index 44174ba..45db89d 100644
+--- a/linux_os/guide/system/network/network-kernel/network_host_parameters/sysctl_net_ipv4_conf_default_send_redirects/rule.yml
++++ b/linux_os/guide/system/network/network-kernel/network_host_parameters/sysctl_net_ipv4_conf_default_send_redirects/rule.yml
+@@ -17,7 +17,7 @@ severity: medium
+ 
+ identifiers:
+     cce@rhel6: 27001-7
+-    cce@rhel7: 80156-3
++    cce@rhel7: 80999-6
+     cce@rhel8: 80921-0
+ 
+ references:

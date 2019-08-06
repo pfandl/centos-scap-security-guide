@@ -1,0 +1,47 @@
+From 1732e962e1157832e77a5471a4cd9ebeb6da83a5 Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Tue, 19 Mar 2019 16:34:37 +0100
+Subject: [PATCH 1/2] Set use_regex to true
+
+The specified pattern is a regular expression
+---
+ shared/templates/template_ANSIBLE_file_regex_permissions | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/shared/templates/template_ANSIBLE_file_regex_permissions b/shared/templates/template_ANSIBLE_file_regex_permissions
+index cfa6073347..6be3b0db2e 100644
+--- a/shared/templates/template_ANSIBLE_file_regex_permissions
++++ b/shared/templates/template_ANSIBLE_file_regex_permissions
+@@ -7,6 +7,7 @@
+   find:
+     paths: "{{{ FILEPATH }}}"
+     patterns: "{{{ FILENAME }}}"
++    use_regex: yes
+   register: files_found
+   tags:
+     @ANSIBLE_TAGS@
+
+From 64c07573e7b30bed581e1765f0964d8934b5ee58 Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Tue, 19 Mar 2019 16:35:27 +0100
+Subject: [PATCH 2/2] Add test for multiple ssh keys
+
+---
+ .../multiple_keys.fail.sh                                 | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+ create mode 100644 tests/data/group_services/group_ssh/rule_file_permissions_sshd_private_key/multiple_keys.fail.sh
+
+diff --git a/tests/data/group_services/group_ssh/rule_file_permissions_sshd_private_key/multiple_keys.fail.sh b/tests/data/group_services/group_ssh/rule_file_permissions_sshd_private_key/multiple_keys.fail.sh
+new file mode 100644
+index 0000000000..7942950dda
+--- /dev/null
++++ b/tests/data/group_services/group_ssh/rule_file_permissions_sshd_private_key/multiple_keys.fail.sh
+@@ -0,0 +1,8 @@
++#!/bin/bash
++#
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++
++FAKE_KEY=$(mktemp -p /etc/ssh/ XXXX_key)
++chmod 0777 $FAKE_KEY
++FAKE_KEY2=$(mktemp -p /etc/ssh/ XXXX_key)
++chmod 0640 $FAKE_KEY2

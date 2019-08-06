@@ -1,0 +1,31 @@
+From 6418fbbce4050ec84836b4fa6855a2699d86a6ac Mon Sep 17 00:00:00 2001
+From: Marek Haicman <mhaicman@redhat.com>
+Date: Mon, 20 May 2019 12:54:15 +0200
+Subject: [PATCH] AIDE rules not applicable to containers
+
+AIDE is tool to assess changes in the system. As containers have this capability by definition, there is no need have AIDE to duplicate it.
+---
+ .../aide/aide_periodic_cron_checking/rule.yml                   | 2 --
+ .../system/software/integrity/software-integrity/aide/group.yml | 2 ++
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/linux_os/guide/system/software/integrity/software-integrity/aide/aide_periodic_cron_checking/rule.yml b/linux_os/guide/system/software/integrity/software-integrity/aide/aide_periodic_cron_checking/rule.yml
+index 7fc8d96b04..68ea7937bd 100644
+--- a/linux_os/guide/system/software/integrity/software-integrity/aide/aide_periodic_cron_checking/rule.yml
++++ b/linux_os/guide/system/software/integrity/software-integrity/aide/aide_periodic_cron_checking/rule.yml
+@@ -63,5 +63,3 @@ ocil: |-
+     <pre>05 4 * * * root /usr/sbin/aide --check</pre>
+ 
+     NOTE: The usage of special cron times, such as @daily or @weekly, is acceptable.
+-
+-platform: machine
+diff --git a/linux_os/guide/system/software/integrity/software-integrity/aide/group.yml b/linux_os/guide/system/software/integrity/software-integrity/aide/group.yml
+index 69d2f0fb56..faa2458657 100644
+--- a/linux_os/guide/system/software/integrity/software-integrity/aide/group.yml
++++ b/linux_os/guide/system/software/integrity/software-integrity/aide/group.yml
+@@ -8,3 +8,5 @@ description: |-
+     created immediately after initial system configuration, and then again after any
+     software update.  AIDE is highly configurable, with further configuration
+     information located in <tt>/usr/share/doc/aide-<i>VERSION</i></tt>.
++
++platform: machine

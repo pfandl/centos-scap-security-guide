@@ -1,0 +1,536 @@
+From 8f2e794f58b75311153609cd57c56dfa104f3ef1 Mon Sep 17 00:00:00 2001
+From: Gabriel Becker <ggasparb@redhat.com>
+Date: Wed, 17 Apr 2019 11:42:05 +0200
+Subject: [PATCH] Mark service rules as machine only.
+
+---
+ .../disable_avahi_group/service_avahi-daemon_disabled/rule.yml  | 2 ++
+ linux_os/guide/services/base/service_abrtd_disabled/rule.yml    | 2 ++
+ linux_os/guide/services/base/service_acpid_disabled/rule.yml    | 2 ++
+ .../guide/services/base/service_certmonger_disabled/rule.yml    | 2 ++
+ linux_os/guide/services/base/service_cgconfig_disabled/rule.yml | 2 ++
+ linux_os/guide/services/base/service_cgred_disabled/rule.yml    | 2 ++
+ linux_os/guide/services/base/service_cpupower_disabled/rule.yml | 2 ++
+ linux_os/guide/services/base/service_cpuspeed_disabled/rule.yml | 2 ++
+ .../guide/services/base/service_haldaemon_disabled/rule.yml     | 2 ++
+ linux_os/guide/services/base/service_kdump_disabled/rule.yml    | 2 ++
+ .../guide/services/base/service_mdmonitor_disabled/rule.yml     | 2 ++
+ .../guide/services/base/service_messagebus_disabled/rule.yml    | 2 ++
+ .../guide/services/base/service_netconsole_disabled/rule.yml    | 2 ++
+ linux_os/guide/services/base/service_ntpdate_disabled/rule.yml  | 2 ++
+ linux_os/guide/services/base/service_oddjobd_disabled/rule.yml  | 2 ++
+ .../guide/services/base/service_portreserve_disabled/rule.yml   | 2 ++
+ linux_os/guide/services/base/service_psacct_enabled/rule.yml    | 2 ++
+ linux_os/guide/services/base/service_qpidd_disabled/rule.yml    | 2 ++
+ .../guide/services/base/service_quota_nld_disabled/rule.yml     | 2 ++
+ linux_os/guide/services/base/service_rdisc_disabled/rule.yml    | 2 ++
+ linux_os/guide/services/base/service_rhnsd_disabled/rule.yml    | 2 ++
+ .../guide/services/base/service_rhsmcertd_disabled/rule.yml     | 2 ++
+ .../guide/services/base/service_saslauthd_disabled/rule.yml     | 2 ++
+ linux_os/guide/services/base/service_smartd_disabled/rule.yml   | 2 ++
+ linux_os/guide/services/base/service_sysstat_disabled/rule.yml  | 2 ++
+ .../guide/services/cron_and_at/service_atd_disabled/rule.yml    | 2 ++
+ .../dhcp/disabling_dhcp_server/service_dhcpd_disabled/rule.yml  | 2 ++
+ .../dns/disabling_dns_server/service_named_disabled/rule.yml    | 2 ++
+ .../ftp/disabling_vsftpd/service_vsftpd_disabled/rule.yml       | 2 ++
+ .../http/disabling_httpd/service_httpd_disabled/rule.yml        | 2 ++
+ .../imap/disabling_dovecot/service_dovecot_disabled/rule.yml    | 2 ++
+ .../disabling_nfs_services/service_rpcbind_disabled/rule.yml    | 2 ++
+ .../disabling_nfsd/service_nfs_disabled/rule.yml                | 2 ++
+ .../disabling_nfsd/service_rpcsvcgssd_disabled/rule.yml         | 2 ++
+ .../obsolete/inetd_and_xinetd/service_xinetd_disabled/rule.yml  | 2 ++
+ .../services/obsolete/nis/service_ypbind_disabled/rule.yml      | 2 ++
+ .../obsolete/r_services/service_rexec_disabled/rule.yml         | 2 ++
+ .../obsolete/r_services/service_rlogin_disabled/rule.yml        | 2 ++
+ .../services/obsolete/r_services/service_rsh_disabled/rule.yml  | 2 ++
+ .../services/obsolete/telnet/service_telnet_disabled/rule.yml   | 2 ++
+ .../guide/services/obsolete/tftp/service_tftp_disabled/rule.yml | 2 ++
+ linux_os/guide/services/printing/service_cups_disabled/rule.yml | 2 ++
+ .../proxy/disabling_squid/service_squid_disabled/rule.yml       | 2 ++
+ .../routing/disabling_quagga/service_zebra_disabled/rule.yml    | 2 ++
+ .../services/smb/disabling_samba/service_smb_disabled/rule.yml  | 2 ++
+ .../snmp/disabling_snmp_service/service_snmpd_disabled/rule.yml | 2 ++
+ .../wireless_software/service_bluetooth_disabled/rule.yml       | 2 ++
+ .../permissions/mounting/service_autofs_disabled/rule.yml       | 2 ++
+ 48 files changed, 96 insertions(+)
+
+diff --git a/linux_os/guide/services/avahi/disable_avahi_group/service_avahi-daemon_disabled/rule.yml b/linux_os/guide/services/avahi/disable_avahi_group/service_avahi-daemon_disabled/rule.yml
+index 43f81254ac..40b88f8c36 100644
+--- a/linux_os/guide/services/avahi/disable_avahi_group/service_avahi-daemon_disabled/rule.yml
++++ b/linux_os/guide/services/avahi/disable_avahi_group/service_avahi-daemon_disabled/rule.yml
+@@ -32,3 +32,5 @@ references:
+     cis-csc: 11,14,3,9
+ 
+ ocil: '{{{ ocil_service_disabled(service="avahi-daemon") }}}'
++
++platform: machine
+diff --git a/linux_os/guide/services/base/service_abrtd_disabled/rule.yml b/linux_os/guide/services/base/service_abrtd_disabled/rule.yml
+index d3f4547161..df51ab91b7 100644
+--- a/linux_os/guide/services/base/service_abrtd_disabled/rule.yml
++++ b/linux_os/guide/services/base/service_abrtd_disabled/rule.yml
+@@ -37,3 +37,5 @@ references:
+     cis-csc: 11,12,14,15,3,8,9
+ 
+ ocil: '{{{ ocil_service_disabled(service="abrtd") }}}'
++
++platform: machine
+diff --git a/linux_os/guide/services/base/service_acpid_disabled/rule.yml b/linux_os/guide/services/base/service_acpid_disabled/rule.yml
+index 1cde23c55b..e28d36139e 100644
+--- a/linux_os/guide/services/base/service_acpid_disabled/rule.yml
++++ b/linux_os/guide/services/base/service_acpid_disabled/rule.yml
+@@ -32,3 +32,5 @@ references:
+     cis-csc: 11,14,3,9
+ 
+ ocil: '{{{ ocil_service_disabled(service="acpid") }}}'
++
++platform: machine
+diff --git a/linux_os/guide/services/base/service_certmonger_disabled/rule.yml b/linux_os/guide/services/base/service_certmonger_disabled/rule.yml
+index c8b9d7ecf8..37f67ac757 100644
+--- a/linux_os/guide/services/base/service_certmonger_disabled/rule.yml
++++ b/linux_os/guide/services/base/service_certmonger_disabled/rule.yml
+@@ -32,3 +32,5 @@ references:
+     cis-csc: 11,14,3,9
+ 
+ ocil: '{{{ ocil_service_disabled(service="certmonger") }}}'
++
++platform: machine
+diff --git a/linux_os/guide/services/base/service_cgconfig_disabled/rule.yml b/linux_os/guide/services/base/service_cgconfig_disabled/rule.yml
+index fc88b03f05..74592ec803 100644
+--- a/linux_os/guide/services/base/service_cgconfig_disabled/rule.yml
++++ b/linux_os/guide/services/base/service_cgconfig_disabled/rule.yml
+@@ -30,3 +30,5 @@ references:
+     cis-csc: 11,14,3,9
+ 
+ ocil: '{{{ ocil_service_disabled(service="cgconfig") }}}'
++
++platform: machine
+diff --git a/linux_os/guide/services/base/service_cgred_disabled/rule.yml b/linux_os/guide/services/base/service_cgred_disabled/rule.yml
+index b7bc04cb3c..95136a34aa 100644
+--- a/linux_os/guide/services/base/service_cgred_disabled/rule.yml
++++ b/linux_os/guide/services/base/service_cgred_disabled/rule.yml
+@@ -29,3 +29,5 @@ references:
+     cis-csc: 11,14,3,9
+ 
+ ocil: '{{{ ocil_service_disabled(service="cgred") }}}'
++
++platform: machine
+diff --git a/linux_os/guide/services/base/service_cpupower_disabled/rule.yml b/linux_os/guide/services/base/service_cpupower_disabled/rule.yml
+index dd6dd4572e..2ceef1df38 100644
+--- a/linux_os/guide/services/base/service_cpupower_disabled/rule.yml
++++ b/linux_os/guide/services/base/service_cpupower_disabled/rule.yml
+@@ -30,3 +30,5 @@ references:
+     cis-csc: 11,14,3,9
+ 
+ ocil: '{{{ ocil_service_disabled(service="cpupower") }}}'
++
++platform: machine
+diff --git a/linux_os/guide/services/base/service_cpuspeed_disabled/rule.yml b/linux_os/guide/services/base/service_cpuspeed_disabled/rule.yml
+index fed0d57a25..24ad5469db 100644
+--- a/linux_os/guide/services/base/service_cpuspeed_disabled/rule.yml
++++ b/linux_os/guide/services/base/service_cpuspeed_disabled/rule.yml
+@@ -30,3 +30,5 @@ references:
+     cis-csc: 11,14,3,9
+ 
+ ocil: '{{{ ocil_service_disabled(service="cpuspeed") }}}'
++
++platform: machine
+diff --git a/linux_os/guide/services/base/service_haldaemon_disabled/rule.yml b/linux_os/guide/services/base/service_haldaemon_disabled/rule.yml
+index 9ffe62f2fb..1f9debf286 100644
+--- a/linux_os/guide/services/base/service_haldaemon_disabled/rule.yml
++++ b/linux_os/guide/services/base/service_haldaemon_disabled/rule.yml
+@@ -31,3 +31,5 @@ references:
+     cis-csc: 11,14,3,9
+ 
+ ocil: '{{{ ocil_service_disabled(service="haldaemon") }}}'
++
++platform: machine
+diff --git a/linux_os/guide/services/base/service_kdump_disabled/rule.yml b/linux_os/guide/services/base/service_kdump_disabled/rule.yml
+index 0dc8bcd117..d3aa88b0a0 100644
+--- a/linux_os/guide/services/base/service_kdump_disabled/rule.yml
++++ b/linux_os/guide/services/base/service_kdump_disabled/rule.yml
+@@ -38,3 +38,5 @@ references:
+     cis-csc: 11,12,14,15,3,8,9
+ 
+ ocil: '{{{ ocil_service_disabled(service="kdump") }}}'
++
++platform: machine
+diff --git a/linux_os/guide/services/base/service_mdmonitor_disabled/rule.yml b/linux_os/guide/services/base/service_mdmonitor_disabled/rule.yml
+index 7c3cf3ce54..e6e43136be 100644
+--- a/linux_os/guide/services/base/service_mdmonitor_disabled/rule.yml
++++ b/linux_os/guide/services/base/service_mdmonitor_disabled/rule.yml
+@@ -29,3 +29,5 @@ references:
+     cis-csc: 11,14,3,9
+ 
+ ocil: '{{{ ocil_service_disabled(service="mdmonitor") }}}'
++
++platform: machine
+diff --git a/linux_os/guide/services/base/service_messagebus_disabled/rule.yml b/linux_os/guide/services/base/service_messagebus_disabled/rule.yml
+index 5935ac3d05..2de1412908 100644
+--- a/linux_os/guide/services/base/service_messagebus_disabled/rule.yml
++++ b/linux_os/guide/services/base/service_messagebus_disabled/rule.yml
+@@ -33,3 +33,5 @@ references:
+     cis-csc: 11,14,3,9
+ 
+ ocil: '{{{ ocil_service_disabled(service="messagebus") }}}'
++
++platform: machine
+diff --git a/linux_os/guide/services/base/service_netconsole_disabled/rule.yml b/linux_os/guide/services/base/service_netconsole_disabled/rule.yml
+index 4579994ffa..db75a5b409 100644
+--- a/linux_os/guide/services/base/service_netconsole_disabled/rule.yml
++++ b/linux_os/guide/services/base/service_netconsole_disabled/rule.yml
+@@ -34,3 +34,5 @@ references:
+     cis-csc: 11,12,14,15,3,8,9
+ 
+ ocil: '{{{ ocil_service_disabled(service="netconsole") }}}'
++
++platform: machine
+diff --git a/linux_os/guide/services/base/service_ntpdate_disabled/rule.yml b/linux_os/guide/services/base/service_ntpdate_disabled/rule.yml
+index 86b0faa459..1a20f8f3e0 100644
+--- a/linux_os/guide/services/base/service_ntpdate_disabled/rule.yml
++++ b/linux_os/guide/services/base/service_ntpdate_disabled/rule.yml
+@@ -38,3 +38,5 @@ references:
+     cis-csc: 11,12,14,15,3,8,9
+ 
+ ocil: '{{{ ocil_service_disabled(service="ntpdate") }}}'
++
++platform: machine
+diff --git a/linux_os/guide/services/base/service_oddjobd_disabled/rule.yml b/linux_os/guide/services/base/service_oddjobd_disabled/rule.yml
+index bc7087f0be..68a3f5f2ab 100644
+--- a/linux_os/guide/services/base/service_oddjobd_disabled/rule.yml
++++ b/linux_os/guide/services/base/service_oddjobd_disabled/rule.yml
+@@ -37,3 +37,5 @@ references:
+     cis-csc: 11,14,3,9
+ 
+ ocil: '{{{ ocil_service_disabled(service="oddjobd") }}}'
++
++platform: machine
+diff --git a/linux_os/guide/services/base/service_portreserve_disabled/rule.yml b/linux_os/guide/services/base/service_portreserve_disabled/rule.yml
+index 64cab85593..2238268d3d 100644
+--- a/linux_os/guide/services/base/service_portreserve_disabled/rule.yml
++++ b/linux_os/guide/services/base/service_portreserve_disabled/rule.yml
+@@ -31,3 +31,5 @@ references:
+     cis-csc: 11,12,14,15,3,8,9
+ 
+ ocil: '{{{ ocil_service_disabled(service="portreserve") }}}'
++
++platform: machine
+diff --git a/linux_os/guide/services/base/service_psacct_enabled/rule.yml b/linux_os/guide/services/base/service_psacct_enabled/rule.yml
+index 4dc88a4176..b53bf84469 100644
+--- a/linux_os/guide/services/base/service_psacct_enabled/rule.yml
++++ b/linux_os/guide/services/base/service_psacct_enabled/rule.yml
+@@ -32,3 +32,5 @@ references:
+     cis-csc: 1,11,12,13,14,15,16,2,3,5,6,7,8,9
+ 
+ ocil: '{{{ ocil_service_disabled(service="psacct") }}}'
++
++platform: machine
+diff --git a/linux_os/guide/services/base/service_qpidd_disabled/rule.yml b/linux_os/guide/services/base/service_qpidd_disabled/rule.yml
+index b31327d2d0..21e3468237 100644
+--- a/linux_os/guide/services/base/service_qpidd_disabled/rule.yml
++++ b/linux_os/guide/services/base/service_qpidd_disabled/rule.yml
+@@ -38,3 +38,5 @@ references:
+     cis-csc: 11,12,14,15,3,8,9
+ 
+ ocil: '{{{ ocil_service_disabled(service="qpidd") }}}'
++
++platform: machine
+diff --git a/linux_os/guide/services/base/service_quota_nld_disabled/rule.yml b/linux_os/guide/services/base/service_quota_nld_disabled/rule.yml
+index b6352e831a..78242b5c7b 100644
+--- a/linux_os/guide/services/base/service_quota_nld_disabled/rule.yml
++++ b/linux_os/guide/services/base/service_quota_nld_disabled/rule.yml
+@@ -35,3 +35,5 @@ references:
+     cis-csc: 11,14,3,9
+ 
+ ocil: '{{{ ocil_service_disabled(service="quota_nld") }}}'
++
++platform: machine
+diff --git a/linux_os/guide/services/base/service_rdisc_disabled/rule.yml b/linux_os/guide/services/base/service_rdisc_disabled/rule.yml
+index 9fcc4ba207..8265d182ef 100644
+--- a/linux_os/guide/services/base/service_rdisc_disabled/rule.yml
++++ b/linux_os/guide/services/base/service_rdisc_disabled/rule.yml
+@@ -37,3 +37,5 @@ references:
+     cis-csc: 1,11,12,13,14,15,16,18,3,4,6,8,9
+ 
+ ocil: '{{{ ocil_service_disabled(service="rdisc") }}}'
++
++platform: machine
+diff --git a/linux_os/guide/services/base/service_rhnsd_disabled/rule.yml b/linux_os/guide/services/base/service_rhnsd_disabled/rule.yml
+index 14b0ab18e0..3bf89d899f 100644
+--- a/linux_os/guide/services/base/service_rhnsd_disabled/rule.yml
++++ b/linux_os/guide/services/base/service_rhnsd_disabled/rule.yml
+@@ -37,3 +37,5 @@ references:
+     cis-csc: 11,12,14,15,3,8,9
+ 
+ ocil: '{{{ ocil_service_disabled(service="rhnsd") }}}'
++
++platform: machine
+diff --git a/linux_os/guide/services/base/service_rhsmcertd_disabled/rule.yml b/linux_os/guide/services/base/service_rhsmcertd_disabled/rule.yml
+index 92ed4fed4d..a4d11dba3c 100644
+--- a/linux_os/guide/services/base/service_rhsmcertd_disabled/rule.yml
++++ b/linux_os/guide/services/base/service_rhsmcertd_disabled/rule.yml
+@@ -33,3 +33,5 @@ references:
+     cis-csc: 11,14,3,9
+ 
+ ocil: '{{{ ocil_service_disabled(service="rhsmcertd") }}}'
++
++platform: machine
+diff --git a/linux_os/guide/services/base/service_saslauthd_disabled/rule.yml b/linux_os/guide/services/base/service_saslauthd_disabled/rule.yml
+index 367530f511..53254f294d 100644
+--- a/linux_os/guide/services/base/service_saslauthd_disabled/rule.yml
++++ b/linux_os/guide/services/base/service_saslauthd_disabled/rule.yml
+@@ -34,3 +34,5 @@ references:
+     cis-csc: 11,12,14,15,3,8,9
+ 
+ ocil: '{{{ ocil_service_disabled(service="saslauthd") }}}'
++
++platform: machine
+diff --git a/linux_os/guide/services/base/service_smartd_disabled/rule.yml b/linux_os/guide/services/base/service_smartd_disabled/rule.yml
+index 9c4345f56f..8c12d2bfb7 100644
+--- a/linux_os/guide/services/base/service_smartd_disabled/rule.yml
++++ b/linux_os/guide/services/base/service_smartd_disabled/rule.yml
+@@ -32,3 +32,5 @@ references:
+     cis-csc: 11,14,3,9
+ 
+ ocil: '{{{ ocil_service_disabled(service="smartd") }}}'
++
++platform: machine
+diff --git a/linux_os/guide/services/base/service_sysstat_disabled/rule.yml b/linux_os/guide/services/base/service_sysstat_disabled/rule.yml
+index 33378cab86..2e62cab258 100644
+--- a/linux_os/guide/services/base/service_sysstat_disabled/rule.yml
++++ b/linux_os/guide/services/base/service_sysstat_disabled/rule.yml
+@@ -32,3 +32,5 @@ references:
+     cis-csc: 11,14,3,9
+ 
+ ocil: '{{{ ocil_service_disabled(service="sysstat") }}}'
++
++platform: machine
+diff --git a/linux_os/guide/services/cron_and_at/service_atd_disabled/rule.yml b/linux_os/guide/services/cron_and_at/service_atd_disabled/rule.yml
+index 7b960f517d..71dab756f2 100644
+--- a/linux_os/guide/services/cron_and_at/service_atd_disabled/rule.yml
++++ b/linux_os/guide/services/cron_and_at/service_atd_disabled/rule.yml
+@@ -38,3 +38,5 @@ references:
+     cis-csc: 11,14,3,9
+ 
+ ocil: '{{{ ocil_service_disabled(service="atd") }}}'
++
++platform: machine
+diff --git a/linux_os/guide/services/dhcp/disabling_dhcp_server/service_dhcpd_disabled/rule.yml b/linux_os/guide/services/dhcp/disabling_dhcp_server/service_dhcpd_disabled/rule.yml
+index af16c87fff..bb0b895d93 100644
+--- a/linux_os/guide/services/dhcp/disabling_dhcp_server/service_dhcpd_disabled/rule.yml
++++ b/linux_os/guide/services/dhcp/disabling_dhcp_server/service_dhcpd_disabled/rule.yml
+@@ -32,3 +32,5 @@ references:
+     cis-csc: 11,14,3,9
+ 
+ ocil: '{{{ ocil_service_disabled(service="dhcpd") }}}'
++
++platform: machine
+diff --git a/linux_os/guide/services/dns/disabling_dns_server/service_named_disabled/rule.yml b/linux_os/guide/services/dns/disabling_dns_server/service_named_disabled/rule.yml
+index f47b4c29ee..d69cb94bd2 100644
+--- a/linux_os/guide/services/dns/disabling_dns_server/service_named_disabled/rule.yml
++++ b/linux_os/guide/services/dns/disabling_dns_server/service_named_disabled/rule.yml
+@@ -28,3 +28,5 @@ references:
+     cis-csc: 11,14,3,9
+ 
+ ocil: '{{{ ocil_service_disabled(service="named") }}}'
++
++platform: machine
+diff --git a/linux_os/guide/services/ftp/disabling_vsftpd/service_vsftpd_disabled/rule.yml b/linux_os/guide/services/ftp/disabling_vsftpd/service_vsftpd_disabled/rule.yml
+index ce7c66175d..721572fd1b 100644
+--- a/linux_os/guide/services/ftp/disabling_vsftpd/service_vsftpd_disabled/rule.yml
++++ b/linux_os/guide/services/ftp/disabling_vsftpd/service_vsftpd_disabled/rule.yml
+@@ -30,3 +30,5 @@ references:
+     cis-csc: 11,14,3,9
+ 
+ ocil: '{{{ ocil_service_disabled(service="vsftpd") }}}'
++
++platform: machine
+diff --git a/linux_os/guide/services/http/disabling_httpd/service_httpd_disabled/rule.yml b/linux_os/guide/services/http/disabling_httpd/service_httpd_disabled/rule.yml
+index de74f1e720..cdec6ac161 100644
+--- a/linux_os/guide/services/http/disabling_httpd/service_httpd_disabled/rule.yml
++++ b/linux_os/guide/services/http/disabling_httpd/service_httpd_disabled/rule.yml
+@@ -27,3 +27,5 @@ references:
+     cis-csc: 11,14,3,9
+ 
+ ocil: '{{{ ocil_service_disabled(service="httpd") }}}'
++
++platform: machine
+diff --git a/linux_os/guide/services/imap/disabling_dovecot/service_dovecot_disabled/rule.yml b/linux_os/guide/services/imap/disabling_dovecot/service_dovecot_disabled/rule.yml
+index bd255dc91e..c6d16decf0 100644
+--- a/linux_os/guide/services/imap/disabling_dovecot/service_dovecot_disabled/rule.yml
++++ b/linux_os/guide/services/imap/disabling_dovecot/service_dovecot_disabled/rule.yml
+@@ -20,3 +20,5 @@ references:
+     cis: 2.2.11
+ 
+ ocil: '{{{ ocil_service_disabled(service="dovecot") }}}'
++
++platform: machine
+diff --git a/linux_os/guide/services/nfs_and_rpc/disabling_nfs/disabling_nfs_services/service_rpcbind_disabled/rule.yml b/linux_os/guide/services/nfs_and_rpc/disabling_nfs/disabling_nfs_services/service_rpcbind_disabled/rule.yml
+index 0f565ab669..8e716c4890 100644
+--- a/linux_os/guide/services/nfs_and_rpc/disabling_nfs/disabling_nfs_services/service_rpcbind_disabled/rule.yml
++++ b/linux_os/guide/services/nfs_and_rpc/disabling_nfs/disabling_nfs_services/service_rpcbind_disabled/rule.yml
+@@ -23,3 +23,5 @@ identifiers:
+ 
+ references:
+     cis: 2.2.7
++
++platform: machine
+diff --git a/linux_os/guide/services/nfs_and_rpc/nfs_configuring_clients/disabling_nfsd/service_nfs_disabled/rule.yml b/linux_os/guide/services/nfs_and_rpc/nfs_configuring_clients/disabling_nfsd/service_nfs_disabled/rule.yml
+index 4da6b1de32..77b9cb19eb 100644
+--- a/linux_os/guide/services/nfs_and_rpc/nfs_configuring_clients/disabling_nfsd/service_nfs_disabled/rule.yml
++++ b/linux_os/guide/services/nfs_and_rpc/nfs_configuring_clients/disabling_nfsd/service_nfs_disabled/rule.yml
+@@ -31,3 +31,5 @@ references:
+ ocil_clause: 'it does not'
+ 
+ ocil: '{{{ ocil_service_disabled(service="nfs") }}}'
++
++platform: machine
+diff --git a/linux_os/guide/services/nfs_and_rpc/nfs_configuring_clients/disabling_nfsd/service_rpcsvcgssd_disabled/rule.yml b/linux_os/guide/services/nfs_and_rpc/nfs_configuring_clients/disabling_nfsd/service_rpcsvcgssd_disabled/rule.yml
+index dfa0d0a8c7..e8d3a81270 100644
+--- a/linux_os/guide/services/nfs_and_rpc/nfs_configuring_clients/disabling_nfsd/service_rpcsvcgssd_disabled/rule.yml
++++ b/linux_os/guide/services/nfs_and_rpc/nfs_configuring_clients/disabling_nfsd/service_rpcsvcgssd_disabled/rule.yml
+@@ -20,3 +20,5 @@ identifiers:
+     cce@rhel7: 80238-9
+ 
+ ocil: '{{{ ocil_service_disabled(service="rpcsvcgssd") }}}'
++
++platform: machine
+diff --git a/linux_os/guide/services/obsolete/inetd_and_xinetd/service_xinetd_disabled/rule.yml b/linux_os/guide/services/obsolete/inetd_and_xinetd/service_xinetd_disabled/rule.yml
+index 2b224eec65..e86a1620ef 100644
+--- a/linux_os/guide/services/obsolete/inetd_and_xinetd/service_xinetd_disabled/rule.yml
++++ b/linux_os/guide/services/obsolete/inetd_and_xinetd/service_xinetd_disabled/rule.yml
+@@ -38,3 +38,5 @@ ocil: |-
+     If network services are using the xinetd service, this is not applicable.
+     <br /><br />
+     {{{ ocil_service_disabled(service="xinetd") }}}
++
++platform: machine
+diff --git a/linux_os/guide/services/obsolete/nis/service_ypbind_disabled/rule.yml b/linux_os/guide/services/obsolete/nis/service_ypbind_disabled/rule.yml
+index 8020867c28..9444832e16 100644
+--- a/linux_os/guide/services/obsolete/nis/service_ypbind_disabled/rule.yml
++++ b/linux_os/guide/services/obsolete/nis/service_ypbind_disabled/rule.yml
+@@ -34,3 +34,5 @@ references:
+     cis-csc: 11,12,14,15,3,8,9
+ 
+ ocil: '{{{ ocil_service_disabled(service="ypbind") }}}'
++
++platform: machine
+diff --git a/linux_os/guide/services/obsolete/r_services/service_rexec_disabled/rule.yml b/linux_os/guide/services/obsolete/r_services/service_rexec_disabled/rule.yml
+index 847304d1fc..65d6cc7a36 100644
+--- a/linux_os/guide/services/obsolete/r_services/service_rexec_disabled/rule.yml
++++ b/linux_os/guide/services/obsolete/r_services/service_rexec_disabled/rule.yml
+@@ -39,3 +39,5 @@ references:
+     cis-csc: 11,12,14,15,3,8,9
+ 
+ {{{ complete_ocil_entry_socket_and_service_disabled("rexec") }}}
++
++platform: machine
+diff --git a/linux_os/guide/services/obsolete/r_services/service_rlogin_disabled/rule.yml b/linux_os/guide/services/obsolete/r_services/service_rlogin_disabled/rule.yml
+index 295c3e6c7a..4864112e97 100644
+--- a/linux_os/guide/services/obsolete/r_services/service_rlogin_disabled/rule.yml
++++ b/linux_os/guide/services/obsolete/r_services/service_rlogin_disabled/rule.yml
+@@ -40,3 +40,5 @@ references:
+     cis-csc: 1,11,12,14,15,16,3,5,8,9
+ 
+ {{{ complete_ocil_entry_socket_and_service_disabled("rlogin") }}}
++
++platform: machine
+diff --git a/linux_os/guide/services/obsolete/r_services/service_rsh_disabled/rule.yml b/linux_os/guide/services/obsolete/r_services/service_rsh_disabled/rule.yml
+index 17740862f2..5bd43b0e6e 100644
+--- a/linux_os/guide/services/obsolete/r_services/service_rsh_disabled/rule.yml
++++ b/linux_os/guide/services/obsolete/r_services/service_rsh_disabled/rule.yml
+@@ -39,3 +39,5 @@ references:
+     cis-csc: 1,11,12,14,15,16,3,5,8,9
+ 
+ {{{ complete_ocil_entry_socket_and_service_disabled("rsh") }}}
++
++platform: machine
+diff --git a/linux_os/guide/services/obsolete/telnet/service_telnet_disabled/rule.yml b/linux_os/guide/services/obsolete/telnet/service_telnet_disabled/rule.yml
+index 09e6d48a82..b4ca1f46de 100644
+--- a/linux_os/guide/services/obsolete/telnet/service_telnet_disabled/rule.yml
++++ b/linux_os/guide/services/obsolete/telnet/service_telnet_disabled/rule.yml
+@@ -59,3 +59,5 @@ references:
+     cis-csc: 1,11,12,14,15,16,3,5,8,9
+ 
+ {{{ complete_ocil_entry_socket_and_service_disabled("telnet") }}}
++
++platform: machine
+diff --git a/linux_os/guide/services/obsolete/tftp/service_tftp_disabled/rule.yml b/linux_os/guide/services/obsolete/tftp/service_tftp_disabled/rule.yml
+index dc94742526..2f1671ef88 100644
+--- a/linux_os/guide/services/obsolete/tftp/service_tftp_disabled/rule.yml
++++ b/linux_os/guide/services/obsolete/tftp/service_tftp_disabled/rule.yml
+@@ -32,3 +32,5 @@ references:
+     cis-csc: 11,12,14,15,3,8,9
+ 
+ ocil: '{{{ ocil_service_disabled(service="tftp") }}}'
++
++platform: machine
+diff --git a/linux_os/guide/services/printing/service_cups_disabled/rule.yml b/linux_os/guide/services/printing/service_cups_disabled/rule.yml
+index 5b0cc60bfd..3728484a62 100644
+--- a/linux_os/guide/services/printing/service_cups_disabled/rule.yml
++++ b/linux_os/guide/services/printing/service_cups_disabled/rule.yml
+@@ -25,3 +25,5 @@ references:
+     cis-csc: 11,14,3,9
+ 
+ ocil: '{{{ ocil_service_disabled(service="cups") }}}'
++
++platform: machine
+diff --git a/linux_os/guide/services/proxy/disabling_squid/service_squid_disabled/rule.yml b/linux_os/guide/services/proxy/disabling_squid/service_squid_disabled/rule.yml
+index a8c1e00d78..990726e40d 100644
+--- a/linux_os/guide/services/proxy/disabling_squid/service_squid_disabled/rule.yml
++++ b/linux_os/guide/services/proxy/disabling_squid/service_squid_disabled/rule.yml
+@@ -20,3 +20,5 @@ references:
+     cis: 2.2.13
+ 
+ ocil: '{{{ ocil_service_disabled(service="squid") }}}'
++
++platform: machine
+diff --git a/linux_os/guide/services/routing/disabling_quagga/service_zebra_disabled/rule.yml b/linux_os/guide/services/routing/disabling_quagga/service_zebra_disabled/rule.yml
+index c3bb80abd8..e9c9a56f77 100644
+--- a/linux_os/guide/services/routing/disabling_quagga/service_zebra_disabled/rule.yml
++++ b/linux_os/guide/services/routing/disabling_quagga/service_zebra_disabled/rule.yml
+@@ -30,3 +30,5 @@ references:
+     cis-csc: 12,15,8
+ 
+ ocil: '{{{ ocil_service_disabled(service="zebra") }}}'
++
++platform: machine
+diff --git a/linux_os/guide/services/smb/disabling_samba/service_smb_disabled/rule.yml b/linux_os/guide/services/smb/disabling_samba/service_smb_disabled/rule.yml
+index f00944b9fa..13769d9ff2 100644
+--- a/linux_os/guide/services/smb/disabling_samba/service_smb_disabled/rule.yml
++++ b/linux_os/guide/services/smb/disabling_samba/service_smb_disabled/rule.yml
+@@ -21,3 +21,5 @@ references:
+     disa: "1436"
+ 
+ ocil: '{{{ ocil_service_disabled(service="smb") }}}'
++
++platform: machine
+diff --git a/linux_os/guide/services/snmp/disabling_snmp_service/service_snmpd_disabled/rule.yml b/linux_os/guide/services/snmp/disabling_snmp_service/service_snmpd_disabled/rule.yml
+index 64f509be20..96a52bc3c9 100644
+--- a/linux_os/guide/services/snmp/disabling_snmp_service/service_snmpd_disabled/rule.yml
++++ b/linux_os/guide/services/snmp/disabling_snmp_service/service_snmpd_disabled/rule.yml
+@@ -21,3 +21,5 @@ references:
+     cis: 2.2.14
+ 
+ ocil: '{{{ ocil_service_disabled(service="snmpd") }}}'
++
++platform: machine
+diff --git a/linux_os/guide/system/network/network-wireless/wireless_software/service_bluetooth_disabled/rule.yml b/linux_os/guide/system/network/network-wireless/wireless_software/service_bluetooth_disabled/rule.yml
+index 05b11ecbc1..fb2eeecfc1 100644
+--- a/linux_os/guide/system/network/network-wireless/wireless_software/service_bluetooth_disabled/rule.yml
++++ b/linux_os/guide/system/network/network-wireless/wireless_software/service_bluetooth_disabled/rule.yml
+@@ -34,3 +34,5 @@ references:
+     cis-csc: 11,12,14,15,3,8,9
+ 
+ ocil: '{{{ ocil_service_disabled(service="bluetooth") }}}'
++
++platform: machine
+diff --git a/linux_os/guide/system/permissions/mounting/service_autofs_disabled/rule.yml b/linux_os/guide/system/permissions/mounting/service_autofs_disabled/rule.yml
+index 9de5b25a74..fa4c8e1a48 100644
+--- a/linux_os/guide/system/permissions/mounting/service_autofs_disabled/rule.yml
++++ b/linux_os/guide/system/permissions/mounting/service_autofs_disabled/rule.yml
+@@ -47,3 +47,5 @@ references:
+     cis-csc: 1,12,15,16,5
+ 
+ ocil: '{{{ ocil_service_disabled(service="autofs") }}}'
++
++platform: machine

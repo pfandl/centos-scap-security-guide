@@ -1,0 +1,82 @@
+From 9c3d35d9c3e1a884fa9e5cd0223172f1c8621b10 Mon Sep 17 00:00:00 2001
+From: Matus Marhefka <mmarhefk@redhat.com>
+Date: Tue, 16 Apr 2019 13:28:30 +0200
+Subject: [PATCH] All SELinux related rules marked as not applicable to
+ containers
+
+* The rule docker_selinux_enabled moved from system/selinux to services/docker.
+* SELinux is not namespaced which means that containers do not have their own
+  separate SELinux policies. SELinux will always appear to be disabled when
+  inside a container (https://danwalsh.livejournal.com/73099.html). Therefore,
+  all the rules from the system/selinux were marked with 'platform: machine'
+  which will make them not applicable when scanning container filesystems.
+---
+ .../docker}/docker_selinux_enabled/oval/rhel7.xml               | 0
+ .../selinux => services/docker}/docker_selinux_enabled/rule.yml | 0
+ linux_os/guide/system/selinux/group.yml                         | 2 ++
+ .../system/selinux/selinux_confinement_of_daemons/rule.yml      | 2 --
+ linux_os/guide/system/selinux/selinux_policytype/rule.yml       | 2 --
+ linux_os/guide/system/selinux/selinux_state/rule.yml            | 2 --
+ linux_os/guide/system/selinux/selinux_user_login_roles/rule.yml | 2 --
+ 7 files changed, 2 insertions(+), 8 deletions(-)
+ rename linux_os/guide/{system/selinux => services/docker}/docker_selinux_enabled/oval/rhel7.xml (100%)
+ rename linux_os/guide/{system/selinux => services/docker}/docker_selinux_enabled/rule.yml (100%)
+
+diff --git a/linux_os/guide/system/selinux/docker_selinux_enabled/oval/rhel7.xml b/linux_os/guide/services/docker/docker_selinux_enabled/oval/rhel7.xml
+similarity index 100%
+rename from linux_os/guide/system/selinux/docker_selinux_enabled/oval/rhel7.xml
+rename to linux_os/guide/services/docker/docker_selinux_enabled/oval/rhel7.xml
+diff --git a/linux_os/guide/system/selinux/docker_selinux_enabled/rule.yml b/linux_os/guide/services/docker/docker_selinux_enabled/rule.yml
+similarity index 100%
+rename from linux_os/guide/system/selinux/docker_selinux_enabled/rule.yml
+rename to linux_os/guide/services/docker/docker_selinux_enabled/rule.yml
+diff --git a/linux_os/guide/system/selinux/group.yml b/linux_os/guide/system/selinux/group.yml
+index e1863d4d03..6525cb4919 100644
+--- a/linux_os/guide/system/selinux/group.yml
++++ b/linux_os/guide/system/selinux/group.yml
+@@ -29,3 +29,5 @@ description: |-
+     {{% elif product == "ol7" %}}
+     For more information on SELinux, see <b>{{{ weblink(link="https://docs.oracle.com/cd/E52668_01/E54669/html/ol7-s1-syssec.html") }}}</b>.
+     {{% endif %}}
++
++platform: machine
+diff --git a/linux_os/guide/system/selinux/selinux_confinement_of_daemons/rule.yml b/linux_os/guide/system/selinux/selinux_confinement_of_daemons/rule.yml
+index 35c47fbd08..9f224c9340 100644
+--- a/linux_os/guide/system/selinux/selinux_confinement_of_daemons/rule.yml
++++ b/linux_os/guide/system/selinux/selinux_confinement_of_daemons/rule.yml
+@@ -42,5 +42,3 @@ warnings:
+         Automatic remediation of this control is not available. Remediation
+         can be achieved by amending SELinux policy or stopping the unconfined
+         daemons as outlined above.
+-
+-platform: machine
+diff --git a/linux_os/guide/system/selinux/selinux_policytype/rule.yml b/linux_os/guide/system/selinux/selinux_policytype/rule.yml
+index 934c0dfa17..e8c82a147a 100644
+--- a/linux_os/guide/system/selinux/selinux_policytype/rule.yml
++++ b/linux_os/guide/system/selinux/selinux_policytype/rule.yml
+@@ -56,5 +56,3 @@ ocil_clause: 'it does not'
+ ocil: |-
+     Check the file <tt>/etc/selinux/config</tt> and ensure the following line appears:
+     <pre>SELINUXTYPE=<sub idref="var_selinux_policy_name" /></pre>
+-
+-platform: machine
+diff --git a/linux_os/guide/system/selinux/selinux_state/rule.yml b/linux_os/guide/system/selinux/selinux_state/rule.yml
+index df0295e043..d993398060 100644
+--- a/linux_os/guide/system/selinux/selinux_state/rule.yml
++++ b/linux_os/guide/system/selinux/selinux_state/rule.yml
+@@ -47,5 +47,3 @@ ocil_clause: 'SELINUX is not set to enforcing'
+ ocil: |-
+     Check the file <tt>/etc/selinux/config</tt> and ensure the following line appears:
+     <pre>SELINUX=<sub idref="var_selinux_state" /></pre>
+-
+-platform: machine
+diff --git a/linux_os/guide/system/selinux/selinux_user_login_roles/rule.yml b/linux_os/guide/system/selinux/selinux_user_login_roles/rule.yml
+index 80844cad14..fc1f87b410 100644
+--- a/linux_os/guide/system/selinux/selinux_user_login_roles/rule.yml
++++ b/linux_os/guide/system/selinux/selinux_user_login_roles/rule.yml
+@@ -54,5 +54,3 @@ ocil: |-
+     All authorized non-administrative
+     users must be mapped to the <tt>user_u</tt> role or the appropriate domain
+     (user_t).
+-
+-platform: machine

@@ -1,0 +1,54 @@
+commit 0fa953ada3356994ddc5a42bd93423c4b95adab8
+Author: Gabriel Becker <ggasparb@redhat.com>
+Date:   Thu Apr 25 16:27:58 2019 +0200
+
+    Remove ensure_gpgcheck_repo_metadata check from rhel profiles.
+
+diff --git a/rhel7/profiles/hipaa.profile b/rhel7/profiles/hipaa.profile
+index 8323245..719093b 100644
+--- a/rhel7/profiles/hipaa.profile
++++ b/rhel7/profiles/hipaa.profile
+@@ -88,7 +88,6 @@ selections:
+     - ensure_redhat_gpgkey_installed
+     - ensure_gpgcheck_globally_activated
+     - ensure_gpgcheck_never_disabled
+-    - ensure_gpgcheck_repo_metadata
+     - ensure_gpgcheck_local_packages
+     - grub2_audit_argument
+     - service_auditd_enabled
+diff --git a/rhel7/profiles/ospp.profile b/rhel7/profiles/ospp.profile
+index 166de67..a4357a6 100644
+--- a/rhel7/profiles/ospp.profile
++++ b/rhel7/profiles/ospp.profile
+@@ -397,7 +397,6 @@ selections:
+     - ensure_redhat_gpgkey_installed
+     - ensure_gpgcheck_globally_activated
+     - ensure_gpgcheck_never_disabled
+-    - ensure_gpgcheck_repo_metadata
+     - ensure_gpgcheck_local_packages
+     - network_sniffer_disabled
+     - network_ipv6_disable_rpc
+diff --git a/rhel8/profiles/hipaa.profile b/rhel8/profiles/hipaa.profile
+index 5819474..f5533f1 100644
+--- a/rhel8/profiles/hipaa.profile
++++ b/rhel8/profiles/hipaa.profile
+@@ -83,7 +83,6 @@ selections:
+     - ensure_redhat_gpgkey_installed
+     - ensure_gpgcheck_globally_activated
+     - ensure_gpgcheck_never_disabled
+-    - ensure_gpgcheck_repo_metadata
+     - ensure_gpgcheck_local_packages
+     - grub2_audit_argument
+     - service_auditd_enabled
+diff --git a/rhv4/profiles/rhvh-stig.profile b/rhv4/profiles/rhvh-stig.profile
+index f55098b..f708198 100644
+--- a/rhv4/profiles/rhvh-stig.profile
++++ b/rhv4/profiles/rhvh-stig.profile
+@@ -371,7 +371,6 @@ selections:
+     - ensure_redhat_gpgkey_installed
+     - ensure_gpgcheck_globally_activated
+     - ensure_gpgcheck_never_disabled
+-    - ensure_gpgcheck_repo_metadata
+     - ensure_gpgcheck_local_packages
+     - network_sniffer_disabled
+     - network_ipv6_disable_rpc

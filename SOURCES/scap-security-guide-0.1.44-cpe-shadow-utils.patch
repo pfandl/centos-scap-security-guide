@@ -64,68 +64,68 @@ Subject: [PATCH 2/3] Rules are applicable when shadow-utils installed
 If package shadow-utils is not installed, the rule will result in
 notapplicable.
 ---
- .../account_disable_post_pw_expiration.rule                     | 2 ++
- .../accounts_maximum_age_login_defs.rule                        | 2 ++
- .../accounts_minimum_age_login_defs.rule                        | 2 ++
- .../accounts_password_minlen_login_defs.rule                    | 2 ++
- .../accounts_password_warn_age_login_defs.rule                  | 2 ++
- .../accounts-session/accounts_logon_fail_delay.rule             | 2 ++
+ .../account_disable_post_pw_expiration/rule.yml                 | 2 ++
+ .../accounts_maximum_age_login_defs/rule.yml                    | 2 ++
+ .../accounts_minimum_age_login_defs/rule.yml                    | 2 ++
+ .../accounts_password_minlen_login_defs/rule.yml                | 2 ++
+ .../accounts_password_warn_age_login_defs/rule.yml              | 2 ++
+ .../accounts-session/accounts_logon_fail_delay/rule.yml         | 2 ++
  6 files changed, 12 insertions(+)
 
-diff --git a/linux_os/guide/system/accounts/accounts-restrictions/account_expiration/account_disable_post_pw_expiration.rule b/linux_os/guide/system/accounts/accounts-restrictions/account_expiration/account_disable_post_pw_expiration.rule
+diff --git a/linux_os/guide/system/accounts/accounts-restrictions/account_expiration/account_disable_post_pw_expiration/rule.yml b/linux_os/guide/system/accounts/accounts-restrictions/account_expiration/account_disable_post_pw_expiration/rule.yml
 index 9d19274f1c..d8b29b6436 100644
---- a/linux_os/guide/system/accounts/accounts-restrictions/account_expiration/account_disable_post_pw_expiration.rule
-+++ b/linux_os/guide/system/accounts/accounts-restrictions/account_expiration/account_disable_post_pw_expiration.rule
+--- a/linux_os/guide/system/accounts/accounts-restrictions/account_expiration/account_disable_post_pw_expiration/rule.yml
++++ b/linux_os/guide/system/accounts/accounts-restrictions/account_expiration/account_disable_post_pw_expiration/rule.yml
 @@ -62,3 +62,5 @@ ocil: |-
      to an appropriate integer as shown in the example below:
      <pre>$ grep "INACTIVE" /etc/default/useradd
      INACTIVE=<sub idref="var_account_disable_post_pw_expiration" /></pre>
 +
 +platform: shadow-utils
-diff --git a/linux_os/guide/system/accounts/accounts-restrictions/password_expiration/accounts_maximum_age_login_defs.rule b/linux_os/guide/system/accounts/accounts-restrictions/password_expiration/accounts_maximum_age_login_defs.rule
+diff --git a/linux_os/guide/system/accounts/accounts-restrictions/password_expiration/accounts_maximum_age_login_defs/rule.yml b/linux_os/guide/system/accounts/accounts-restrictions/password_expiration/accounts_maximum_age_login_defs/rule.yml
 index 90dc1b4f2b..de322bc787 100644
---- a/linux_os/guide/system/accounts/accounts-restrictions/password_expiration/accounts_maximum_age_login_defs.rule
-+++ b/linux_os/guide/system/accounts/accounts-restrictions/password_expiration/accounts_maximum_age_login_defs.rule
+--- a/linux_os/guide/system/accounts/accounts-restrictions/password_expiration/accounts_maximum_age_login_defs/rule.yml
++++ b/linux_os/guide/system/accounts/accounts-restrictions/password_expiration/accounts_maximum_age_login_defs/rule.yml
 @@ -55,3 +55,5 @@ ocil: |-
      <pre>$ grep PASS_MAX_DAYS /etc/login.defs</pre>
      The DoD and FISMA requirement is 60.
      A value of 180 days is sufficient for many environments.
 +
 +platform: shadow-utils
-diff --git a/linux_os/guide/system/accounts/accounts-restrictions/password_expiration/accounts_minimum_age_login_defs.rule b/linux_os/guide/system/accounts/accounts-restrictions/password_expiration/accounts_minimum_age_login_defs.rule
+diff --git a/linux_os/guide/system/accounts/accounts-restrictions/password_expiration/accounts_minimum_age_login_defs/rule.yml b/linux_os/guide/system/accounts/accounts-restrictions/password_expiration/accounts_minimum_age_login_defs/rule.yml
 index 88706c8b3e..dd7030cd0a 100644
---- a/linux_os/guide/system/accounts/accounts-restrictions/password_expiration/accounts_minimum_age_login_defs.rule
-+++ b/linux_os/guide/system/accounts/accounts-restrictions/password_expiration/accounts_minimum_age_login_defs.rule
+--- a/linux_os/guide/system/accounts/accounts-restrictions/password_expiration/accounts_minimum_age_login_defs/rule.yml
++++ b/linux_os/guide/system/accounts/accounts-restrictions/password_expiration/accounts_minimum_age_login_defs/rule.yml
 @@ -49,3 +49,5 @@ ocil_clause: 'it is not equal to or greater than the required value'
  ocil: |-
      To check the minimum password age, run the command:
      <pre>$ grep PASS_MIN_DAYS /etc/login.defs</pre>
 +
 +platform: shadow-utils
-diff --git a/linux_os/guide/system/accounts/accounts-restrictions/password_expiration/accounts_password_minlen_login_defs.rule b/linux_os/guide/system/accounts/accounts-restrictions/password_expiration/accounts_password_minlen_login_defs.rule
+diff --git a/linux_os/guide/system/accounts/accounts-restrictions/password_expiration/accounts_password_minlen_login_defs/rule.yml b/linux_os/guide/system/accounts/accounts-restrictions/password_expiration/accounts_password_minlen_login_defs/rule.yml
 index 814fda94b9..d38ee253fb 100644
---- a/linux_os/guide/system/accounts/accounts-restrictions/password_expiration/accounts_password_minlen_login_defs.rule
-+++ b/linux_os/guide/system/accounts/accounts-restrictions/password_expiration/accounts_password_minlen_login_defs.rule
+--- a/linux_os/guide/system/accounts/accounts-restrictions/password_expiration/accounts_password_minlen_login_defs/rule.yml
++++ b/linux_os/guide/system/accounts/accounts-restrictions/password_expiration/accounts_password_minlen_login_defs/rule.yml
 @@ -51,3 +51,5 @@ ocil: |-
      To check the minimum password length, run the command:
      <pre>$ grep PASS_MIN_LEN /etc/login.defs</pre>
      The DoD requirement is <tt>15</tt>.
 +
 +platform: shadow-utils
-diff --git a/linux_os/guide/system/accounts/accounts-restrictions/password_expiration/accounts_password_warn_age_login_defs.rule b/linux_os/guide/system/accounts/accounts-restrictions/password_expiration/accounts_password_warn_age_login_defs.rule
+diff --git a/linux_os/guide/system/accounts/accounts-restrictions/password_expiration/accounts_password_warn_age_login_defs/rule.yml b/linux_os/guide/system/accounts/accounts-restrictions/password_expiration/accounts_password_warn_age_login_defs/rule.yml
 index d8947ad9fd..85b5cd762f 100644
---- a/linux_os/guide/system/accounts/accounts-restrictions/password_expiration/accounts_password_warn_age_login_defs.rule
-+++ b/linux_os/guide/system/accounts/accounts-restrictions/password_expiration/accounts_password_warn_age_login_defs.rule
+--- a/linux_os/guide/system/accounts/accounts-restrictions/password_expiration/accounts_password_warn_age_login_defs/rule.yml
++++ b/linux_os/guide/system/accounts/accounts-restrictions/password_expiration/accounts_password_warn_age_login_defs/rule.yml
 @@ -40,3 +40,5 @@ ocil: |-
      To check the password warning age, run the command:
      <pre>$ grep PASS_WARN_AGE /etc/login.defs</pre>
      The DoD requirement is 7.
 +
 +platform: shadow-utils
-diff --git a/linux_os/guide/system/accounts/accounts-session/accounts_logon_fail_delay.rule b/linux_os/guide/system/accounts/accounts-session/accounts_logon_fail_delay.rule
+diff --git a/linux_os/guide/system/accounts/accounts-session/accounts_logon_fail_delay/rule.yml b/linux_os/guide/system/accounts/accounts-session/accounts_logon_fail_delay/rule.yml
 index 171051e138..33fc873e97 100644
---- a/linux_os/guide/system/accounts/accounts-session/accounts_logon_fail_delay.rule
-+++ b/linux_os/guide/system/accounts/accounts-session/accounts_logon_fail_delay.rule
+--- a/linux_os/guide/system/accounts/accounts-session/accounts_logon_fail_delay/rule.yml
++++ b/linux_os/guide/system/accounts/accounts-session/accounts_logon_fail_delay/rule.yml
 @@ -37,3 +37,5 @@ ocil: |-
      All output must show the value of <tt>FAIL_DELAY</tt> set as shown in the below:
      <pre>$ sudo grep -i "FAIL_DELAY" /etc/login.defs

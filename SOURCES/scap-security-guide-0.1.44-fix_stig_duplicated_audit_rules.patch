@@ -1,0 +1,410 @@
+From 2476a35d0ad4055d52c33c03bb82031f6f19c794 Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Fri, 15 Mar 2019 17:11:37 +0100
+Subject: [PATCH 1/6] Enable privileged_commands test to run on Fedora
+
+Also create audit rules directory, to ensure scenario setup always
+works.
+---
+ .../rhel7_augenrules_default.fail.sh                          | 2 +-
+ .../rhel7_augenrules_missing_rule.fail.sh                     | 3 ++-
+ .../rhel7_augenrules_one_rule.fail.sh                         | 1 +
+ .../rhel7_augenrules_rules_configured.pass.sh                 | 3 ++-
+ .../rhel7_augenrules_rules_configured_mixed_keys.pass.sh      | 3 ++-
+ .../rhel7_augenrules_two_rules_mixed_keys.fail.sh             | 3 ++-
+ .../rhel7_rules_with_own_key.pass.sh                          | 2 +-
+ .../rhel7_auditctl_4294967295_configured.pass.sh              | 1 +
+ .../rhel7_auditctl_unset_configured.pass.sh                   | 1 +
+ .../rhel7_augenrules_4294967295_configured.pass.sh            | 4 ++--
+ .../rhel7_augenrules_remove_all_rules.fail.sh                 | 4 ++--
+ .../rhel7_augenrules_substring_rule.fail.sh                   | 4 ++--
+ .../rhel7_augenrules_superstring_rule.fail.sh                 | 4 ++--
+ .../rhel7_augenrules_unset_configured.pass.sh                 | 4 ++--
+ .../rhel7_rules_with_own_key.pass.sh                          | 3 +--
+ 15 files changed, 24 insertions(+), 18 deletions(-)
+
+diff --git a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands/rhel7_augenrules_default.fail.sh b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands/rhel7_augenrules_default.fail.sh
+index 2442fc22f8..4713a53605 100644
+--- a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands/rhel7_augenrules_default.fail.sh
++++ b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands/rhel7_augenrules_default.fail.sh
+@@ -1,6 +1,6 @@
+ #!/bin/bash
+ # profiles = xccdf_org.ssgproject.content_profile_pci-dss
+ # remediation = bash
+-# platform = Red Hat Enterprise Linux 7
++# platform = Red Hat Enterprise Linux 7,Fedora
+ 
+ # augenrules is default for rhel7
+diff --git a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands/rhel7_augenrules_missing_rule.fail.sh b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands/rhel7_augenrules_missing_rule.fail.sh
+index 69e659d53c..c007f5dd24 100644
+--- a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands/rhel7_augenrules_missing_rule.fail.sh
++++ b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands/rhel7_augenrules_missing_rule.fail.sh
+@@ -1,7 +1,8 @@
+ #!/bin/bash
+ # profiles = xccdf_org.ssgproject.content_profile_pci-dss
+ # remediation = bash
+-# platform = Red Hat Enterprise Linux 7
++# platform = Red Hat Enterprise Linux 7,Fedora
+ 
++mkdir -p /etc/audit/rules.d
+ ./generate_privileged_commands_rule.sh 1000 privileged /etc/audit/rules.d/privileged.rules
+  sed -i '/newgrp/d' /etc/audit/rules.d/privileged.rules
+diff --git a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands/rhel7_augenrules_one_rule.fail.sh b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands/rhel7_augenrules_one_rule.fail.sh
+index aa8e01cf11..591109a013 100644
+--- a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands/rhel7_augenrules_one_rule.fail.sh
++++ b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands/rhel7_augenrules_one_rule.fail.sh
+@@ -3,4 +3,5 @@
+ # remediation = bash
+ # platform = Red Hat Enterprise Linux 7
+ 
++mkdir -p /etc/audit/rules.d
+ echo "-a always,exit -F path=/usr/bin/newgrp -F perm=x -F auid>=1000 -F auid!=unset -k privileged" >> /etc/audit/rules.d/privileged.rules
+diff --git a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands/rhel7_augenrules_rules_configured.pass.sh b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands/rhel7_augenrules_rules_configured.pass.sh
+index fa1d72ff0a..913ca44025 100644
+--- a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands/rhel7_augenrules_rules_configured.pass.sh
++++ b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands/rhel7_augenrules_rules_configured.pass.sh
+@@ -1,6 +1,7 @@
+ #!/bin/bash
+ # profiles = xccdf_org.ssgproject.content_profile_pci-dss
+ # remediation = bash
+-# platform = Red Hat Enterprise Linux 7
++# platform = Red Hat Enterprise Linux 7,Fedora
+ 
++mkdir -p /etc/audit/rules.d
+ ./generate_privileged_commands_rule.sh 1000 privileged /etc/audit/rules.d/privileged.rules
+diff --git a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands/rhel7_augenrules_rules_configured_mixed_keys.pass.sh b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands/rhel7_augenrules_rules_configured_mixed_keys.pass.sh
+index 40aea6c963..a0ba4fac7d 100644
+--- a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands/rhel7_augenrules_rules_configured_mixed_keys.pass.sh
++++ b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands/rhel7_augenrules_rules_configured_mixed_keys.pass.sh
+@@ -1,8 +1,9 @@
+ #!/bin/bash
+ # profiles = xccdf_org.ssgproject.content_profile_pci-dss
+ # remediation = bash
+-# platform = Red Hat Enterprise Linux 7
++# platform = Red Hat Enterprise Linux 7,Fedora
+ 
++mkdir -p /etc/audit/rules.d
+ ./generate_privileged_commands_rule.sh 1000 privileged /etc/audit/rules.d/privileged.rules
+ # change key of rules for binaries in /usr/sbin
+ # A mixed conbination of -k and -F key= should be accepted
+diff --git a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands/rhel7_augenrules_two_rules_mixed_keys.fail.sh b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands/rhel7_augenrules_two_rules_mixed_keys.fail.sh
+index eb2ae8cdc9..bc4a7c4bfe 100644
+--- a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands/rhel7_augenrules_two_rules_mixed_keys.fail.sh
++++ b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands/rhel7_augenrules_two_rules_mixed_keys.fail.sh
+@@ -1,7 +1,8 @@
+ #!/bin/bash
+ # profiles = xccdf_org.ssgproject.content_profile_pci-dss
+ # remediation = bash
+-# platform = Red Hat Enterprise Linux 7
++# platform = Red Hat Enterprise Linux 7,Fedora
+ 
++mkdir -p /etc/audit/rules.d
+ echo "-a always,exit -F path=/usr/bin/newgrp -F perm=x -F auid>=1000 -F auid!=unset -k privileged" >> /etc/audit/rules.d/privileged.rules
+ echo "-a always,exit -F path=/usr/bin/passwd -F perm=x -F auid>=1000 -F auid!=unset -F key=privileged" >> /etc/audit/rules.d/privileged.rules
+diff --git a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands/rhel7_rules_with_own_key.pass.sh b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands/rhel7_rules_with_own_key.pass.sh
+index 1b376d0e0f..c40fd133dd 100644
+--- a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands/rhel7_rules_with_own_key.pass.sh
++++ b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands/rhel7_rules_with_own_key.pass.sh
+@@ -1,6 +1,6 @@
+ #!/bin/bash
+ # profiles = xccdf_org.ssgproject.content_profile_pci-dss
+ # remediation = bash
+-# platform = Red Hat Enterprise Linux 7
++# platform = Red Hat Enterprise Linux 7,Fedora
+ 
+ ./generate_privileged_commands_rule.sh 1000 own_key /etc/audit/rules.d/privileged.rules
+diff --git a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands_sudo/rhel7_auditctl_4294967295_configured.pass.sh b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands_sudo/rhel7_auditctl_4294967295_configured.pass.sh
+index 93f90a1c5b..52b28d2c30 100644
+--- a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands_sudo/rhel7_auditctl_4294967295_configured.pass.sh
++++ b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands_sudo/rhel7_auditctl_4294967295_configured.pass.sh
+@@ -1,6 +1,7 @@
+ #!/bin/bash
+ # profiles = xccdf_org.ssgproject.content_profile_ospp
+ # remediation = bash
++# platform = Red Hat Enterprise Linux 7
+ 
+ echo "-a always,exit -F path=/usr/bin/sudo -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged" >> /etc/audit/audit.rules
+ sed -i "s%^ExecStartPost=.*%ExecStartPost=-/sbin/auditctl%" /usr/lib/systemd/system/auditd.service
+diff --git a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands_sudo/rhel7_auditctl_unset_configured.pass.sh b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands_sudo/rhel7_auditctl_unset_configured.pass.sh
+index bda4011950..4a8627e1be 100644
+--- a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands_sudo/rhel7_auditctl_unset_configured.pass.sh
++++ b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands_sudo/rhel7_auditctl_unset_configured.pass.sh
+@@ -1,6 +1,7 @@
+ #!/bin/bash
+ # profiles = xccdf_org.ssgproject.content_profile_ospp
+ # remediation = bash
++# platform = Red Hat Enterprise Linux 7
+ 
+ echo "-a always,exit -F path=/usr/bin/sudo -F perm=x -F auid>=1000 -F auid!=unset -k privileged" >> /etc/audit/audit.rules
+ sed -i "s%^ExecStartPost=.*%ExecStartPost=-/sbin/auditctl%" /usr/lib/systemd/system/auditd.service
+diff --git a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands_sudo/rhel7_augenrules_4294967295_configured.pass.sh b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands_sudo/rhel7_augenrules_4294967295_configured.pass.sh
+index c1385fe491..13054c36d4 100644
+--- a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands_sudo/rhel7_augenrules_4294967295_configured.pass.sh
++++ b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands_sudo/rhel7_augenrules_4294967295_configured.pass.sh
+@@ -1,7 +1,7 @@
+ #!/bin/bash
+ # profiles = xccdf_org.ssgproject.content_profile_ospp
+ # remediation = bash
++# platform = Red Hat Enterprise Linux 7,Fedora
+ 
++mkdir -p /etc/audit/rules.d
+ echo "-a always,exit -F path=/usr/bin/sudo -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged" >> /etc/audit/rules.d/privileged.rules
+-# This is a trick to fail setup of this test in rhel6 systems
+-ls /usr/lib/systemd/system/auditd.service
+diff --git a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands_sudo/rhel7_augenrules_remove_all_rules.fail.sh b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands_sudo/rhel7_augenrules_remove_all_rules.fail.sh
+index 7ef3deb40b..8a05910a39 100644
+--- a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands_sudo/rhel7_augenrules_remove_all_rules.fail.sh
++++ b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands_sudo/rhel7_augenrules_remove_all_rules.fail.sh
+@@ -1,8 +1,8 @@
+ #!/bin/bash
+ # profiles = xccdf_org.ssgproject.content_profile_ospp
+ # remediation = bash
++# platform = Red Hat Enterprise Linux 7,Fedora
+ 
++mkdir -p /etc/audit/rules.d
+ rm -f /etc/audit/rules.d/*
+ > /etc/audit/audit.rules
+-# This is a trick to fail setup of this test in rhel6 systems
+-ls /usr/lib/systemd/system/auditd.service
+diff --git a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands_sudo/rhel7_augenrules_substring_rule.fail.sh b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands_sudo/rhel7_augenrules_substring_rule.fail.sh
+index 54df301ec7..8cc460e965 100644
+--- a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands_sudo/rhel7_augenrules_substring_rule.fail.sh
++++ b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands_sudo/rhel7_augenrules_substring_rule.fail.sh
+@@ -1,7 +1,7 @@
+ #!/bin/bash
+ # profiles = xccdf_org.ssgproject.content_profile_ospp
+ # remediation = bash
++# platform = Red Hat Enterprise Linux 7,Fedora
+ 
++mkdir -p /etc/audit/rules.d
+ echo "-a always,exit -F path=/usr/bin/su -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged" >> /etc/audit/rules.d/privileged.rules
+-# This is a trick to fail setup of this test in rhel6 systems
+-ls /usr/lib/systemd/system/auditd.service
+diff --git a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands_sudo/rhel7_augenrules_superstring_rule.fail.sh b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands_sudo/rhel7_augenrules_superstring_rule.fail.sh
+index 5de32da121..0c72b90456 100644
+--- a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands_sudo/rhel7_augenrules_superstring_rule.fail.sh
++++ b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands_sudo/rhel7_augenrules_superstring_rule.fail.sh
+@@ -1,7 +1,7 @@
+ #!/bin/bash
+ # profiles = xccdf_org.ssgproject.content_profile_ospp
+ # remediation = bash
++# platform = Red Hat Enterprise Linux 7,Fedora
+ 
++mkdir -p /etc/audit/rules.d
+ echo "-a always,exit -F path=/usr/bin/sudoedit -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged" >> /etc/audit/rules.d/privileged.rules
+-# This is a trick to fail setup of this test in rhel6 systems
+-ls /usr/lib/systemd/system/auditd.service
+diff --git a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands_sudo/rhel7_augenrules_unset_configured.pass.sh b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands_sudo/rhel7_augenrules_unset_configured.pass.sh
+index 4aa01afad9..0cf6de31a3 100644
+--- a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands_sudo/rhel7_augenrules_unset_configured.pass.sh
++++ b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands_sudo/rhel7_augenrules_unset_configured.pass.sh
+@@ -1,7 +1,7 @@
+ #!/bin/bash
+ # profiles = xccdf_org.ssgproject.content_profile_ospp
+ # remediation = bash
++# platform = Red Hat Enterprise Linux 7,Fedora
+ 
++mkdir -p /etc/audit/rules.d
+ echo "-a always,exit -F path=/usr/bin/sudo -F perm=x -F auid>=1000 -F auid!=unset -k privileged" >> /etc/audit/rules.d/privileged.rules
+-# This is a trick to fail setup of this test in rhel6 systems
+-ls /usr/lib/systemd/system/auditd.service
+diff --git a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands_sudo/rhel7_rules_with_own_key.pass.sh b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands_sudo/rhel7_rules_with_own_key.pass.sh
+index e267050ae1..a264144bd2 100644
+--- a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands_sudo/rhel7_rules_with_own_key.pass.sh
++++ b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands_sudo/rhel7_rules_with_own_key.pass.sh
+@@ -1,7 +1,6 @@
+ #!/bin/bash
+ # profiles = xccdf_org.ssgproject.content_profile_ospp
+ # remediation = bash
++# platform = Red Hat Enterprise Linux 7,Fedora
+ 
+ echo "-a always,exit -F path=/usr/bin/sudo -F perm=x -F auid>=1000 -F auid!=4294967295 -k own_key" >> /etc/audit/rules.d/privileged.rules
+-# This is a trick to fail setup of this test in rhel6 systems
+-ls /usr/lib/systemd/system/auditd.service
+
+From 6ac52cb2183484685c2632cecdfc5724767b1f79 Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Fri, 15 Mar 2019 16:01:37 +0100
+Subject: [PATCH 2/6] Add test for duplicated audit rules
+
+The rules don't need to be exactly the same to be considered duplicates.
+- auid unset and auid 4294967295 are equivalent
+- "-k" and "-F key=" are equivalent
+---
+ .../rhel7_augenrules_duplicated.fail.sh               | 11 +++++++++++
+ .../rhel7_augenrules_duplicated.fail.sh               |  8 ++++++++
+ 2 files changed, 19 insertions(+)
+ create mode 100644 tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands/rhel7_augenrules_duplicated.fail.sh
+ create mode 100644 tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands_sudo/rhel7_augenrules_duplicated.fail.sh
+
+diff --git a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands/rhel7_augenrules_duplicated.fail.sh b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands/rhel7_augenrules_duplicated.fail.sh
+new file mode 100644
+index 0000000000..19b12d0906
+--- /dev/null
++++ b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands/rhel7_augenrules_duplicated.fail.sh
+@@ -0,0 +1,11 @@
++#!/bin/bash
++# profiles = xccdf_org.ssgproject.content_profile_ospp,xccdf_org.ssgproject.content_profile_pci-dss
++# Remediation for this rule cannot remove the duplicates
++# remediation = none
++# platform = Red Hat Enterprise Linux 7,Fedora
++
++mkdir -p /etc/audit/rules.d
++./generate_privileged_commands_rule.sh 1000 privileged /tmp/privileged.rules
++
++cp /tmp/privileged.rules /etc/audit/rules.d/privileged.rules
++sed 's/unset/4294967295/' /tmp/privileged.rules >> /etc/audit/rules.d/privileged.rules
+diff --git a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands_sudo/rhel7_augenrules_duplicated.fail.sh b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands_sudo/rhel7_augenrules_duplicated.fail.sh
+new file mode 100644
+index 0000000000..c3a0e1dbb3
+--- /dev/null
++++ b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands_sudo/rhel7_augenrules_duplicated.fail.sh
+@@ -0,0 +1,8 @@
++#!/bin/bash
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++# remediation = bash
++# platform = Red Hat Enterprise Linux 7,Fedora
++
++mkdir -p /etc/audit/rules.d
++echo "-a always,exit -F path=/usr/bin/sudo -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged" >> /etc/audit/rules.d/privileged.rules
++echo "-a always,exit -F path=/usr/bin/sudo -F perm=x -F auid>=1000 -F auid!=unset -F key=privileged" >> /etc/audit/rules.d/privileged.rules
+
+From 160ddfa6b662dfc129f308ba239e87339e4adbf6 Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Fri, 15 Mar 2019 16:00:24 +0100
+Subject: [PATCH 3/6] Fail check when there is more than one audit rule for a
+ given path
+
+Duplicated rules cause loading of audit rules to fail.
+- There should exist only one match
+- Examine all instances (objects found)
+- Do not capture key of rule (we don't use it)
+---
+ .../template_OVAL_audit_rules_privileged_commands    | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/shared/templates/template_OVAL_audit_rules_privileged_commands b/shared/templates/template_OVAL_audit_rules_privileged_commands
+index 602f29de5d..b738cdfa54 100644
+--- a/shared/templates/template_OVAL_audit_rules_privileged_commands
++++ b/shared/templates/template_OVAL_audit_rules_privileged_commands
+@@ -28,22 +28,22 @@
+     </criteria>
+   </definition>
+ 
+-  <ind:textfilecontent54_test check="all" check_existence="all_exist" comment="audit augenrules {{{ NAME }}}" id="test_{{{ ID }}}_augenrules" version="1">
++  <ind:textfilecontent54_test check="all" check_existence="only_one_exists" comment="audit augenrules {{{ NAME }}}" id="test_{{{ ID }}}_augenrules" version="1">
+     <ind:object object_ref="object_{{{ ID }}}_augenrules" />
+   </ind:textfilecontent54_test>
+   <ind:textfilecontent54_object id="object_{{{ ID }}}_augenrules" version="1">
+     <ind:filepath operation="pattern match">^/etc/audit/rules\.d/.*\.rules$</ind:filepath>
+-    <ind:pattern operation="pattern match">^[\s]*-a[\s]+always,exit[\s]+-F[\s]+path={{{ PATH }}}[\s]+-F[\s]+perm=x[\s]+-F[\s]+auid>={{{ auid }}}[\s]+-F[\s]+auid!=(?:4294967295|unset)[\s]+(-k[\s]+|-F[\s]+key=)[\S]+[\s]*$</ind:pattern>
+-    <ind:instance datatype="int">1</ind:instance>
++    <ind:pattern operation="pattern match">^[\s]*-a[\s]+always,exit[\s]+-F[\s]+path={{{ PATH }}}[\s]+-F[\s]+perm=x[\s]+-F[\s]+auid>={{{ auid }}}[\s]+-F[\s]+auid!=(?:4294967295|unset)[\s]+(?:-k[\s]+|-F[\s]+key=)[\S]+[\s]*$</ind:pattern>
++    <ind:instance operation="greater than or equal" datatype="int">1</ind:instance>
+   </ind:textfilecontent54_object>
+ 
+-  <ind:textfilecontent54_test check="all" check_existence="all_exist" comment="audit auditctl {{{ NAME }}}" id="test_{{{ ID }}}_auditctl" version="1">
++  <ind:textfilecontent54_test check="all" check_existence="only_one_exists" comment="audit auditctl {{{ NAME }}}" id="test_{{{ ID }}}_auditctl" version="1">
+     <ind:object object_ref="object_{{{ ID }}}_auditctl" />
+   </ind:textfilecontent54_test>
+   <ind:textfilecontent54_object id="object_{{{ ID }}}_auditctl" version="1">
+     <ind:filepath>/etc/audit/audit.rules</ind:filepath>
+-    <ind:pattern operation="pattern match">^[\s]*-a[\s]+always,exit[\s]+-F[\s]+path={{{ PATH }}}[\s]+-F[\s]+perm=x[\s]+-F[\s]+auid>={{{ auid }}}[\s]+-F[\s]+auid!=(?:4294967295|unset)[\s]+(-k[\s]+|-F[\s]+key=)[\S]+[\s]*$</ind:pattern>
+-    <ind:instance datatype="int">1</ind:instance>
++    <ind:pattern operation="pattern match">^[\s]*-a[\s]+always,exit[\s]+-F[\s]+path={{{ PATH }}}[\s]+-F[\s]+perm=x[\s]+-F[\s]+auid>={{{ auid }}}[\s]+-F[\s]+auid!=(?:4294967295|unset)[\s]+(?:-k[\s]+|-F[\s]+key=)[\S]+[\s]*$</ind:pattern>
++    <ind:instance operation="greater than or equal" datatype="int">1</ind:instance>
+   </ind:textfilecontent54_object>
+ 
+ </def-group>
+
+From 08a30fe02fc60c63a2057382ce5cd9de9d0fd877 Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Fri, 15 Mar 2019 15:56:42 +0100
+Subject: [PATCH 4/6] Reset ARCH
+
+The variable should be reset so that we don't use a value set
+by some previous remediation.
+---
+ shared/templates/template_BASH_audit_rules_privileged_commands | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/shared/templates/template_BASH_audit_rules_privileged_commands b/shared/templates/template_BASH_audit_rules_privileged_commands
+index 90807084e8..612f8a0826 100644
+--- a/shared/templates/template_BASH_audit_rules_privileged_commands
++++ b/shared/templates/template_BASH_audit_rules_privileged_commands
+@@ -5,6 +5,8 @@
+ 
+ PATTERN="-a always,exit -F path={{{ PATH }}}\\s\\+.*"
+ GROUP="privileged"
++# Although the fix doesn't use ARCH, we reset it because it could have been set by some other remediation
++ARCH=""
+ FULL_RULE="-a always,exit -F path={{{ PATH }}} -F perm=x -F auid>={{{ auid }}} -F auid!=unset -F key=privileged"
+ # Perform the remediation for both possible tools: 'auditctl' and 'augenrules'
+ fix_audit_syscall_rule "auditctl" "$PATTERN" "$GROUP" "$ARCH" "$FULL_RULE"
+
+From 8e83eb070f6cc7931e8c1005cd8eb7674e1bf186 Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Fri, 15 Mar 2019 16:31:20 +0100
+Subject: [PATCH 5/6] Test if remediation can handle rules in separate files
+
+---
+ .../rhel7_augenrules_two_rules_sep_files.fail.sh          | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+ create mode 100644 tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands/rhel7_augenrules_two_rules_sep_files.fail.sh
+
+diff --git a/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands/rhel7_augenrules_two_rules_sep_files.fail.sh b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands/rhel7_augenrules_two_rules_sep_files.fail.sh
+new file mode 100644
+index 0000000000..0e70910537
+--- /dev/null
++++ b/tests/data/group_system/group_auditing/group_auditd_configure_rules/group_audit_privileged_commands/rule_audit_rules_privileged_commands/rhel7_augenrules_two_rules_sep_files.fail.sh
+@@ -0,0 +1,8 @@
++#!/bin/bash
++# profiles = xccdf_org.ssgproject.content_profile_pci-dss
++# remediation = bash
++# platform = Red Hat Enterprise Linux 7,Fedora
++
++mkdir -p /etc/audit/rules.d
++echo "-a always,exit -F path=/usr/bin/newgrp -F perm=x -F auid>=1000 -F auid!=unset -k privileged" >> /etc/audit/rules.d/priv.rules
++echo "-a always,exit -F path=/usr/bin/passwd -F perm=x -F auid>=1000 -F auid!=unset -F key=privileged" >> /etc/audit/rules.d/privileged.rules
+
+From d706bdbebb8e2ffbd4872ea7870ac5f1e2f6a00e Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Fri, 15 Mar 2019 15:56:11 +0100
+Subject: [PATCH 6/6] Do not add rule if it was handled in another file
+
+---
+ ..._audit_rules_privileged_commands_remediation.sh | 14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
+
+diff --git a/shared/bash_remediation_functions/perform_audit_rules_privileged_commands_remediation.sh b/shared/bash_remediation_functions/perform_audit_rules_privileged_commands_remediation.sh
+index d824e5debb..91eeedb545 100644
+--- a/shared/bash_remediation_functions/perform_audit_rules_privileged_commands_remediation.sh
++++ b/shared/bash_remediation_functions/perform_audit_rules_privileged_commands_remediation.sh
+@@ -71,7 +71,7 @@ declare -a sbinaries_to_skip=()
+ for sbinary in "${privileged_binaries[@]}"
+ do
+ 
+-	# Check if this sbinary wasn't already handled in some of the previous iterations
++	# Check if this sbinary wasn't already handled in some of the previous sbinary iterations
+ 	# Return match only if whole sbinary definition matched (not in the case just prefix matched!!!)
+ 	if [[ $(sed -ne "\|${sbinary}|p" <<< "${sbinaries_to_skip[*]}") ]]
+ 	then
+@@ -169,9 +169,15 @@ do
+ 		elif [ "$tool" == "auditctl" ] || [[ "$tool" == "augenrules" && $count_of_inspected_files -eq "${#files_to_inspect[@]}" ]]
+ 		then
+ 
+-			# Current audit rules file's content doesn't contain expected rule for this
+-			# SUID/SGID binary yet => append it
+-			echo "$expected_rule" >> "$output_audit_file"
++			# Check if this sbinary wasn't already handled in some of the previous afile iterations
++			# Return match only if whole sbinary definition matched (not in the case just prefix matched!!!)
++			if [[ ! $(sed -ne "\|${sbinary}|p" <<< "${sbinaries_to_skip[*]}") ]]
++			then
++				# Current audit rules file's content doesn't contain expected rule for this
++				# SUID/SGID binary yet => append it
++				echo "$expected_rule" >> "$output_audit_file"
++			fi
++
+ 			continue
+ 		fi
+ 

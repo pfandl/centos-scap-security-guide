@@ -1,0 +1,57 @@
+From 40ced7704f5e6f8166cd4e7b0fa273854c7c53ba Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Fri, 10 May 2019 14:27:51 +0200
+Subject: [PATCH] Evaluate Ansible platform macro True package CPE
+
+Other platforms were introduced, like yum, pam, shadow-utils...
+Let's handle the case when platform is machine normally, and evaluate
+the other platforms to True.
+---
+ shared/transforms/xccdf-addremediations.xslt | 24 ++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
+
+diff --git a/shared/transforms/xccdf-addremediations.xslt b/shared/transforms/xccdf-addremediations.xslt
+index 360877b2f..6339c020e 100644
+--- a/shared/transforms/xccdf-addremediations.xslt
++++ b/shared/transforms/xccdf-addremediations.xslt
+@@ -127,6 +127,9 @@
+             <xsl:when test="$platform_cpe = 'machine'">
+               <xsl:value-of select="concat('when:  # Bare-metal/VM task, not applicable for containers', $newline, '    - (ansible_virtualization_role != &quot;guest&quot; or ansible_virtualization_type != &quot;docker&quot;)')"/>
+             </xsl:when>
++            <xsl:when test="$platform_cpe = 'gdm' or $platform_cpe = 'libuser' or  $platform_cpe = 'nss-pam-ldapd' or $platform_cpe = 'pam' or $platform_cpe = 'shadow-utils' or $platform_cpe = 'systemd' or $platform_cpe = 'yum'">
++                <!-- do nothing -->
++            </xsl:when>
+             <xsl:otherwise>
+               <xsl:value-of select="concat('# Error ensuring that the platform is applicable - unknown platform CPE spec encountered: &quot;', $platform_cpe, '&quot;')"/>
+             </xsl:otherwise>
+@@ -149,6 +152,27 @@
+             <xsl:when test="$platform_cpe = 'machine'">
+               <xsl:value-of select="'(ansible_virtualization_role != &quot;guest&quot; or ansible_virtualization_type != &quot;docker&quot;)'"/>
+             </xsl:when>
++            <xsl:when test="$platform_cpe = 'gdm'">
++              <xsl:value-of select="'True'"/>
++            </xsl:when>
++            <xsl:when test="$platform_cpe = 'libuser'">
++              <xsl:value-of select="'True'"/>
++            </xsl:when>
++            <xsl:when test="$platform_cpe = 'nss-pam-ldapd'">
++              <xsl:value-of select="'True'"/>
++            </xsl:when>
++            <xsl:when test="$platform_cpe = 'pam'">
++              <xsl:value-of select="'True'"/>
++            </xsl:when>
++            <xsl:when test="$platform_cpe = 'shadow-utils'">
++              <xsl:value-of select="'True'"/>
++            </xsl:when>
++            <xsl:when test="$platform_cpe = 'systemd'">
++              <xsl:value-of select="'True'"/>
++            </xsl:when>
++            <xsl:when test="$platform_cpe = 'yum'">
++              <xsl:value-of select="'True'"/>
++            </xsl:when>
+             <xsl:otherwise>
+               <xsl:value-of select="concat(' # Error ensuring that the platform is applicable - unknown platform CPE spec encountered: &quot;', $platform_cpe, '&quot;')"/>
+             </xsl:otherwise>
+-- 
+2.20.1
+

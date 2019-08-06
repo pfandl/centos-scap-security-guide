@@ -1,0 +1,377 @@
+From 15488aa8ae05def7d6e967170e550b3f764204e4 Mon Sep 17 00:00:00 2001
+From: Gabriel Becker <ggasparb@redhat.com>
+Date: Thu, 16 May 2019 17:38:17 +0200
+Subject: [PATCH 1/4] Add bash remediation, fix oval and add test scenarios for
+ sssd_ssh_known_hosts_timeout.
+
+---
+ .../bash/shared.sh                            | 23 +++++++++++++++++++
+ .../oval/shared.xml                           |  2 +-
+ .../sssd_ssh_known_hosts_timeout/rule.yml     |  2 +-
+ .../comment.fail.sh                           | 12 ++++++++++
+ .../correct_value.pass.sh                     | 12 ++++++++++
+ .../wrong_section.fail.sh                     | 12 ++++++++++
+ .../wrong_value.fail.sh                       | 15 ++++++++++++
+ 7 files changed, 76 insertions(+), 2 deletions(-)
+ create mode 100644 linux_os/guide/services/sssd/sssd_ssh_known_hosts_timeout/bash/shared.sh
+ create mode 100644 tests/data/group_services/group_sssd/rule_sssd_ssh_known_hosts_timeout/comment.fail.sh
+ create mode 100644 tests/data/group_services/group_sssd/rule_sssd_ssh_known_hosts_timeout/correct_value.pass.sh
+ create mode 100644 tests/data/group_services/group_sssd/rule_sssd_ssh_known_hosts_timeout/wrong_section.fail.sh
+ create mode 100644 tests/data/group_services/group_sssd/rule_sssd_ssh_known_hosts_timeout/wrong_value.fail.sh
+
+diff --git a/linux_os/guide/services/sssd/sssd_ssh_known_hosts_timeout/bash/shared.sh b/linux_os/guide/services/sssd/sssd_ssh_known_hosts_timeout/bash/shared.sh
+new file mode 100644
+index 0000000000..33ebf544e3
+--- /dev/null
++++ b/linux_os/guide/services/sssd/sssd_ssh_known_hosts_timeout/bash/shared.sh
+@@ -0,0 +1,23 @@
++# platform = multi_platform_rhel,multi_platform_fedora,multi_platform_ol
++
++# Include source function library.
++. /usr/share/scap-security-guide/remediation_functions
++
++populate var_sssd_ssh_known_hosts_timeout
++
++SSSD_CONF="/etc/sssd/sssd.conf"
++SSH_KNOWN_HOSTS_TIMEOUT_REGEX="[[:space:]]*\[ssh]([^\n\[]*\n+)+?[[:space:]]*ssh_known_hosts_timeout"
++SSH_REGEX="[[:space:]]*\[ssh]"
++
++# Try find [ssh] and ssh_known_hosts_timeout in sssd.conf, if it exists, set to
++# var_sssd_ssh_known_hosts_timeout, if it isn't here, add it, if [ssh] doesn't
++# exist, add it there
++if grep -qzosP $SSH_KNOWN_HOSTS_TIMEOUT_REGEX $SSSD_CONF; then
++        sed -i "s/ssh_known_hosts_timeout[^(\n)]*/ssh_known_hosts_timeout = $var_sssd_ssh_known_hosts_timeout/" $SSSD_CONF
++elif grep -qs $SSH_REGEX $SSSD_CONF; then
++        sed -i "/$SSH_REGEX/a ssh_known_hosts_timeout = $var_sssd_ssh_known_hosts_timeout" $SSSD_CONF
++else
++        mkdir -p /etc/sssd
++        touch $SSSD_CONF
++        echo -e "[ssh]\nssh_known_hosts_timeout = $var_sssd_ssh_known_hosts_timeout" >> $SSSD_CONF
++fi
+diff --git a/linux_os/guide/services/sssd/sssd_ssh_known_hosts_timeout/oval/shared.xml b/linux_os/guide/services/sssd/sssd_ssh_known_hosts_timeout/oval/shared.xml
+index 5bfdeee99e..d98934d294 100644
+--- a/linux_os/guide/services/sssd/sssd_ssh_known_hosts_timeout/oval/shared.xml
++++ b/linux_os/guide/services/sssd/sssd_ssh_known_hosts_timeout/oval/shared.xml
+@@ -27,7 +27,7 @@
+   </ind:textfilecontent54_test>
+   <ind:textfilecontent54_object id="obj_sssd_ssh_known_hosts_timeout" version="1">
+     <ind:filepath>/etc/sssd/sssd.conf</ind:filepath>
+-    <ind:pattern operation="pattern match">^\[ssh]([^\n]*\n+)+?ssh_known_hosts_timeout[\s]+=[\s]+(\d+)$</ind:pattern>
++    <ind:pattern operation="pattern match">^[\s]*\[ssh](?:[^\n\[]*\n+)+?[\s]*ssh_known_hosts_timeout[\s]*=[\s]*(\d+)$</ind:pattern>
+     <ind:instance datatype="int">1</ind:instance>
+   </ind:textfilecontent54_object>
+ 
+diff --git a/linux_os/guide/services/sssd/sssd_ssh_known_hosts_timeout/rule.yml b/linux_os/guide/services/sssd/sssd_ssh_known_hosts_timeout/rule.yml
+index ada49bd662..d041029264 100644
+--- a/linux_os/guide/services/sssd/sssd_ssh_known_hosts_timeout/rule.yml
++++ b/linux_os/guide/services/sssd/sssd_ssh_known_hosts_timeout/rule.yml
+@@ -1,6 +1,6 @@
+ documentation_complete: true
+ 
+-prodtype: rhel6,rhel7,rhel8
++prodtype: rhel6,rhel7,rhel8,fedora,rhv4
+ 
+ title: 'Configure SSSD to Expire SSH Known Hosts'
+ 
+diff --git a/tests/data/group_services/group_sssd/rule_sssd_ssh_known_hosts_timeout/comment.fail.sh b/tests/data/group_services/group_sssd/rule_sssd_ssh_known_hosts_timeout/comment.fail.sh
+new file mode 100644
+index 0000000000..5092f147c6
+--- /dev/null
++++ b/tests/data/group_services/group_sssd/rule_sssd_ssh_known_hosts_timeout/comment.fail.sh
+@@ -0,0 +1,12 @@
++#!/bin/bash
++
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++
++SSSD_CONF="/etc/sssd/sssd.conf"
++TIMEOUT="180"
++
++dnf -y install sssd
++systemctl enable sssd
++mkdir -p /etc/sssd
++touch $SSSD_CONF
++echo -e "[ssh]\n#ssh_known_hosts_timeout = $TIMEOUT" >> $SSSD_CONF
+diff --git a/tests/data/group_services/group_sssd/rule_sssd_ssh_known_hosts_timeout/correct_value.pass.sh b/tests/data/group_services/group_sssd/rule_sssd_ssh_known_hosts_timeout/correct_value.pass.sh
+new file mode 100644
+index 0000000000..84a93b955f
+--- /dev/null
++++ b/tests/data/group_services/group_sssd/rule_sssd_ssh_known_hosts_timeout/correct_value.pass.sh
+@@ -0,0 +1,12 @@
++#!/bin/bash
++
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++
++SSSD_CONF="/etc/sssd/sssd.conf"
++TIMEOUT="180"
++
++dnf -y install sssd
++systemctl enable sssd
++mkdir -p /etc/sssd
++touch $SSSD_CONF
++echo -e "[ssh]\nssh_known_hosts_timeout = $TIMEOUT" >> $SSSD_CONF
+diff --git a/tests/data/group_services/group_sssd/rule_sssd_ssh_known_hosts_timeout/wrong_section.fail.sh b/tests/data/group_services/group_sssd/rule_sssd_ssh_known_hosts_timeout/wrong_section.fail.sh
+new file mode 100644
+index 0000000000..da720151dc
+--- /dev/null
++++ b/tests/data/group_services/group_sssd/rule_sssd_ssh_known_hosts_timeout/wrong_section.fail.sh
+@@ -0,0 +1,12 @@
++#!/bin/bash
++
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++
++SSSD_CONF="/etc/sssd/sssd.conf"
++TIMEOUT="180"
++
++dnf -y install sssd
++systemctl enable sssd
++mkdir -p /etc/sssd
++touch $SSSD_CONF
++echo -e "[ssh]\nsomething = wrong\n[pam]\nssh_known_hosts_timeout = $TIMEOUT" >> $SSSD_CONF
+diff --git a/tests/data/group_services/group_sssd/rule_sssd_ssh_known_hosts_timeout/wrong_value.fail.sh b/tests/data/group_services/group_sssd/rule_sssd_ssh_known_hosts_timeout/wrong_value.fail.sh
+new file mode 100644
+index 0000000000..fcba0e0019
+--- /dev/null
++++ b/tests/data/group_services/group_sssd/rule_sssd_ssh_known_hosts_timeout/wrong_value.fail.sh
+@@ -0,0 +1,15 @@
++#!/bin/bash
++
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++
++SSSD_CONF="/etc/sssd/sssd.conf"
++
++# The rule sssd_memcache_timeout requires memcache_timeout = 86400
++# Let's put there a different value to fail
++TIMEOUT="99999"
++
++dnf -y install sssd
++systemctl enable sssd
++mkdir -p /etc/sssd
++touch $SSSD_CONF
++echo -e "[ssh]\nssh_known_hosts_timeout = $TIMEOUT" >> $SSSD_CONF
+
+From 4737fa82aaed8ad9f305b9900c992f80d37b3fb6 Mon Sep 17 00:00:00 2001
+From: Gabriel Becker <ggasparb@redhat.com>
+Date: Fri, 17 May 2019 13:55:23 +0200
+Subject: [PATCH 2/4] Change values in timeout test scenarios so it has better
+ accuracy in test results.
+
+---
+ .../group_sssd/rule_sssd_memcache_timeout/comment.fail.sh     | 2 +-
+ .../rule_sssd_memcache_timeout/correct_value.pass.sh          | 4 +++-
+ .../rule_sssd_memcache_timeout/wrong_section.fail.sh          | 2 +-
+ .../group_sssd/rule_sssd_memcache_timeout/wrong_value.fail.sh | 4 ++--
+ .../rule_sssd_ssh_known_hosts_timeout/correct_value.pass.sh   | 2 ++
+ 5 files changed, 9 insertions(+), 5 deletions(-)
+
+diff --git a/tests/data/group_services/group_sssd/rule_sssd_memcache_timeout/comment.fail.sh b/tests/data/group_services/group_sssd/rule_sssd_memcache_timeout/comment.fail.sh
+index 8d68ec3a05..d4f2cd99aa 100644
+--- a/tests/data/group_services/group_sssd/rule_sssd_memcache_timeout/comment.fail.sh
++++ b/tests/data/group_services/group_sssd/rule_sssd_memcache_timeout/comment.fail.sh
+@@ -3,7 +3,7 @@
+ # profiles = xccdf_org.ssgproject.content_profile_ospp
+ 
+ SSSD_CONF="/etc/sssd/sssd.conf"
+-TIMEOUT="86400"
++TIMEOUT="180"
+ 
+ dnf -y install sssd
+ systemctl enable sssd
+diff --git a/tests/data/group_services/group_sssd/rule_sssd_memcache_timeout/correct_value.pass.sh b/tests/data/group_services/group_sssd/rule_sssd_memcache_timeout/correct_value.pass.sh
+index 7320a79564..25c6593a7f 100644
+--- a/tests/data/group_services/group_sssd/rule_sssd_memcache_timeout/correct_value.pass.sh
++++ b/tests/data/group_services/group_sssd/rule_sssd_memcache_timeout/correct_value.pass.sh
+@@ -3,7 +3,9 @@
+ # profiles = xccdf_org.ssgproject.content_profile_ospp
+ 
+ SSSD_CONF="/etc/sssd/sssd.conf"
+-TIMEOUT="86400"
++# The smallest variable value for sssd_memcache_timeout is 180 so
++# this should pass for every product which contains ospp profile
++TIMEOUT="180"
+ 
+ dnf -y install sssd
+ systemctl enable sssd
+diff --git a/tests/data/group_services/group_sssd/rule_sssd_memcache_timeout/wrong_section.fail.sh b/tests/data/group_services/group_sssd/rule_sssd_memcache_timeout/wrong_section.fail.sh
+index b3326721e4..7b78532d92 100644
+--- a/tests/data/group_services/group_sssd/rule_sssd_memcache_timeout/wrong_section.fail.sh
++++ b/tests/data/group_services/group_sssd/rule_sssd_memcache_timeout/wrong_section.fail.sh
+@@ -3,7 +3,7 @@
+ # profiles = xccdf_org.ssgproject.content_profile_ospp
+ 
+ SSSD_CONF="/etc/sssd/sssd.conf"
+-TIMEOUT="86400"
++TIMEOUT="180"
+ 
+ dnf -y install sssd
+ systemctl enable sssd
+diff --git a/tests/data/group_services/group_sssd/rule_sssd_memcache_timeout/wrong_value.fail.sh b/tests/data/group_services/group_sssd/rule_sssd_memcache_timeout/wrong_value.fail.sh
+index 1e378ef034..a5ac22077e 100644
+--- a/tests/data/group_services/group_sssd/rule_sssd_memcache_timeout/wrong_value.fail.sh
++++ b/tests/data/group_services/group_sssd/rule_sssd_memcache_timeout/wrong_value.fail.sh
+@@ -4,8 +4,8 @@
+ 
+ SSSD_CONF="/etc/sssd/sssd.conf"
+ 
+-# The rule sssd_memcache_timeout requires memcache_timeout = 86400
+-# Let's put there a different value to fail
++# The highest variable value for sssd_memcache_timeout is 86400 so
++# Let's put there a higher value to fail
+ TIMEOUT="99999"
+ 
+ dnf -y install sssd
+diff --git a/tests/data/group_services/group_sssd/rule_sssd_ssh_known_hosts_timeout/correct_value.pass.sh b/tests/data/group_services/group_sssd/rule_sssd_ssh_known_hosts_timeout/correct_value.pass.sh
+index 84a93b955f..cb0462d9a7 100644
+--- a/tests/data/group_services/group_sssd/rule_sssd_ssh_known_hosts_timeout/correct_value.pass.sh
++++ b/tests/data/group_services/group_sssd/rule_sssd_ssh_known_hosts_timeout/correct_value.pass.sh
+@@ -3,6 +3,8 @@
+ # profiles = xccdf_org.ssgproject.content_profile_ospp
+ 
+ SSSD_CONF="/etc/sssd/sssd.conf"
++# The smallest variable value for sssd_memcache_timeout is 180 so
++# this should pass for every product which contains ospp profile
+ TIMEOUT="180"
+ 
+ dnf -y install sssd
+
+From f5ca4d6be1eeac477be9ba8c3e5764c33d17ffe9 Mon Sep 17 00:00:00 2001
+From: Gabriel Becker <ggasparb@redhat.com>
+Date: Fri, 17 May 2019 14:30:34 +0200
+Subject: [PATCH 3/4] Use yum to install packages in test scenarios.
+
+---
+ .../group_sssd/rule_sssd_memcache_timeout/comment.fail.sh       | 2 +-
+ .../group_sssd/rule_sssd_memcache_timeout/correct_value.pass.sh | 2 +-
+ .../group_sssd/rule_sssd_memcache_timeout/wrong_section.fail.sh | 2 +-
+ .../group_sssd/rule_sssd_memcache_timeout/wrong_value.fail.sh   | 2 +-
+ .../rule_sssd_ssh_known_hosts_timeout/comment.fail.sh           | 2 +-
+ .../rule_sssd_ssh_known_hosts_timeout/correct_value.pass.sh     | 2 +-
+ .../rule_sssd_ssh_known_hosts_timeout/wrong_section.fail.sh     | 2 +-
+ .../rule_sssd_ssh_known_hosts_timeout/wrong_value.fail.sh       | 2 +-
+ 8 files changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/tests/data/group_services/group_sssd/rule_sssd_memcache_timeout/comment.fail.sh b/tests/data/group_services/group_sssd/rule_sssd_memcache_timeout/comment.fail.sh
+index d4f2cd99aa..d6ce9eedec 100644
+--- a/tests/data/group_services/group_sssd/rule_sssd_memcache_timeout/comment.fail.sh
++++ b/tests/data/group_services/group_sssd/rule_sssd_memcache_timeout/comment.fail.sh
+@@ -5,7 +5,7 @@
+ SSSD_CONF="/etc/sssd/sssd.conf"
+ TIMEOUT="180"
+ 
+-dnf -y install sssd
++yum -y install sssd
+ systemctl enable sssd
+ mkdir -p /etc/sssd
+ touch $SSSD_CONF
+diff --git a/tests/data/group_services/group_sssd/rule_sssd_memcache_timeout/correct_value.pass.sh b/tests/data/group_services/group_sssd/rule_sssd_memcache_timeout/correct_value.pass.sh
+index 25c6593a7f..7d492a5a37 100644
+--- a/tests/data/group_services/group_sssd/rule_sssd_memcache_timeout/correct_value.pass.sh
++++ b/tests/data/group_services/group_sssd/rule_sssd_memcache_timeout/correct_value.pass.sh
+@@ -7,7 +7,7 @@ SSSD_CONF="/etc/sssd/sssd.conf"
+ # this should pass for every product which contains ospp profile
+ TIMEOUT="180"
+ 
+-dnf -y install sssd
++yum -y install sssd
+ systemctl enable sssd
+ mkdir -p /etc/sssd
+ touch $SSSD_CONF
+diff --git a/tests/data/group_services/group_sssd/rule_sssd_memcache_timeout/wrong_section.fail.sh b/tests/data/group_services/group_sssd/rule_sssd_memcache_timeout/wrong_section.fail.sh
+index 7b78532d92..e46427a391 100644
+--- a/tests/data/group_services/group_sssd/rule_sssd_memcache_timeout/wrong_section.fail.sh
++++ b/tests/data/group_services/group_sssd/rule_sssd_memcache_timeout/wrong_section.fail.sh
+@@ -5,7 +5,7 @@
+ SSSD_CONF="/etc/sssd/sssd.conf"
+ TIMEOUT="180"
+ 
+-dnf -y install sssd
++yum -y install sssd
+ systemctl enable sssd
+ mkdir -p /etc/sssd
+ touch $SSSD_CONF
+diff --git a/tests/data/group_services/group_sssd/rule_sssd_memcache_timeout/wrong_value.fail.sh b/tests/data/group_services/group_sssd/rule_sssd_memcache_timeout/wrong_value.fail.sh
+index a5ac22077e..440ae8d404 100644
+--- a/tests/data/group_services/group_sssd/rule_sssd_memcache_timeout/wrong_value.fail.sh
++++ b/tests/data/group_services/group_sssd/rule_sssd_memcache_timeout/wrong_value.fail.sh
+@@ -8,7 +8,7 @@ SSSD_CONF="/etc/sssd/sssd.conf"
+ # Let's put there a higher value to fail
+ TIMEOUT="99999"
+ 
+-dnf -y install sssd
++yum -y install sssd
+ systemctl enable sssd
+ mkdir -p /etc/sssd
+ touch $SSSD_CONF
+diff --git a/tests/data/group_services/group_sssd/rule_sssd_ssh_known_hosts_timeout/comment.fail.sh b/tests/data/group_services/group_sssd/rule_sssd_ssh_known_hosts_timeout/comment.fail.sh
+index 5092f147c6..4c40dedb8a 100644
+--- a/tests/data/group_services/group_sssd/rule_sssd_ssh_known_hosts_timeout/comment.fail.sh
++++ b/tests/data/group_services/group_sssd/rule_sssd_ssh_known_hosts_timeout/comment.fail.sh
+@@ -5,7 +5,7 @@
+ SSSD_CONF="/etc/sssd/sssd.conf"
+ TIMEOUT="180"
+ 
+-dnf -y install sssd
++yum -y install sssd
+ systemctl enable sssd
+ mkdir -p /etc/sssd
+ touch $SSSD_CONF
+diff --git a/tests/data/group_services/group_sssd/rule_sssd_ssh_known_hosts_timeout/correct_value.pass.sh b/tests/data/group_services/group_sssd/rule_sssd_ssh_known_hosts_timeout/correct_value.pass.sh
+index cb0462d9a7..0610144030 100644
+--- a/tests/data/group_services/group_sssd/rule_sssd_ssh_known_hosts_timeout/correct_value.pass.sh
++++ b/tests/data/group_services/group_sssd/rule_sssd_ssh_known_hosts_timeout/correct_value.pass.sh
+@@ -7,7 +7,7 @@ SSSD_CONF="/etc/sssd/sssd.conf"
+ # this should pass for every product which contains ospp profile
+ TIMEOUT="180"
+ 
+-dnf -y install sssd
++yum -y install sssd
+ systemctl enable sssd
+ mkdir -p /etc/sssd
+ touch $SSSD_CONF
+diff --git a/tests/data/group_services/group_sssd/rule_sssd_ssh_known_hosts_timeout/wrong_section.fail.sh b/tests/data/group_services/group_sssd/rule_sssd_ssh_known_hosts_timeout/wrong_section.fail.sh
+index da720151dc..c35754881c 100644
+--- a/tests/data/group_services/group_sssd/rule_sssd_ssh_known_hosts_timeout/wrong_section.fail.sh
++++ b/tests/data/group_services/group_sssd/rule_sssd_ssh_known_hosts_timeout/wrong_section.fail.sh
+@@ -5,7 +5,7 @@
+ SSSD_CONF="/etc/sssd/sssd.conf"
+ TIMEOUT="180"
+ 
+-dnf -y install sssd
++yum -y install sssd
+ systemctl enable sssd
+ mkdir -p /etc/sssd
+ touch $SSSD_CONF
+diff --git a/tests/data/group_services/group_sssd/rule_sssd_ssh_known_hosts_timeout/wrong_value.fail.sh b/tests/data/group_services/group_sssd/rule_sssd_ssh_known_hosts_timeout/wrong_value.fail.sh
+index fcba0e0019..2422bb70fe 100644
+--- a/tests/data/group_services/group_sssd/rule_sssd_ssh_known_hosts_timeout/wrong_value.fail.sh
++++ b/tests/data/group_services/group_sssd/rule_sssd_ssh_known_hosts_timeout/wrong_value.fail.sh
+@@ -8,7 +8,7 @@ SSSD_CONF="/etc/sssd/sssd.conf"
+ # Let's put there a different value to fail
+ TIMEOUT="99999"
+ 
+-dnf -y install sssd
++yum -y install sssd
+ systemctl enable sssd
+ mkdir -p /etc/sssd
+ touch $SSSD_CONF
+
+From 42f536cfdb0898e56ac6a4e9ba8eefcce81ae17a Mon Sep 17 00:00:00 2001
+From: Gabriel Becker <ggasparb@redhat.com>
+Date: Fri, 17 May 2019 14:30:59 +0200
+Subject: [PATCH 4/4] Remove unused variable from rhel7/stig-rhel7-disa.profile.
+
+---
+ rhel7/profiles/stig-rhel7-disa.profile | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/rhel7/profiles/stig-rhel7-disa.profile b/rhel7/profiles/stig-rhel7-disa.profile
+index 85dfda0ad2..9f8e9ab156 100644
+--- a/rhel7/profiles/stig-rhel7-disa.profile
++++ b/rhel7/profiles/stig-rhel7-disa.profile
+@@ -18,7 +18,6 @@ description: |-
+ selections:
+     - login_banner_text=dod_banners
+     - inactivity_timeout_value=15_minutes
+-    - var_sssd_ssh_known_hosts_timeout=5_minutes
+     - var_screensaver_lock_delay=5_seconds
+     - sshd_idle_timeout_value=10_minutes
+     - var_accounts_fail_delay=4

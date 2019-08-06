@@ -1,0 +1,1336 @@
+From 89f967ca5598cab539fe66560534207b45ff9734 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Mat=C4=9Bj=20T=C3=BD=C4=8D?= <matyc@redhat.com>
+Date: Thu, 30 May 2019 13:22:30 +0200
+Subject: [PATCH 1/9] Introduced the "DConf System DBs are in sync with
+ keyfiles" rule.
+
+---
+ fedora/profiles/ospp.profile                  |  1 +
+ .../gnome/dconf_db_up_to_date/bash/shared.sh  |  3 +
+ .../gnome/dconf_db_up_to_date/oval/shared.xml | 63 +++++++++++++++++++
+ .../gnome/dconf_db_up_to_date/rule.yml        | 30 +++++++++
+ rhel7/profiles/ospp.profile                   |  1 +
+ shared/references/cce-rhel-avail.txt        |  2 -
+ 6 files changed, 98 insertions(+), 2 deletions(-)
+ create mode 100644 linux_os/guide/system/software/gnome/dconf_db_up_to_date/bash/shared.sh
+ create mode 100644 linux_os/guide/system/software/gnome/dconf_db_up_to_date/oval/shared.xml
+ create mode 100644 linux_os/guide/system/software/gnome/dconf_db_up_to_date/rule.yml
+
+diff --git a/fedora/profiles/ospp.profile b/fedora/profiles/ospp.profile
+index b5e8fe097c..92cf738385 100644
+--- a/fedora/profiles/ospp.profile
++++ b/fedora/profiles/ospp.profile
+@@ -43,6 +43,7 @@ selections:
+     - sysctl_kernel_kptr_restrict
+     - sysctl_kernel_kexec_load_disabled
+     - sysctl_kernel_dmesg_restrict
++    - dconf_db_up_to_date
+     - dconf_gnome_screensaver_idle_activation_enabled
+     - dconf_gnome_screensaver_idle_delay
+     - dconf_gnome_screensaver_lock_delay
+diff --git a/linux_os/guide/system/software/gnome/dconf_db_up_to_date/bash/shared.sh b/linux_os/guide/system/software/gnome/dconf_db_up_to_date/bash/shared.sh
+new file mode 100644
+index 0000000000..db06c9f5aa
+--- /dev/null
++++ b/linux_os/guide/system/software/gnome/dconf_db_up_to_date/bash/shared.sh
+@@ -0,0 +1,3 @@
++# platform = multi_platform_rhel,multi_platform_fedora,multi_platform_ol
++
++dconf update
+diff --git a/linux_os/guide/system/software/gnome/dconf_db_up_to_date/oval/shared.xml b/linux_os/guide/system/software/gnome/dconf_db_up_to_date/oval/shared.xml
+new file mode 100644
+index 0000000000..b3b5b0358b
+--- /dev/null
++++ b/linux_os/guide/system/software/gnome/dconf_db_up_to_date/oval/shared.xml
+@@ -0,0 +1,63 @@
++<def-group>
++
++  {{% macro check_db_is_up_to_date(db_name) %}}
++  <unix:file_object id="obj_dconf_{{{ db_name }}}_db" comment="The binary system-wide dconf database with '{{{ db_name }}}' settings" version="1">
++    <unix:filepath>/etc/dconf/db/{{{ db_name }}}</unix:filepath>
++  </unix:file_object>
++
++  <local_variable id="var_dconf_{{{ db_name }}}_db_modified_time" datatype="string" version="1" comment="When the '{{{ db_name }}}' dconf DB has been modified">
++    <time_difference format_2="seconds_since_epoch">
++      <object_component object_ref="obj_dconf_{{{ db_name }}}_db" item_field="m_time"/>
++    </time_difference>
++  </local_variable>
++
++  <unix:file_object id="obj_dconf_{{{ db_name }}}_config" comment="The dconf keyfile with '{{{ db_name }}}' settings" version="1">
++    <unix:path>/etc/dconf/db/{{{ db_name }}}.d/</unix:path>
++    <unix:filename operation="pattern match">.*</unix:filename>
++  </unix:file_object>
++
++  <local_variable id="var_dconf_{{{ db_name }}}_keyfiles_modified_time" datatype="int" version="1" comment="When dconf keyfiles in the '{{{ db_name }}}' tree have been modified">
++    <time_difference format_2="seconds_since_epoch">
++      <object_component object_ref="obj_dconf_{{{ db_name }}}_config" item_field="m_time"/>
++    </time_difference>
++  </local_variable>
++
++  <ind:variable_test check="all" check_existence="all_exist" id="test_dconf_{{{ db_name }}}_up_to_date" version="1" comment="Check if the {{{ db_name }}} dconf DB is up-to-date with keyfiles in the {{{ db_name }}} tree.">
++    <ind:object object_ref="object_{{{ db_name }}}_db_modified_time" />
++    <ind:state state_ref="state_{{{ db_name }}}_db_is_up_to_date" />
++  </ind:variable_test>
++
++  <ind:variable_object comment="All modified times of all keyfiles" id="object_{{{ db_name }}}_db_modified_time" version="1">
++     <ind:var_ref>var_dconf_{{{ db_name }}}_db_modified_time</ind:var_ref>
++   </ind:variable_object>
++
++  <!-- The age of the DB has to be lower than age of any keyfile. -->
++  <ind:variable_state id="state_{{{ db_name }}}_db_is_up_to_date" version="1">
++    <ind:value datatype="int" operation="less than or equal" var_check="all" var_ref="var_dconf_{{{ db_name }}}_keyfiles_modified_time" />
++  </ind:variable_state>
++  {{% endmacro %}}
++
++  <definition class="compliance" id="dconf_db_up_to_date" version="2">
++    <metadata>
++      <title>Configure the GNOME3 GUI Screen locking</title>
++      <affected family="unix">
++        <platform>Red Hat Enterprise Linux 7</platform>
++        <platform>Red Hat Enterprise Linux 8</platform>
++        <platform>multi_platform_fedora</platform>
++        <platform>multi_platform_ol</platform>
++      </affected>
++      <description>The allowed period of inactivity before the screensaver is activated.</description>
++    </metadata>
++    <criteria operator="OR">
++      <extend_definition comment="dconf installed" definition_ref="package_dconf_installed" negate="true" />
++      <criteria comment="check screensaver idle delay and prevent user from changing it" operator="AND">
++        <criterion comment="local database is up-to-date wrt keyfiles" test_ref="test_dconf_local_up_to_date" />
++        <criterion comment="gdm database is up-to-date wrt keyfiles" test_ref="test_dconf_gdm_up_to_date" />
++      </criteria>
++    </criteria>
++  </definition>
++
++  {{{ check_db_is_up_to_date("local") }}}
++  {{{ check_db_is_up_to_date("gdm") }}}
++
++</def-group>
+diff --git a/linux_os/guide/system/software/gnome/dconf_db_up_to_date/rule.yml b/linux_os/guide/system/software/gnome/dconf_db_up_to_date/rule.yml
+new file mode 100644
+index 0000000000..3017b789f8
+--- /dev/null
++++ b/linux_os/guide/system/software/gnome/dconf_db_up_to_date/rule.yml
+@@ -0,0 +1,30 @@
++documentation_complete: true
++
++prodtype: rhel7,rhel8,fedora,ol7,ol8
++
++title: 'Make sure that the dconf databases are up-to-date with regards to respective keyfiles'
++
++description: |-
++    By default, DConf uses a binary database as a data backend.
++    The system-level database is compiled from keyfiles in the /etc/dconf/db/ directory by the <pre>dconf update</pre> command.
++
++rationale: |-
++    Unlike text-based keyfiles, the binary database is impossible to check by OVAL.
++    Therefore, in order to evaluate dconf configuration, both have to be true at the same time -
++    configuration files have to be compliant, and the database needs to be more recent than those keyfiles,
++    which gives confidence that it reflects them.
++
++severity: high
++
++identifiers:
++    cce@rhel8: 81003-6
++    cce@rhel7: 81004-4
++
++ocil_clause: 'The system-wide dconf databases are up-to-date with regards to respective keyfiles'
++
++ocil: |-
++    In order to be sure that the databases are up-to-date, run the
++    <pre>dconf update</pre>
++    command as the administrator.
++
++platform: machine
+diff --git a/rhel7/profiles/ospp.profile b/rhel7/profiles/ospp.profile
+index 36e5d7ee90..d551465f70 100644
+--- a/rhel7/profiles/ospp.profile
++++ b/rhel7/profiles/ospp.profile
+@@ -401,6 +401,7 @@ selections:
+     - network_sniffer_disabled
+     - network_ipv6_disable_rpc
+     - network_ipv6_privacy_extensions
++    - dconf_db_up_to_date
+     - dconf_gnome_banner_enabled
+     - dconf_gnome_disable_automount
+     - dconf_gnome_disable_ctrlaltdel_reboot
+diff --git a/shared/references/cce-rhel-avail.txt b/shared/references/cce-rhel-avail.txt
+index 3cc6d0a916..d6e8161225 100644
+--- a/shared/references/cce-rhel-avail.txt
++++ b/shared/references/cce-rhel-avail.txt
+@@ -1,5 +1,3 @@
+-CCE-81003-6
+-CCE-81004-4
+ CCE-81005-1
+ CCE-81006-9
+ CCE-81007-7
+
+From 5a857f490e914078b610eb3d05e390861c30eef4 Mon Sep 17 00:00:00 2001
+From: Gabriel Becker <ggasparb@redhat.com>
+Date: Wed, 29 May 2019 17:31:02 +0200
+Subject: [PATCH 2/9] Add test scenarios for dconf gnome rules.
+
+---
+ .../correct_value.pass.sh                     | 18 ++++++++++++++++
+ .../wrong_value.fail.sh                       | 18 ++++++++++++++++
+ .../correct_value.pass.sh                     | 21 +++++++++++++++++++
+ .../wrong_value.fail.sh                       | 21 +++++++++++++++++++
+ .../correct_value.pass.sh                     | 18 ++++++++++++++++
+ .../wrong_value.fail.sh                       | 18 ++++++++++++++++
+ .../correct_value.pass.sh                     | 18 ++++++++++++++++
+ .../wrong_value.fail.sh                       | 18 ++++++++++++++++
+ .../correct_value.pass.sh                     | 18 ++++++++++++++++
+ .../wrong_value.fail.sh                       | 18 ++++++++++++++++
+ .../correct_value.pass.sh                     | 18 ++++++++++++++++
+ .../wrong_value.fail.sh                       | 18 ++++++++++++++++
+ 12 files changed, 222 insertions(+)
+ create mode 100644 tests/data/group_system/group_accounts/group_accounts-banners/group_gui_login_banner/rule_dconf_gnome_banner_enabled/correct_value.pass.sh
+ create mode 100644 tests/data/group_system/group_accounts/group_accounts-banners/group_gui_login_banner/rule_dconf_gnome_banner_enabled/wrong_value.fail.sh
+ create mode 100644 tests/data/group_system/group_accounts/group_accounts-banners/group_gui_login_banner/rule_dconf_gnome_login_banner_text/correct_value.pass.sh
+ create mode 100644 tests/data/group_system/group_accounts/group_accounts-banners/group_gui_login_banner/rule_dconf_gnome_login_banner_text/wrong_value.fail.sh
+ create mode 100644 tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_disable_restart_shutdown/correct_value.pass.sh
+ create mode 100644 tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_disable_restart_shutdown/wrong_value.fail.sh
+ create mode 100644 tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_disable_user_list/correct_value.pass.sh
+ create mode 100644 tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_disable_user_list/wrong_value.fail.sh
+ create mode 100644 tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_enable_smartcard_auth/correct_value.pass.sh
+ create mode 100644 tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_enable_smartcard_auth/wrong_value.fail.sh
+ create mode 100644 tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_login_retries/correct_value.pass.sh
+ create mode 100644 tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_login_retries/wrong_value.fail.sh
+
+diff --git a/tests/data/group_system/group_accounts/group_accounts-banners/group_gui_login_banner/rule_dconf_gnome_banner_enabled/correct_value.pass.sh b/tests/data/group_system/group_accounts/group_accounts-banners/group_gui_login_banner/rule_dconf_gnome_banner_enabled/correct_value.pass.sh
+new file mode 100644
+index 0000000000..d6f11373d0
+--- /dev/null
++++ b/tests/data/group_system/group_accounts/group_accounts-banners/group_gui_login_banner/rule_dconf_gnome_banner_enabled/correct_value.pass.sh
+@@ -0,0 +1,18 @@
++#!/bin/bash
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++
++. ../../../../group_software/group_gnome/dconf_test_functions.sh
++
++if ! rpm -q dconf; then
++    yum -y install dconf
++fi
++
++if ! rpm -q gdm; then
++    yum -y install gdm
++fi
++
++clean_dconf_settings
++add_dconf_setting "org/gnome/login-screen" "banner-message-enable" "true" "gdm.d" "00-security-settings"
++add_dconf_lock "org/gnome/login-screen" "banner-message-enable" "gdm.d" "00-security-settings"
++
++dconf update
+diff --git a/tests/data/group_system/group_accounts/group_accounts-banners/group_gui_login_banner/rule_dconf_gnome_banner_enabled/wrong_value.fail.sh b/tests/data/group_system/group_accounts/group_accounts-banners/group_gui_login_banner/rule_dconf_gnome_banner_enabled/wrong_value.fail.sh
+new file mode 100644
+index 0000000000..f1e97fea20
+--- /dev/null
++++ b/tests/data/group_system/group_accounts/group_accounts-banners/group_gui_login_banner/rule_dconf_gnome_banner_enabled/wrong_value.fail.sh
+@@ -0,0 +1,18 @@
++#!/bin/bash
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++
++. ../../../../group_software/group_gnome/dconf_test_functions.sh
++
++if ! rpm -q dconf; then
++    yum -y install dconf
++fi
++
++if ! rpm -q gdm; then
++    yum -y install gdm
++fi
++
++clean_dconf_settings
++add_dconf_setting "org/gnome/login-screen" "banner-message-enable" "false" "gdm.d" "00-security-settings"
++add_dconf_lock "org/gnome/login-screen" "banner-message-enable" "gdm.d" "00-security-settings"
++
++dconf update
+diff --git a/tests/data/group_system/group_accounts/group_accounts-banners/group_gui_login_banner/rule_dconf_gnome_login_banner_text/correct_value.pass.sh b/tests/data/group_system/group_accounts/group_accounts-banners/group_gui_login_banner/rule_dconf_gnome_login_banner_text/correct_value.pass.sh
+new file mode 100644
+index 0000000000..e161691aa7
+--- /dev/null
++++ b/tests/data/group_system/group_accounts/group_accounts-banners/group_gui_login_banner/rule_dconf_gnome_login_banner_text/correct_value.pass.sh
+@@ -0,0 +1,21 @@
++#!/bin/bash
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++
++. ../../../../group_software/group_gnome/dconf_test_functions.sh
++
++if ! rpm -q dconf; then
++    yum -y install dconf
++fi
++
++if ! rpm -q gdm; then
++    yum -y install gdm
++fi
++
++login_banner_text="--[\s\n]+WARNING[\s\n]+--[\s\n]*This[\s\n]+system[\s\n]+is[\s\n]+for[\s\n]+the[\s\n]+use[\s\n]+of[\s\n]+authorized[\s\n]+users[\s\n]+only.[\s\n]+Individuals[\s\n]*using[\s\n]+this[\s\n]+computer[\s\n]+system[\s\n]+without[\s\n]+authority[\s\n]+or[\s\n]+in[\s\n]+excess[\s\n]+of[\s\n]+their[\s\n]*authority[\s\n]+are[\s\n]+subject[\s\n]+to[\s\n]+having[\s\n]+all[\s\n]+their[\s\n]+activities[\s\n]+on[\s\n]+this[\s\n]+system[\s\n]*monitored[\s\n]+and[\s\n]+recorded[\s\n]+by[\s\n]+system[\s\n]+personnel.[\s\n]+Anyone[\s\n]+using[\s\n]+this[\s\n]*system[\s\n]+expressly[\s\n]+consents[\s\n]+to[\s\n]+such[\s\n]+monitoring[\s\n]+and[\s\n]+is[\s\n]+advised[\s\n]+that[\s\n]*if[\s\n]+such[\s\n]+monitoring[\s\n]+reveals[\s\n]+possible[\s\n]+evidence[\s\n]+of[\s\n]+criminal[\s\n]+activity[\s\n]*system[\s\n]+personal[\s\n]+may[\s\n]+provide[\s\n]+the[\s\n]+evidence[\s\n]+of[\s\n]+such[\s\n]+monitoring[\s\n]+to[\s\n]+law[\s\n]*enforcement[\s\n]+officials."
++expanded=$(echo "$login_banner_text" | sed 's/(\\\\\x27)\*/\\\x27/g;s/(\\\x27)\*//g;s/(\\\\\x27)/tamere/g;s/(\^\(.*\)\$|.*$/\1/g;s/\[\\s\\n\][+*]/ /g;s/\\//g;s/(n)\*/\\n/g;s/\x27/\\\x27/g;')
++
++clean_dconf_settings
++add_dconf_setting "org/gnome/login-screen" "banner-message-text" "'${expanded}''" "gdm.d" "00-security-settings"
++add_dconf_lock "org/gnome/login-screen" "banner-message-text" "gdm.d" "00-security-settings-lock"
++
++dconf update
+diff --git a/tests/data/group_system/group_accounts/group_accounts-banners/group_gui_login_banner/rule_dconf_gnome_login_banner_text/wrong_value.fail.sh b/tests/data/group_system/group_accounts/group_accounts-banners/group_gui_login_banner/rule_dconf_gnome_login_banner_text/wrong_value.fail.sh
+new file mode 100644
+index 0000000000..b45c5b193f
+--- /dev/null
++++ b/tests/data/group_system/group_accounts/group_accounts-banners/group_gui_login_banner/rule_dconf_gnome_login_banner_text/wrong_value.fail.sh
+@@ -0,0 +1,21 @@
++#!/bin/bash
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++
++. ../../../../group_software/group_gnome/dconf_test_functions.sh
++
++if ! rpm -q dconf; then
++    yum -y install dconf
++fi
++
++if ! rpm -q gdm; then
++    yum -y install gdm
++fi
++
++login_banner_text="Wrong Banner Text"
++expanded=$(echo "$login_banner_text" | sed 's/(\\\\\x27)\*/\\\x27/g;s/(\\\x27)\*//g;s/(\\\\\x27)/tamere/g;s/(\^\(.*\)\$|.*$/\1/g;s/\[\\s\\n\][+*]/ /g;s/\\//g;s/(n)\*/\\n/g;s/\x27/\\\x27/g;')
++
++clean_dconf_settings
++add_dconf_setting "org/gnome/login-screen" "banner-message-text" "'${expanded}'" "gdm.d" "00-security-settings"
++add_dconf_lock "org/gnome/login-screen" "banner-message-text" "gdm.d" "00-security-settings-lock"
++
++dconf update
+diff --git a/tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_disable_restart_shutdown/correct_value.pass.sh b/tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_disable_restart_shutdown/correct_value.pass.sh
+new file mode 100644
+index 0000000000..a5a207b80a
+--- /dev/null
++++ b/tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_disable_restart_shutdown/correct_value.pass.sh
+@@ -0,0 +1,18 @@
++#!/bin/bash
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++
++. ../../dconf_test_functions.sh
++
++if ! rpm -q dconf; then
++    yum -y install dconf
++fi
++
++if ! rpm -q gdm; then
++    yum -y install gdm
++fi
++
++clean_dconf_settings
++add_dconf_setting "org/gnome/login-screen" "disable-restart-buttons" "true" "gdm.d" "00-security-settings"
++add_dconf_lock "org/gnome/login-screen" "disable-restart-buttons" "gdm.d" "00-security-settings-lock"
++
++dconf update
+diff --git a/tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_disable_restart_shutdown/wrong_value.fail.sh b/tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_disable_restart_shutdown/wrong_value.fail.sh
+new file mode 100644
+index 0000000000..04d3e9eca2
+--- /dev/null
++++ b/tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_disable_restart_shutdown/wrong_value.fail.sh
+@@ -0,0 +1,18 @@
++#!/bin/bash
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++
++. ../../dconf_test_functions.sh
++
++if ! rpm -q dconf; then
++    yum -y install dconf
++fi
++
++if ! rpm -q gdm; then
++    yum -y install gdm
++fi
++
++clean_dconf_settings
++add_dconf_setting "org/gnome/login-screen" "disable-restart-buttons" "false" "gdm.d" "00-security-settings"
++add_dconf_lock "org/gnome/login-screen" "disable-restart-buttons" "gdm.d" "00-security-settings-lock"
++
++dconf update
+diff --git a/tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_disable_user_list/correct_value.pass.sh b/tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_disable_user_list/correct_value.pass.sh
+new file mode 100644
+index 0000000000..9a3d60d9f6
+--- /dev/null
++++ b/tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_disable_user_list/correct_value.pass.sh
+@@ -0,0 +1,18 @@
++#!/bin/bash
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++
++. ../../dconf_test_functions.sh
++
++if ! rpm -q dconf; then
++    yum -y install dconf
++fi
++
++if ! rpm -q gdm; then
++    yum -y install gdm
++fi
++
++clean_dconf_settings
++add_dconf_setting "org/gnome/login-screen" "disable-user-list" "true" "gdm.d" "00-security-settings"
++add_dconf_lock "org/gnome/login-screen" "disable-user-list" "gdm.d" "00-security-settings-lock"
++
++dconf update
+diff --git a/tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_disable_user_list/wrong_value.fail.sh b/tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_disable_user_list/wrong_value.fail.sh
+new file mode 100644
+index 0000000000..11e3cbfa9b
+--- /dev/null
++++ b/tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_disable_user_list/wrong_value.fail.sh
+@@ -0,0 +1,18 @@
++#!/bin/bash
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++
++. ../../dconf_test_functions.sh
++
++if ! rpm -q dconf; then
++    yum -y install dconf
++fi
++
++if ! rpm -q gdm; then
++    yum -y install gdm
++fi
++
++clean_dconf_settings
++add_dconf_setting "org/gnome/login-screen" "disable-user-list" "false" "gdm.d" "00-security-settings"
++add_dconf_lock "org/gnome/login-screen" "disable-user-list" "gdm.d" "00-security-settings-lock"
++
++dconf update
+diff --git a/tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_enable_smartcard_auth/correct_value.pass.sh b/tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_enable_smartcard_auth/correct_value.pass.sh
+new file mode 100644
+index 0000000000..58703799f6
+--- /dev/null
++++ b/tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_enable_smartcard_auth/correct_value.pass.sh
+@@ -0,0 +1,18 @@
++#!/bin/bash
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++
++. ../../dconf_test_functions.sh
++
++if ! rpm -q dconf; then
++    yum -y install dconf
++fi
++
++if ! rpm -q gdm; then
++    yum -y install gdm
++fi
++
++clean_dconf_settings
++add_dconf_setting "org/gnome/login-screen" "enable-smartcard-authentication" "true" "gdm.d" "00-security-settings"
++add_dconf_lock "org/gnome/login-screen" "enable-smartcard-authentication" "gdm.d" "00-security-settings-lock"
++
++dconf update
+diff --git a/tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_enable_smartcard_auth/wrong_value.fail.sh b/tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_enable_smartcard_auth/wrong_value.fail.sh
+new file mode 100644
+index 0000000000..18f89c182e
+--- /dev/null
++++ b/tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_enable_smartcard_auth/wrong_value.fail.sh
+@@ -0,0 +1,18 @@
++#!/bin/bash
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++
++. ../../dconf_test_functions.sh
++
++if ! rpm -q dconf; then
++    yum -y install dconf
++fi
++
++if ! rpm -q gdm; then
++    yum -y install gdm
++fi
++
++clean_dconf_settings
++add_dconf_setting "org/gnome/login-screen" "enable-smartcard-authentication" "false" "gdm.d" "00-security-settings"
++add_dconf_lock "org/gnome/login-screen" "enable-smartcard-authentication" "gdm.d" "00-security-settings-lock"
++
++dconf update
+diff --git a/tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_login_retries/correct_value.pass.sh b/tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_login_retries/correct_value.pass.sh
+new file mode 100644
+index 0000000000..0cc2a80762
+--- /dev/null
++++ b/tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_login_retries/correct_value.pass.sh
+@@ -0,0 +1,18 @@
++#!/bin/bash
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++
++. ../../dconf_test_functions.sh
++
++if ! rpm -q dconf; then
++    yum -y install dconf
++fi
++
++if ! rpm -q gdm; then
++    yum -y install gdm
++fi
++
++clean_dconf_settings
++add_dconf_setting "org/gnome/login-screen" "allowed-failures" "3" "gdm.d" "00-security-settings"
++add_dconf_lock "org/gnome/login-screen" "allowed-failures" "gdm.d" "00-security-settings-lock"
++
++dconf update
+diff --git a/tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_login_retries/wrong_value.fail.sh b/tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_login_retries/wrong_value.fail.sh
+new file mode 100644
+index 0000000000..f89a9d74b9
+--- /dev/null
++++ b/tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_login_retries/wrong_value.fail.sh
+@@ -0,0 +1,18 @@
++#!/bin/bash
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++
++. ../../dconf_test_functions.sh
++
++if ! rpm -q dconf; then
++    yum -y install dconf
++fi
++
++if ! rpm -q gdm; then
++    yum -y install gdm
++fi
++
++clean_dconf_settings
++add_dconf_setting "org/gnome/login-screen" "allowed-failures" "99" "gdm.d" "00-security-settings"
++add_dconf_lock "org/gnome/login-screen" "allowed-failures" "gdm.d" "00-security-settings-lock"
++
++dconf update
+
+From d2facf408c5f011449539fc3edeaed90a72af04d Mon Sep 17 00:00:00 2001
+From: Gabriel Becker <ggasparb@redhat.com>
+Date: Thu, 30 May 2019 15:39:36 +0200
+Subject: [PATCH 3/9] Add test scenarios for dconf_db_up_to_date.
+
+---
+ .../group_gnome/dconf_test_functions.sh       |  7 ++++-
+ .../db_not_up_to_date.fail.sh                 | 26 +++++++++++++++++++
+ .../db_up_to_date.pass.sh                     | 21 +++++++++++++++
+ .../no_db_files.fail.sh                       | 23 ++++++++++++++++
+ 4 files changed, 76 insertions(+), 1 deletion(-)
+ create mode 100644 tests/data/group_system/group_software/group_gnome/rule_dconf_db_up_to_date/db_not_up_to_date.fail.sh
+ create mode 100644 tests/data/group_system/group_software/group_gnome/rule_dconf_db_up_to_date/db_up_to_date.pass.sh
+ create mode 100644 tests/data/group_system/group_software/group_gnome/rule_dconf_db_up_to_date/no_db_files.fail.sh
+
+diff --git a/tests/data/group_system/group_software/group_gnome/dconf_test_functions.sh b/tests/data/group_system/group_software/group_gnome/dconf_test_functions.sh
+index 07940ea272..d975ea0715 100644
+--- a/tests/data/group_system/group_software/group_gnome/dconf_test_functions.sh
++++ b/tests/data/group_system/group_software/group_gnome/dconf_test_functions.sh
+@@ -4,6 +4,11 @@ clean_dconf_settings(){
+ 	rm -rf /etc/dconf/db/*
+ }
+ 
++# Wipes out dconf db files
++remove_dconf_databases(){
++	rm -f /etc/dconf/db/*
++}
++
+ # Adds a new dconf setting
+ # $1 _path
+ # $2 _setting
+@@ -12,7 +17,7 @@ clean_dconf_settings(){
+ # $5 _settingFile
+ add_dconf_setting() {
+ 	local _path=$1 _setting=$2 _value=$3 _db=$4 _settingFile=$5
+-	mkdir /etc/dconf/db/${_db}
++	mkdir -p /etc/dconf/db/${_db} || true
+ 	echo "[${_path}]" > /etc/dconf/db/${_db}/${_settingFile}
+ 	echo "${_setting}=${_value}" >> /etc/dconf/db/${_db}/${_settingFile}
+ }
+diff --git a/tests/data/group_system/group_software/group_gnome/rule_dconf_db_up_to_date/db_not_up_to_date.fail.sh b/tests/data/group_system/group_software/group_gnome/rule_dconf_db_up_to_date/db_not_up_to_date.fail.sh
+new file mode 100644
+index 0000000000..bb8b1d42ff
+--- /dev/null
++++ b/tests/data/group_system/group_software/group_gnome/rule_dconf_db_up_to_date/db_not_up_to_date.fail.sh
+@@ -0,0 +1,26 @@
++#!/bin/bash
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++
++. ../dconf_test_functions.sh
++
++if ! rpm -q dconf; then
++    yum -y install dconf
++fi
++
++if ! rpm -q gdm; then
++    yum -y install gdm
++fi
++
++clean_dconf_settings
++add_dconf_setting "org/gnome/login-screen" "banner-message-enabled" "true" "gdm.d" "00-security-settings"
++add_dconf_lock "org/gnome/login-screen" "banner-message-enable" "gdm.d" "00-security-settings-lock"
++
++add_dconf_setting "org/gnome/login-screen" "banner-message-enabled" "true" "local.d" "00-security-settings"
++add_dconf_lock "org/gnome/login-screen" "banner-message-enable" "local.d" "00-security-settings-lock"
++
++dconf update
++
++sleep 3
++
++# make static files newer than the database
++add_dconf_setting "org/gnome/login-screen" "banner-message-enabled" "true" "gdm.d" "00-security-settings"
+diff --git a/tests/data/group_system/group_software/group_gnome/rule_dconf_db_up_to_date/db_up_to_date.pass.sh b/tests/data/group_system/group_software/group_gnome/rule_dconf_db_up_to_date/db_up_to_date.pass.sh
+new file mode 100644
+index 0000000000..66ed76e4fa
+--- /dev/null
++++ b/tests/data/group_system/group_software/group_gnome/rule_dconf_db_up_to_date/db_up_to_date.pass.sh
+@@ -0,0 +1,21 @@
++#!/bin/bash
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++
++. ../dconf_test_functions.sh
++
++if ! rpm -q dconf; then
++    yum -y install dconf
++fi
++
++if ! rpm -q gdm; then
++    yum -y install gdm
++fi
++
++clean_dconf_settings
++add_dconf_setting "org/gnome/login-screen" "banner-message-enabled" "true" "gdm.d" "00-security-settings"
++add_dconf_lock "org/gnome/login-screen" "banner-message-enable" "gdm.d" "00-security-settings-lock"
++
++add_dconf_setting "org/gnome/login-screen" "banner-message-enabled" "true" "local.d" "00-security-settings"
++add_dconf_lock "org/gnome/login-screen" "banner-message-enable" "local.d" "00-security-settings-lock"
++
++dconf update
+diff --git a/tests/data/group_system/group_software/group_gnome/rule_dconf_db_up_to_date/no_db_files.fail.sh b/tests/data/group_system/group_software/group_gnome/rule_dconf_db_up_to_date/no_db_files.fail.sh
+new file mode 100644
+index 0000000000..a7bc04efac
+--- /dev/null
++++ b/tests/data/group_system/group_software/group_gnome/rule_dconf_db_up_to_date/no_db_files.fail.sh
+@@ -0,0 +1,23 @@
++#!/bin/bash
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++
++. ../dconf_test_functions.sh
++
++if ! rpm -q dconf; then
++    yum -y install dconf
++fi
++
++if ! rpm -q gdm; then
++    yum -y install gdm
++fi
++
++# remove all database files
++remove_dconf_databases
++
++sleep 3
++
++add_dconf_setting "org/gnome/login-screen" "banner-message-enabled" "true" "gdm.d" "00-security-settings"
++add_dconf_lock "org/gnome/login-screen" "banner-message-enable" "gdm.d" "00-security-settings-lock"
++
++add_dconf_setting "org/gnome/login-screen" "banner-message-enabled" "true" "local.d" "00-security-settings"
++add_dconf_lock "org/gnome/login-screen" "banner-message-enable" "local.d" "00-security-settings-lock"
+
+From d57e981a45e88a9e28b621ed5d9cbf64c17f3592 Mon Sep 17 00:00:00 2001
+From: Gabriel Becker <ggasparb@redhat.com>
+Date: Thu, 30 May 2019 16:45:35 +0200
+Subject: [PATCH 4/9] Add dconf_db_up_to_date to profiles which use gnome
+ config.
+
+---
+ fedora/profiles/pci-dss.profile | 1 +
+ ol7/profiles/pci-dss.profile    | 1 +
+ ol7/profiles/stig-ol7-disa.profile       | 1 +
+ ol8/profiles/ospp.profile       | 1 +
+ ol8/profiles/pci-dss.profile    | 1 +
+ rhel7/profiles/C2S.profile      | 1 +
+ rhel7/profiles/hipaa.profile    | 1 +
+ rhel7/profiles/ospp42.profile   | 1 +
+ rhel7/profiles/pci-dss.profile  | 1 +
+ rhel7/profiles/stig-rhel7-disa.profile     | 1 +
+ rhel8/profiles/cjis.profile     | 1 +
+ rhel8/profiles/hipaa.profile    | 1 +
+ rhel8/profiles/ospp.profile     | 1 +
+ rhel8/profiles/pci-dss.profile  | 1 +
+ 14 files changed, 14 insertions(+)
+
+diff --git a/fedora/profiles/pci-dss.profile b/fedora/profiles/pci-dss.profile
+index 5e47534e81..dea9efe685 100644
+--- a/fedora/profiles/pci-dss.profile
++++ b/fedora/profiles/pci-dss.profile
+@@ -98,6 +98,7 @@ selections:
+     - account_disable_post_pw_expiration
+     - accounts_passwords_pam_faillock_deny
+     - accounts_passwords_pam_faillock_unlock_time
++    - dconf_db_up_to_date
+     - dconf_gnome_screensaver_idle_delay
+     - dconf_gnome_screensaver_idle_activation_enabled
+     - dconf_gnome_screensaver_lock_enabled
+diff --git a/ol7/profiles/pci-dss.profile b/ol7/profiles/pci-dss.profile
+index 1648129066..01fcda6031 100644
+--- a/ol7/profiles/pci-dss.profile
++++ b/ol7/profiles/pci-dss.profile
+@@ -121,6 +121,7 @@ selections:
+     - accounts_passwords_pam_faillock_deny
+     - accounts_passwords_pam_faillock_unlock_time
+     - account_unique_name
++    - dconf_db_up_to_date
+     - dconf_gnome_screensaver_idle_activation_enabled
+     - dconf_gnome_screensaver_idle_delay
+     - dconf_gnome_screensaver_lock_enabled
+diff --git a/ol7/profiles/stig-ol7-disa.profile b/ol7/profiles/stig-ol7-disa.profile
+index f9d2f4c900..9ae23a41be 100644
+--- a/ol7/profiles/stig-ol7-disa.profile
++++ b/ol7/profiles/stig-ol7-disa.profile
+@@ -109,6 +109,7 @@ selections:
+     - audit_rules_usergroup_modification_opasswd
+     - audit_rules_usergroup_modification_passwd
+     - audit_rules_usergroup_modification_shadow
++    - dconf_db_up_to_date
+     - dconf_gnome_screensaver_idle_activation_enabled
+     - dconf_gnome_screensaver_idle_activation_locked
+     - dconf_gnome_screensaver_idle_delay
+diff --git a/ol8/profiles/ospp.profile b/ol8/profiles/ospp.profile
+index 5c13575f72..8506713cc1 100644
+--- a/ol8/profiles/ospp.profile
++++ b/ol8/profiles/ospp.profile
+@@ -42,6 +42,7 @@ selections:
+     - sysctl_kernel_kptr_restrict
+     - sysctl_kernel_kexec_load_disabled
+     - sysctl_kernel_dmesg_restrict
++    - dconf_db_up_to_date
+     - dconf_gnome_screensaver_idle_activation_enabled
+     - dconf_gnome_screensaver_idle_delay
+     - dconf_gnome_screensaver_lock_delay
+diff --git a/ol8/profiles/pci-dss.profile b/ol8/profiles/pci-dss.profile
+index 6920cf9b7d..237757c523 100644
+--- a/ol8/profiles/pci-dss.profile
++++ b/ol8/profiles/pci-dss.profile
+@@ -126,6 +126,7 @@ selections:
+     - accounts_passwords_pam_faillock_deny
+     - accounts_passwords_pam_faillock_unlock_time
+     - account_unique_name
++    - dconf_db_up_to_date
+     - dconf_gnome_screensaver_idle_activation_enabled
+     - dconf_gnome_screensaver_idle_delay
+     - dconf_gnome_screensaver_lock_enabled
+diff --git a/rhel7/profiles/C2S.profile b/rhel7/profiles/C2S.profile
+index 65805957af..031b0247df 100644
+--- a/rhel7/profiles/C2S.profile
++++ b/rhel7/profiles/C2S.profile
+@@ -70,6 +70,7 @@ selections:
+     - selinux_confinement_of_daemons
+     - banner_etc_issue
+     - login_banner_text=usgcb_default
++    - dconf_db_up_to_date
+     - dconf_gnome_login_banner_text
+     - dconf_gnome_banner_enabled
+     - security_patches_up_to_date
+diff --git a/rhel7/profiles/hipaa.profile b/rhel7/profiles/hipaa.profile
+index 76fb4a8269..a58f625309 100644
+--- a/rhel7/profiles/hipaa.profile
++++ b/rhel7/profiles/hipaa.profile
+@@ -28,6 +28,7 @@ selections:
+     - service_debug-shell_disabled
+     - disable_ctrlaltdel_reboot
+     - disable_ctrlaltdel_burstaction
++    - dconf_db_up_to_date
+     - dconf_gnome_remote_access_credential_prompt
+     - dconf_gnome_remote_access_encryption
+     - sshd_disable_empty_passwords
+diff --git a/rhel7/profiles/ospp42.profile b/rhel7/profiles/ospp42.profile
+index de4827afaf..3f59466477 100644
+--- a/rhel7/profiles/ospp42.profile
++++ b/rhel7/profiles/ospp42.profile
+@@ -42,6 +42,7 @@ selections:
+     - sysctl_kernel_kptr_restrict
+     - sysctl_kernel_kexec_load_disabled
+     - sysctl_kernel_dmesg_restrict
++    - dconf_db_up_to_date
+     - dconf_gnome_screensaver_idle_activation_enabled
+     - dconf_gnome_screensaver_idle_delay
+     - dconf_gnome_screensaver_lock_delay
+diff --git a/rhel7/profiles/pci-dss.profile b/rhel7/profiles/pci-dss.profile
+index b4e4786ce9..0d9a51c42b 100644
+--- a/rhel7/profiles/pci-dss.profile
++++ b/rhel7/profiles/pci-dss.profile
+@@ -79,6 +79,7 @@ selections:
+     - account_disable_post_pw_expiration
+     - accounts_passwords_pam_faillock_deny
+     - accounts_passwords_pam_faillock_unlock_time
++    - dconf_db_up_to_date
+     - dconf_gnome_screensaver_idle_delay
+     - dconf_gnome_screensaver_idle_activation_enabled
+     - dconf_gnome_screensaver_lock_enabled
+diff --git a/rhel7/profiles/stig-rhel7-disa.profile b/rhel7/profiles/stig-rhel7-disa.profile
+index 4edae36b0c..1d558f0068 100644
+--- a/rhel7/profiles/stig-rhel7-disa.profile
++++ b/rhel7/profiles/stig-rhel7-disa.profile
+@@ -57,6 +57,7 @@ selections:
+     - rpm_verify_permissions
+     - rpm_verify_ownership
+     - rpm_verify_hashes
++    - dconf_db_up_to_date
+     - dconf_gnome_banner_enabled
+     - dconf_gnome_login_banner_text
+     - banner_etc_issue
+diff --git a/rhel8/profiles/cjis.profile b/rhel8/profiles/cjis.profile
+index ec225d89a4..8d173d257f 100644
+--- a/rhel8/profiles/cjis.profile
++++ b/rhel8/profiles/cjis.profile
+@@ -86,6 +86,7 @@ selections:
+     - var_password_pam_retry=5
+     - var_accounts_passwords_pam_faillock_deny=5
+     - var_accounts_passwords_pam_faillock_unlock_time=600
++    - dconf_db_up_to_date
+     - dconf_gnome_screensaver_idle_delay
+     - dconf_gnome_screensaver_idle_activation_enabled
+     - dconf_gnome_screensaver_lock_enabled
+diff --git a/rhel8/profiles/hipaa.profile b/rhel8/profiles/hipaa.profile
+index d44960d84c..3debc739fc 100644
+--- a/rhel8/profiles/hipaa.profile
++++ b/rhel8/profiles/hipaa.profile
+@@ -28,6 +28,7 @@ selections:
+     - service_debug-shell_disabled
+     - disable_ctrlaltdel_reboot
+     - disable_ctrlaltdel_burstaction
++    - dconf_db_up_to_date
+     - dconf_gnome_remote_access_credential_prompt
+     - dconf_gnome_remote_access_encryption
+     - sshd_disable_empty_passwords
+diff --git a/rhel8/profiles/ospp.profile b/rhel8/profiles/ospp.profile
+index f9f7cd04dc..c5a7ee5ed5 100644
+--- a/rhel8/profiles/ospp.profile
++++ b/rhel8/profiles/ospp.profile
+@@ -219,6 +219,7 @@ selections:
+     ### FMT_MOF_EXT.1 / AC-11(a)
+     ### Enable Screen Lock
+     - package_tmux_installed
++    - dconf_db_up_to_date
+     - dconf_gnome_screensaver_idle_activation_enabled
+     - dconf_gnome_screensaver_idle_delay
+     - dconf_gnome_screensaver_lock_delay
+diff --git a/rhel8/profiles/pci-dss.profile b/rhel8/profiles/pci-dss.profile
+index bdca65b4fa..89abad1338 100644
+--- a/rhel8/profiles/pci-dss.profile
++++ b/rhel8/profiles/pci-dss.profile
+@@ -98,6 +98,7 @@ selections:
+     - account_disable_post_pw_expiration
+     - accounts_passwords_pam_faillock_deny
+     - accounts_passwords_pam_faillock_unlock_time
++    - dconf_db_up_to_date
+     - dconf_gnome_screensaver_idle_delay
+     - dconf_gnome_screensaver_idle_activation_enabled
+     - dconf_gnome_screensaver_lock_enabled
+
+From 42cb1e23c1c39dd19d99628d133fae60b06f078c Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Mat=C4=9Bj=20T=C3=BD=C4=8D?= <matyc@redhat.com>
+Date: Thu, 30 May 2019 17:26:11 +0200
+Subject: [PATCH 5/9] Added an OVAL customization for Fedora
+ (dconf_db_up_to_date).
+
+---
+ .../gnome/dconf_db_up_to_date/oval/shared.xml    | 16 ++++++++++++----
+ 1 file changed, 12 insertions(+), 4 deletions(-)
+
+diff --git a/linux_os/guide/system/software/gnome/dconf_db_up_to_date/oval/shared.xml b/linux_os/guide/system/software/gnome/dconf_db_up_to_date/oval/shared.xml
+index b3b5b0358b..6b34446487 100644
+--- a/linux_os/guide/system/software/gnome/dconf_db_up_to_date/oval/shared.xml
++++ b/linux_os/guide/system/software/gnome/dconf_db_up_to_date/oval/shared.xml
+@@ -37,6 +37,10 @@
+   </ind:variable_state>
+   {{% endmacro %}}
+ 
++  {{% macro check_db_criterion(db_name) %}}
++      <criterion comment="{{{ db_name }}} database is up-to-date wrt keyfiles" test_ref="test_dconf_{{{ db_name }}}_up_to_date" />
++  {{% endmacro %}}
++
+   <definition class="compliance" id="dconf_db_up_to_date" version="2">
+     <metadata>
+       <title>Configure the GNOME3 GUI Screen locking</title>
+@@ -50,14 +54,18 @@
+     </metadata>
+     <criteria operator="OR">
+       <extend_definition comment="dconf installed" definition_ref="package_dconf_installed" negate="true" />
+-      <criteria comment="check screensaver idle delay and prevent user from changing it" operator="AND">
+-        <criterion comment="local database is up-to-date wrt keyfiles" test_ref="test_dconf_local_up_to_date" />
+-        <criterion comment="gdm database is up-to-date wrt keyfiles" test_ref="test_dconf_gdm_up_to_date" />
++      <criteria comment="check that all DBs in question are up-to-date" operator="AND">
++        {{% if product != 'fedora' %}}
++          {{{ check_db_criterion("gdm") }}}
++        {{% endif %}}
++        {{{ check_db_criterion("local") }}}
+       </criteria>
+     </criteria>
+   </definition>
+ 
++  {{% if product != 'fedora' %}}
++    {{{ check_db_is_up_to_date("gdm") }}}
++  {{% endif %}}
+   {{{ check_db_is_up_to_date("local") }}}
+-  {{{ check_db_is_up_to_date("gdm") }}}
+ 
+ </def-group>
+
+From 758e239c798620038216c554a05cba9bd95a93c1 Mon Sep 17 00:00:00 2001
+From: Gabriel Becker <ggasparb@redhat.com>
+Date: Thu, 30 May 2019 17:37:36 +0200
+Subject: [PATCH 6/9] Create helper function to install gdm and dconf to be
+ used within test scenarios.
+
+Fix test scenario when dconf db is not up to date.
+---
+ .../correct_value.pass.sh                          |  8 +-------
+ .../wrong_value.fail.sh                            |  8 +-------
+ .../correct_value.pass.sh                          |  8 +-------
+ .../wrong_value.fail.sh                            |  8 +-------
+ .../group_gnome/dconf_test_functions.sh            | 11 +++++++++++
+ .../correct_value.pass.sh                          |  8 +-------
+ .../wrong_value.fail.sh                            |  8 +-------
+ .../correct_value.pass.sh                          |  8 +-------
+ .../wrong_value.fail.sh                            |  8 +-------
+ .../correct_value.pass.sh                          |  8 +-------
+ .../wrong_value.fail.sh                            |  8 +-------
+ .../correct_value.pass.sh                          |  8 +-------
+ .../wrong_value.fail.sh                            |  8 +-------
+ .../db_not_up_to_date.fail.sh                      | 14 +++++---------
+ .../rule_dconf_db_up_to_date/db_up_to_date.pass.sh |  8 +-------
+ .../rule_dconf_db_up_to_date/no_db_files.fail.sh   | 11 +++--------
+ 16 files changed, 32 insertions(+), 108 deletions(-)
+
+diff --git a/tests/data/group_system/group_accounts/group_accounts-banners/group_gui_login_banner/rule_dconf_gnome_banner_enabled/correct_value.pass.sh b/tests/data/group_system/group_accounts/group_accounts-banners/group_gui_login_banner/rule_dconf_gnome_banner_enabled/correct_value.pass.sh
+index d6f11373d0..285c9474d4 100644
+--- a/tests/data/group_system/group_accounts/group_accounts-banners/group_gui_login_banner/rule_dconf_gnome_banner_enabled/correct_value.pass.sh
++++ b/tests/data/group_system/group_accounts/group_accounts-banners/group_gui_login_banner/rule_dconf_gnome_banner_enabled/correct_value.pass.sh
+@@ -3,13 +3,7 @@
+ 
+ . ../../../../group_software/group_gnome/dconf_test_functions.sh
+ 
+-if ! rpm -q dconf; then
+-    yum -y install dconf
+-fi
+-
+-if ! rpm -q gdm; then
+-    yum -y install gdm
+-fi
++install_dconf_and_gdm_if_needed
+ 
+ clean_dconf_settings
+ add_dconf_setting "org/gnome/login-screen" "banner-message-enable" "true" "gdm.d" "00-security-settings"
+diff --git a/tests/data/group_system/group_accounts/group_accounts-banners/group_gui_login_banner/rule_dconf_gnome_banner_enabled/wrong_value.fail.sh b/tests/data/group_system/group_accounts/group_accounts-banners/group_gui_login_banner/rule_dconf_gnome_banner_enabled/wrong_value.fail.sh
+index f1e97fea20..9408a5c3bb 100644
+--- a/tests/data/group_system/group_accounts/group_accounts-banners/group_gui_login_banner/rule_dconf_gnome_banner_enabled/wrong_value.fail.sh
++++ b/tests/data/group_system/group_accounts/group_accounts-banners/group_gui_login_banner/rule_dconf_gnome_banner_enabled/wrong_value.fail.sh
+@@ -3,13 +3,7 @@
+ 
+ . ../../../../group_software/group_gnome/dconf_test_functions.sh
+ 
+-if ! rpm -q dconf; then
+-    yum -y install dconf
+-fi
+-
+-if ! rpm -q gdm; then
+-    yum -y install gdm
+-fi
++install_dconf_and_gdm_if_needed
+ 
+ clean_dconf_settings
+ add_dconf_setting "org/gnome/login-screen" "banner-message-enable" "false" "gdm.d" "00-security-settings"
+diff --git a/tests/data/group_system/group_accounts/group_accounts-banners/group_gui_login_banner/rule_dconf_gnome_login_banner_text/correct_value.pass.sh b/tests/data/group_system/group_accounts/group_accounts-banners/group_gui_login_banner/rule_dconf_gnome_login_banner_text/correct_value.pass.sh
+index e161691aa7..c39f919959 100644
+--- a/tests/data/group_system/group_accounts/group_accounts-banners/group_gui_login_banner/rule_dconf_gnome_login_banner_text/correct_value.pass.sh
++++ b/tests/data/group_system/group_accounts/group_accounts-banners/group_gui_login_banner/rule_dconf_gnome_login_banner_text/correct_value.pass.sh
+@@ -3,13 +3,7 @@
+ 
+ . ../../../../group_software/group_gnome/dconf_test_functions.sh
+ 
+-if ! rpm -q dconf; then
+-    yum -y install dconf
+-fi
+-
+-if ! rpm -q gdm; then
+-    yum -y install gdm
+-fi
++install_dconf_and_gdm_if_needed
+ 
+ login_banner_text="--[\s\n]+WARNING[\s\n]+--[\s\n]*This[\s\n]+system[\s\n]+is[\s\n]+for[\s\n]+the[\s\n]+use[\s\n]+of[\s\n]+authorized[\s\n]+users[\s\n]+only.[\s\n]+Individuals[\s\n]*using[\s\n]+this[\s\n]+computer[\s\n]+system[\s\n]+without[\s\n]+authority[\s\n]+or[\s\n]+in[\s\n]+excess[\s\n]+of[\s\n]+their[\s\n]*authority[\s\n]+are[\s\n]+subject[\s\n]+to[\s\n]+having[\s\n]+all[\s\n]+their[\s\n]+activities[\s\n]+on[\s\n]+this[\s\n]+system[\s\n]*monitored[\s\n]+and[\s\n]+recorded[\s\n]+by[\s\n]+system[\s\n]+personnel.[\s\n]+Anyone[\s\n]+using[\s\n]+this[\s\n]*system[\s\n]+expressly[\s\n]+consents[\s\n]+to[\s\n]+such[\s\n]+monitoring[\s\n]+and[\s\n]+is[\s\n]+advised[\s\n]+that[\s\n]*if[\s\n]+such[\s\n]+monitoring[\s\n]+reveals[\s\n]+possible[\s\n]+evidence[\s\n]+of[\s\n]+criminal[\s\n]+activity[\s\n]*system[\s\n]+personal[\s\n]+may[\s\n]+provide[\s\n]+the[\s\n]+evidence[\s\n]+of[\s\n]+such[\s\n]+monitoring[\s\n]+to[\s\n]+law[\s\n]*enforcement[\s\n]+officials."
+ expanded=$(echo "$login_banner_text" | sed 's/(\\\\\x27)\*/\\\x27/g;s/(\\\x27)\*//g;s/(\\\\\x27)/tamere/g;s/(\^\(.*\)\$|.*$/\1/g;s/\[\\s\\n\][+*]/ /g;s/\\//g;s/(n)\*/\\n/g;s/\x27/\\\x27/g;')
+diff --git a/tests/data/group_system/group_accounts/group_accounts-banners/group_gui_login_banner/rule_dconf_gnome_login_banner_text/wrong_value.fail.sh b/tests/data/group_system/group_accounts/group_accounts-banners/group_gui_login_banner/rule_dconf_gnome_login_banner_text/wrong_value.fail.sh
+index b45c5b193f..b9e7fc8661 100644
+--- a/tests/data/group_system/group_accounts/group_accounts-banners/group_gui_login_banner/rule_dconf_gnome_login_banner_text/wrong_value.fail.sh
++++ b/tests/data/group_system/group_accounts/group_accounts-banners/group_gui_login_banner/rule_dconf_gnome_login_banner_text/wrong_value.fail.sh
+@@ -3,13 +3,7 @@
+ 
+ . ../../../../group_software/group_gnome/dconf_test_functions.sh
+ 
+-if ! rpm -q dconf; then
+-    yum -y install dconf
+-fi
+-
+-if ! rpm -q gdm; then
+-    yum -y install gdm
+-fi
++install_dconf_and_gdm_if_needed
+ 
+ login_banner_text="Wrong Banner Text"
+ expanded=$(echo "$login_banner_text" | sed 's/(\\\\\x27)\*/\\\x27/g;s/(\\\x27)\*//g;s/(\\\\\x27)/tamere/g;s/(\^\(.*\)\$|.*$/\1/g;s/\[\\s\\n\][+*]/ /g;s/\\//g;s/(n)\*/\\n/g;s/\x27/\\\x27/g;')
+diff --git a/tests/data/group_system/group_software/group_gnome/dconf_test_functions.sh b/tests/data/group_system/group_software/group_gnome/dconf_test_functions.sh
+index d975ea0715..a218f1f8e7 100644
+--- a/tests/data/group_system/group_software/group_gnome/dconf_test_functions.sh
++++ b/tests/data/group_system/group_software/group_gnome/dconf_test_functions.sh
+@@ -1,4 +1,15 @@
+ 
++# Check if gdm and dconf are installed, if not then install them
++install_dconf_and_gdm_if_needed(){
++	if ! rpm -q dconf; then
++		yum -y install dconf
++	fi
++
++	if ! rpm -q gdm; then
++		yum -y install gdm
++	fi
++}
++
+ # Wipes out dconf db settings directory
+ clean_dconf_settings(){
+ 	rm -rf /etc/dconf/db/*
+diff --git a/tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_disable_restart_shutdown/correct_value.pass.sh b/tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_disable_restart_shutdown/correct_value.pass.sh
+index a5a207b80a..9aea0b74cf 100644
+--- a/tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_disable_restart_shutdown/correct_value.pass.sh
++++ b/tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_disable_restart_shutdown/correct_value.pass.sh
+@@ -3,13 +3,7 @@
+ 
+ . ../../dconf_test_functions.sh
+ 
+-if ! rpm -q dconf; then
+-    yum -y install dconf
+-fi
+-
+-if ! rpm -q gdm; then
+-    yum -y install gdm
+-fi
++install_dconf_and_gdm_if_needed
+ 
+ clean_dconf_settings
+ add_dconf_setting "org/gnome/login-screen" "disable-restart-buttons" "true" "gdm.d" "00-security-settings"
+diff --git a/tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_disable_restart_shutdown/wrong_value.fail.sh b/tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_disable_restart_shutdown/wrong_value.fail.sh
+index 04d3e9eca2..d8c571fc0a 100644
+--- a/tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_disable_restart_shutdown/wrong_value.fail.sh
++++ b/tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_disable_restart_shutdown/wrong_value.fail.sh
+@@ -3,13 +3,7 @@
+ 
+ . ../../dconf_test_functions.sh
+ 
+-if ! rpm -q dconf; then
+-    yum -y install dconf
+-fi
+-
+-if ! rpm -q gdm; then
+-    yum -y install gdm
+-fi
++install_dconf_and_gdm_if_needed
+ 
+ clean_dconf_settings
+ add_dconf_setting "org/gnome/login-screen" "disable-restart-buttons" "false" "gdm.d" "00-security-settings"
+diff --git a/tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_disable_user_list/correct_value.pass.sh b/tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_disable_user_list/correct_value.pass.sh
+index 9a3d60d9f6..776f9e7c23 100644
+--- a/tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_disable_user_list/correct_value.pass.sh
++++ b/tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_disable_user_list/correct_value.pass.sh
+@@ -3,13 +3,7 @@
+ 
+ . ../../dconf_test_functions.sh
+ 
+-if ! rpm -q dconf; then
+-    yum -y install dconf
+-fi
+-
+-if ! rpm -q gdm; then
+-    yum -y install gdm
+-fi
++install_dconf_and_gdm_if_needed
+ 
+ clean_dconf_settings
+ add_dconf_setting "org/gnome/login-screen" "disable-user-list" "true" "gdm.d" "00-security-settings"
+diff --git a/tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_disable_user_list/wrong_value.fail.sh b/tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_disable_user_list/wrong_value.fail.sh
+index 11e3cbfa9b..571bd75f22 100644
+--- a/tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_disable_user_list/wrong_value.fail.sh
++++ b/tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_disable_user_list/wrong_value.fail.sh
+@@ -3,13 +3,7 @@
+ 
+ . ../../dconf_test_functions.sh
+ 
+-if ! rpm -q dconf; then
+-    yum -y install dconf
+-fi
+-
+-if ! rpm -q gdm; then
+-    yum -y install gdm
+-fi
++install_dconf_and_gdm_if_needed
+ 
+ clean_dconf_settings
+ add_dconf_setting "org/gnome/login-screen" "disable-user-list" "false" "gdm.d" "00-security-settings"
+diff --git a/tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_enable_smartcard_auth/correct_value.pass.sh b/tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_enable_smartcard_auth/correct_value.pass.sh
+index 58703799f6..13562cfa1d 100644
+--- a/tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_enable_smartcard_auth/correct_value.pass.sh
++++ b/tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_enable_smartcard_auth/correct_value.pass.sh
+@@ -3,13 +3,7 @@
+ 
+ . ../../dconf_test_functions.sh
+ 
+-if ! rpm -q dconf; then
+-    yum -y install dconf
+-fi
+-
+-if ! rpm -q gdm; then
+-    yum -y install gdm
+-fi
++install_dconf_and_gdm_if_needed
+ 
+ clean_dconf_settings
+ add_dconf_setting "org/gnome/login-screen" "enable-smartcard-authentication" "true" "gdm.d" "00-security-settings"
+diff --git a/tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_enable_smartcard_auth/wrong_value.fail.sh b/tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_enable_smartcard_auth/wrong_value.fail.sh
+index 18f89c182e..666ce2c21c 100644
+--- a/tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_enable_smartcard_auth/wrong_value.fail.sh
++++ b/tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_enable_smartcard_auth/wrong_value.fail.sh
+@@ -3,13 +3,7 @@
+ 
+ . ../../dconf_test_functions.sh
+ 
+-if ! rpm -q dconf; then
+-    yum -y install dconf
+-fi
+-
+-if ! rpm -q gdm; then
+-    yum -y install gdm
+-fi
++install_dconf_and_gdm_if_needed
+ 
+ clean_dconf_settings
+ add_dconf_setting "org/gnome/login-screen" "enable-smartcard-authentication" "false" "gdm.d" "00-security-settings"
+diff --git a/tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_login_retries/correct_value.pass.sh b/tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_login_retries/correct_value.pass.sh
+index 0cc2a80762..59d005967a 100644
+--- a/tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_login_retries/correct_value.pass.sh
++++ b/tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_login_retries/correct_value.pass.sh
+@@ -3,13 +3,7 @@
+ 
+ . ../../dconf_test_functions.sh
+ 
+-if ! rpm -q dconf; then
+-    yum -y install dconf
+-fi
+-
+-if ! rpm -q gdm; then
+-    yum -y install gdm
+-fi
++install_dconf_and_gdm_if_needed
+ 
+ clean_dconf_settings
+ add_dconf_setting "org/gnome/login-screen" "allowed-failures" "3" "gdm.d" "00-security-settings"
+diff --git a/tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_login_retries/wrong_value.fail.sh b/tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_login_retries/wrong_value.fail.sh
+index f89a9d74b9..c6d31f5b8a 100644
+--- a/tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_login_retries/wrong_value.fail.sh
++++ b/tests/data/group_system/group_software/group_gnome/group_gnome_login_screen/rule_dconf_gnome_login_retries/wrong_value.fail.sh
+@@ -3,13 +3,7 @@
+ 
+ . ../../dconf_test_functions.sh
+ 
+-if ! rpm -q dconf; then
+-    yum -y install dconf
+-fi
+-
+-if ! rpm -q gdm; then
+-    yum -y install gdm
+-fi
++install_dconf_and_gdm_if_needed
+ 
+ clean_dconf_settings
+ add_dconf_setting "org/gnome/login-screen" "allowed-failures" "99" "gdm.d" "00-security-settings"
+diff --git a/tests/data/group_system/group_software/group_gnome/rule_dconf_db_up_to_date/db_not_up_to_date.fail.sh b/tests/data/group_system/group_software/group_gnome/rule_dconf_db_up_to_date/db_not_up_to_date.fail.sh
+index bb8b1d42ff..db6e7138aa 100644
+--- a/tests/data/group_system/group_software/group_gnome/rule_dconf_db_up_to_date/db_not_up_to_date.fail.sh
++++ b/tests/data/group_system/group_software/group_gnome/rule_dconf_db_up_to_date/db_not_up_to_date.fail.sh
+@@ -3,13 +3,7 @@
+ 
+ . ../dconf_test_functions.sh
+ 
+-if ! rpm -q dconf; then
+-    yum -y install dconf
+-fi
+-
+-if ! rpm -q gdm; then
+-    yum -y install gdm
+-fi
++install_dconf_and_gdm_if_needed
+ 
+ clean_dconf_settings
+ add_dconf_setting "org/gnome/login-screen" "banner-message-enabled" "true" "gdm.d" "00-security-settings"
+@@ -20,7 +14,9 @@ add_dconf_lock "org/gnome/login-screen" "banner-message-enable" "local.d" "00-se
+ 
+ dconf update
+ 
+-sleep 3
++# ensure that the modification happens a reasonable amount of time after running dconf update
++sleep 5
+ 
+-# make static files newer than the database
++# make static keyfiles newer than the database
+ add_dconf_setting "org/gnome/login-screen" "banner-message-enabled" "true" "gdm.d" "00-security-settings"
++add_dconf_setting "org/gnome/login-screen" "banner-message-enabled" "true" "local.d" "00-security-settings"
+diff --git a/tests/data/group_system/group_software/group_gnome/rule_dconf_db_up_to_date/db_up_to_date.pass.sh b/tests/data/group_system/group_software/group_gnome/rule_dconf_db_up_to_date/db_up_to_date.pass.sh
+index 66ed76e4fa..5a6c2f0a43 100644
+--- a/tests/data/group_system/group_software/group_gnome/rule_dconf_db_up_to_date/db_up_to_date.pass.sh
++++ b/tests/data/group_system/group_software/group_gnome/rule_dconf_db_up_to_date/db_up_to_date.pass.sh
+@@ -3,13 +3,7 @@
+ 
+ . ../dconf_test_functions.sh
+ 
+-if ! rpm -q dconf; then
+-    yum -y install dconf
+-fi
+-
+-if ! rpm -q gdm; then
+-    yum -y install gdm
+-fi
++install_dconf_and_gdm_if_needed
+ 
+ clean_dconf_settings
+ add_dconf_setting "org/gnome/login-screen" "banner-message-enabled" "true" "gdm.d" "00-security-settings"
+diff --git a/tests/data/group_system/group_software/group_gnome/rule_dconf_db_up_to_date/no_db_files.fail.sh b/tests/data/group_system/group_software/group_gnome/rule_dconf_db_up_to_date/no_db_files.fail.sh
+index a7bc04efac..3fdbed905e 100644
+--- a/tests/data/group_system/group_software/group_gnome/rule_dconf_db_up_to_date/no_db_files.fail.sh
++++ b/tests/data/group_system/group_software/group_gnome/rule_dconf_db_up_to_date/no_db_files.fail.sh
+@@ -3,18 +3,13 @@
+ 
+ . ../dconf_test_functions.sh
+ 
+-if ! rpm -q dconf; then
+-    yum -y install dconf
+-fi
+-
+-if ! rpm -q gdm; then
+-    yum -y install gdm
+-fi
++install_dconf_and_gdm_if_needed
+ 
+ # remove all database files
+ remove_dconf_databases
+ 
+-sleep 3
++# ensure that the modification happens a reasonable amount of time after running dconf update
++sleep 5
+ 
+ add_dconf_setting "org/gnome/login-screen" "banner-message-enabled" "true" "gdm.d" "00-security-settings"
+ add_dconf_lock "org/gnome/login-screen" "banner-message-enable" "gdm.d" "00-security-settings-lock"
+
+From 68e3f056a723ceb170fd81105d354e390e3ea00a Mon Sep 17 00:00:00 2001
+From: Gabriel Becker <ggasparb@redhat.com>
+Date: Fri, 31 May 2019 10:06:03 +0200
+Subject: [PATCH 7/9] Update dconf_db_up_to_date OVAL metadata.
+
+---
+ .../system/software/gnome/dconf_db_up_to_date/oval/shared.xml | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/linux_os/guide/system/software/gnome/dconf_db_up_to_date/oval/shared.xml b/linux_os/guide/system/software/gnome/dconf_db_up_to_date/oval/shared.xml
+index 6b34446487..499bb4db60 100644
+--- a/linux_os/guide/system/software/gnome/dconf_db_up_to_date/oval/shared.xml
++++ b/linux_os/guide/system/software/gnome/dconf_db_up_to_date/oval/shared.xml
+@@ -43,14 +43,14 @@
+ 
+   <definition class="compliance" id="dconf_db_up_to_date" version="2">
+     <metadata>
+-      <title>Configure the GNOME3 GUI Screen locking</title>
++      <title>The dconf databases are up-to-date.</title>
+       <affected family="unix">
+         <platform>Red Hat Enterprise Linux 7</platform>
+         <platform>Red Hat Enterprise Linux 8</platform>
+         <platform>multi_platform_fedora</platform>
+         <platform>multi_platform_ol</platform>
+       </affected>
+-      <description>The allowed period of inactivity before the screensaver is activated.</description>
++      <description>Make sure that the dconf databases are up-to-date with regards to respective keyfiles.</description>
+     </metadata>
+     <criteria operator="OR">
+       <extend_definition comment="dconf installed" definition_ref="package_dconf_installed" negate="true" />
+
+From f86c4b314cc7d4d3922cf424a77674f9332eced9 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Mat=C4=9Bj=20T=C3=BD=C4=8D?= <matyc@redhat.com>
+Date: Fri, 31 May 2019 15:59:11 +0200
+Subject: [PATCH 8/9] Made the gdm.d keyfile tree relevant only for RHEL7.
+
+---
+ .../system/software/gnome/dconf_db_up_to_date/oval/shared.xml | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/linux_os/guide/system/software/gnome/dconf_db_up_to_date/oval/shared.xml b/linux_os/guide/system/software/gnome/dconf_db_up_to_date/oval/shared.xml
+index 499bb4db60..bc31a6cb7e 100644
+--- a/linux_os/guide/system/software/gnome/dconf_db_up_to_date/oval/shared.xml
++++ b/linux_os/guide/system/software/gnome/dconf_db_up_to_date/oval/shared.xml
+@@ -55,7 +55,7 @@
+     <criteria operator="OR">
+       <extend_definition comment="dconf installed" definition_ref="package_dconf_installed" negate="true" />
+       <criteria comment="check that all DBs in question are up-to-date" operator="AND">
+-        {{% if product != 'fedora' %}}
++        {{% if product == 'rhel7' %}}
+           {{{ check_db_criterion("gdm") }}}
+         {{% endif %}}
+         {{{ check_db_criterion("local") }}}
+@@ -63,7 +63,7 @@
+     </criteria>
+   </definition>
+ 
+-  {{% if product != 'fedora' %}}
++  {{% if product == 'rhel7' %}}
+     {{{ check_db_is_up_to_date("gdm") }}}
+   {{% endif %}}
+   {{{ check_db_is_up_to_date("local") }}}
+
+From 64a53ece4ffea9f9d4017955433a251493649175 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Mat=C4=9Bj=20T=C3=BD=C4=8D?= <matyc@redhat.com>
+Date: Mon, 3 Jun 2019 14:39:09 +0200
+Subject: [PATCH 9/9] Added support for missing keyfiles.
+
+---
+ .../gnome/dconf_db_up_to_date/oval/shared.xml        | 12 +++++++++---
+ .../rule_dconf_db_up_to_date/no_keyfiles.pass.sh     |  8 ++++++++
+ 2 files changed, 17 insertions(+), 3 deletions(-)
+ create mode 100644 tests/data/group_system/group_software/group_gnome/rule_dconf_db_up_to_date/no_keyfiles.pass.sh
+
+diff --git a/linux_os/guide/system/software/gnome/dconf_db_up_to_date/oval/shared.xml b/linux_os/guide/system/software/gnome/dconf_db_up_to_date/oval/shared.xml
+index bc31a6cb7e..f073268762 100644
+--- a/linux_os/guide/system/software/gnome/dconf_db_up_to_date/oval/shared.xml
++++ b/linux_os/guide/system/software/gnome/dconf_db_up_to_date/oval/shared.xml
+@@ -12,8 +12,7 @@
+   </local_variable>
+ 
+   <unix:file_object id="obj_dconf_{{{ db_name }}}_config" comment="The dconf keyfile with '{{{ db_name }}}' settings" version="1">
+-    <unix:path>/etc/dconf/db/{{{ db_name }}}.d/</unix:path>
+-    <unix:filename operation="pattern match">.*</unix:filename>
++    <unix:filepath operation="pattern match">^/etc/dconf/db/{{{ db_name }}}.d/.*</unix:filepath>
+   </unix:file_object>
+ 
+   <local_variable id="var_dconf_{{{ db_name }}}_keyfiles_modified_time" datatype="int" version="1" comment="When dconf keyfiles in the '{{{ db_name }}}' tree have been modified">
+@@ -35,10 +34,17 @@
+   <ind:variable_state id="state_{{{ db_name }}}_db_is_up_to_date" version="1">
+     <ind:value datatype="int" operation="less than or equal" var_check="all" var_ref="var_dconf_{{{ db_name }}}_keyfiles_modified_time" />
+   </ind:variable_state>
++
++  <unix:file_test id="test_dconf_{{{ db_name }}}_no_keyfiles" check="all" check_existence="none_exist" comment="no keyfiles applicable to the {{{ db_name }}} database" version="1">
++    <unix:object object_ref="obj_dconf_{{{ db_name }}}_config" />
++  </unix:file_test>
+   {{% endmacro %}}
+ 
+   {{% macro check_db_criterion(db_name) %}}
+-      <criterion comment="{{{ db_name }}} database is up-to-date wrt keyfiles" test_ref="test_dconf_{{{ db_name }}}_up_to_date" />
++      <criteria comment="check that all DBs in question are up-to-date" operator="OR">
++        <criterion comment="{{{ db_name }}} database is up-to-date wrt keyfiles" test_ref="test_dconf_{{{ db_name }}}_up_to_date" />
++	<criterion comment="no keyfiles applicable to the {{{ db_name }}} database" test_ref="test_dconf_{{{ db_name }}}_no_keyfiles" />
++      </criteria>
+   {{% endmacro %}}
+ 
+   <definition class="compliance" id="dconf_db_up_to_date" version="2">
+diff --git a/tests/data/group_system/group_software/group_gnome/rule_dconf_db_up_to_date/no_keyfiles.pass.sh b/tests/data/group_system/group_software/group_gnome/rule_dconf_db_up_to_date/no_keyfiles.pass.sh
+new file mode 100644
+index 0000000000..06945575f1
+--- /dev/null
++++ b/tests/data/group_system/group_software/group_gnome/rule_dconf_db_up_to_date/no_keyfiles.pass.sh
+@@ -0,0 +1,8 @@
++#!/bin/bash
++# profiles = xccdf_org.ssgproject.content_profile_ospp
++
++. ../dconf_test_functions.sh
++
++install_dconf_and_gdm_if_needed
++
++clean_dconf_settings

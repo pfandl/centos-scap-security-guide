@@ -68,72 +68,72 @@ Date: Mon, 8 Apr 2019 15:43:04 +0200
 Subject: [PATCH 03/11] Update rules for PAM CPE check
 
 ---
- .../accounts_password_pam_dcredit.rule                      | 2 ++
- .../accounts_password_pam_difok.rule                        | 2 ++
- .../accounts_password_pam_maxclassrepeat.rule               | 2 ++
- .../accounts_password_pam_minclass.rule                     | 2 ++
- .../accounts_password_pam_minlen.rule                       | 2 ++
- .../accounts_max_concurrent_login_sessions.rule             | 2 ++
+ .../accounts_password_pam_dcredit/rule.yml                      | 2 ++
+ .../accounts_password_pam_difok/rule.yml                        | 2 ++
+ .../accounts_password_pam_maxclassrepeat/rule.yml               | 2 ++
+ .../accounts_password_pam_minclass/rule.yml                     | 2 ++
+ .../accounts_password_pam_minlen/rule.yml                       | 2 ++
+ .../accounts_max_concurrent_login_sessions/rule.yml             | 2 ++
  6 files changed, 12 insertions(+)
 
-diff --git a/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_dcredit.rule b/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_dcredit.rule
+diff --git a/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_dcredit/rule.yml b/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_dcredit/rule.yml
 index 72fc5970ea..fe997d97c8 100644
---- a/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_dcredit.rule
-+++ b/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_dcredit.rule
+--- a/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_dcredit/rule.yml
++++ b/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_dcredit/rule.yml
 @@ -52,3 +52,5 @@ ocil: |-
      <pre>$ grep dcredit /etc/security/pwquality.conf</pre>
      The <tt>dcredit</tt> parameter (as a negative number) will indicate how many digits are required.
      The DoD requires at least one digit in a password. This would appear as <tt>dcredit = -1</tt>.
 +
 +platform: pam
-diff --git a/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_difok.rule b/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_difok.rule
+diff --git a/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_difok/rule.yml b/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_difok/rule.yml
 index 931f0aa9e4..d1855a2cf4 100644
---- a/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_difok.rule
-+++ b/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_difok.rule
+--- a/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_difok/rule.yml
++++ b/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_difok/rule.yml
 @@ -53,3 +53,5 @@ ocil: |-
      To check how many characters must differ during a password change, run the following command:
      <pre>$ grep difok /etc/security/pwquality.conf</pre>
      The <tt>difok</tt> parameter will indicate how many characters must differ.
 +
 +platform: pam
-diff --git a/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_maxclassrepeat.rule b/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_maxclassrepeat.rule
+diff --git a/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_maxclassrepeat/rule.yml b/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_maxclassrepeat/rule.yml
 index 35de1318d5..d964a5e3ea 100644
---- a/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_maxclassrepeat.rule
-+++ b/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_maxclassrepeat.rule
+--- a/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_maxclassrepeat/rule.yml
++++ b/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_maxclassrepeat/rule.yml
 @@ -43,3 +43,5 @@ ocil: |-
      To check the value for maximum consecutive repeating characters, run the following command:
      <pre>$ grep maxclassrepeat /etc/security/pwquality.conf</pre>
      For DoD systems, the output should show <tt>maxclassrepeat</tt>=4.
 +
 +platform: pam
-diff --git a/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_minclass.rule b/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_minclass.rule
+diff --git a/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_minclass/rule.yml b/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_minclass/rule.yml
 index 7f99aba143..dc3377de0b 100644
---- a/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_minclass.rule
-+++ b/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_minclass.rule
+--- a/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_minclass/rule.yml
++++ b/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_minclass/rule.yml
 @@ -60,3 +60,5 @@ ocil: |-
      The <tt>minclass</tt> parameter will indicate how many character classes must be used. If
      the requirement was for the password to contain characters from three different categories,
      then this would appear as <tt>minclass = 3</tt>.
 +
 +platform: pam
-diff --git a/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_minlen.rule b/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_minlen.rule
+diff --git a/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_minlen/rule.yml b/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_minlen/rule.yml
 index d6462579fe..0799aecf01 100644
---- a/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_minlen.rule
-+++ b/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_minlen.rule
+--- a/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_minlen/rule.yml
++++ b/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_minlen/rule.yml
 @@ -49,3 +49,5 @@ ocil: |-
      To check how many characters are required in a password, run the following command:
      <pre>$ grep minlen /etc/security/pwquality.conf</pre>
      Your output should contain <tt>minlen = <sub idref="var_password_pam_minlen" /></tt>
 +
 +platform: pam
-diff --git a/linux_os/guide/system/accounts/accounts-session/accounts_max_concurrent_login_sessions.rule b/linux_os/guide/system/accounts/accounts-session/accounts_max_concurrent_login_sessions.rule
+diff --git a/linux_os/guide/system/accounts/accounts-session/accounts_max_concurrent_login_sessions/rule.yml b/linux_os/guide/system/accounts/accounts-session/accounts_max_concurrent_login_sessions/rule.yml
 index bd53c19c08..f9d9a08706 100644
---- a/linux_os/guide/system/accounts/accounts-session/accounts_max_concurrent_login_sessions.rule
-+++ b/linux_os/guide/system/accounts/accounts-session/accounts_max_concurrent_login_sessions.rule
-@@ -45,3 +45,5 @@
- ocil_clause: 'maxlogins is not equal to or less than the expected value'
- 
- ocil: "Run the following command to ensure the <tt>maxlogins</tt> value is configured for all users\non the system:\n<pre># grep \"maxlogins\" /etc/security/limits.conf</pre>\nYou should receive output similar to the following:\n<pre>*\t\thard\tmaxlogins\t<sub idref=\"var_accounts_max_concurrent_login_sessions\" /></pre>"
+--- a/linux_os/guide/system/accounts/accounts-session/accounts_max_concurrent_login_sessions/rule.yml
++++ b/linux_os/guide/system/accounts/accounts-session/accounts_max_concurrent_login_sessions/rule.yml
+@@ -45,3 +45,5 @@ ocil: |-
+     <pre># grep "maxlogins" /etc/security/limits.conf</pre>
+     You should receive output similar to the following:
+     <pre>*\t\thard\tmaxlogins\t<sub idref="var_accounts_max_concurrent_login_sessions" /></pre>
 +
 +platform: pam
 
@@ -225,168 +225,168 @@ Date: Mon, 8 Apr 2019 15:45:01 +0200
 Subject: [PATCH 06/11] Update rules with package CPEs
 
 ---
- .../accounts/accounts-pam/display_login_attempts.rule       | 2 ++
- .../accounts_password_pam_unix_remember.rule                | 2 ++
- .../accounts_passwords_pam_faillock_deny.rule               | 2 ++
- .../accounts_passwords_pam_faillock_deny_root.rule          | 2 ++
- .../accounts_passwords_pam_faillock_interval.rule           | 2 ++
- .../accounts_passwords_pam_faillock_unlock_time.rule        | 2 ++
- .../accounts_password_pam_lcredit.rule                      | 2 ++
- .../accounts_password_pam_ocredit.rule                      | 2 ++
- .../accounts_password_pam_retry.rule                        | 2 ++
- .../accounts_password_pam_ucredit.rule                      | 2 ++
- .../set_password_hashing_algorithm_libuserconf.rule         | 2 ++
- .../set_password_hashing_algorithm_logindefs.rule           | 2 ++
- .../set_password_hashing_algorithm_systemauth.rule          | 2 ++
- .../accounts-physical/disable_ctrlaltdel_burstaction.rule   | 2 ++
- .../user_umask/accounts_umask_etc_login_defs.rule           | 2 ++
+ .../accounts/accounts-pam/display_login_attempts/rule.yml       | 2 ++
+ .../accounts_password_pam_unix_remember/rule.yml                | 2 ++
+ .../accounts_passwords_pam_faillock_deny/rule.yml               | 2 ++
+ .../accounts_passwords_pam_faillock_deny_root/rule.yml          | 2 ++
+ .../accounts_passwords_pam_faillock_interval/rule.yml           | 2 ++
+ .../accounts_passwords_pam_faillock_unlock_time/rule.yml        | 2 ++
+ .../accounts_password_pam_lcredit/rule.yml                      | 2 ++
+ .../accounts_password_pam_ocredit/rule.yml                      | 2 ++
+ .../accounts_password_pam_retry/rule.yml                        | 2 ++
+ .../accounts_password_pam_ucredit/rule.yml                      | 2 ++
+ .../set_password_hashing_algorithm_libuserconf/rule.yml         | 2 ++
+ .../set_password_hashing_algorithm_logindefs/rule.yml           | 2 ++
+ .../set_password_hashing_algorithm_systemauth/rule.yml          | 2 ++
+ .../accounts-physical/disable_ctrlaltdel_burstaction/rule.yml   | 2 ++
+ .../user_umask/accounts_umask_etc_login_defs/rule.yml           | 2 ++
  ssg/constants.py                                                | 2 ++
  16 files changed, 32 insertions(+)
 
-diff --git a/linux_os/guide/system/accounts/accounts-pam/display_login_attempts.rule b/linux_os/guide/system/accounts/accounts-pam/display_login_attempts.rule
+diff --git a/linux_os/guide/system/accounts/accounts-pam/display_login_attempts/rule.yml b/linux_os/guide/system/accounts/accounts-pam/display_login_attempts/rule.yml
 index 5c2287a4d3..baeece4b59 100644
---- a/linux_os/guide/system/accounts/accounts-pam/display_login_attempts.rule
-+++ b/linux_os/guide/system/accounts/accounts-pam/display_login_attempts.rule
+--- a/linux_os/guide/system/accounts/accounts-pam/display_login_attempts/rule.yml
++++ b/linux_os/guide/system/accounts/accounts-pam/display_login_attempts/rule.yml
 @@ -47,3 +47,5 @@ ocil: |-
      the following command:
      <pre>$ grep pam_lastlog.so /etc/pam.d/postlogin</pre>
      The output should show output <tt>showfailed</tt>.
 +
 +platform: pam
-diff --git a/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_password_pam_unix_remember.rule b/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_password_pam_unix_remember.rule
+diff --git a/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_password_pam_unix_remember/rule.yml b/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_password_pam_unix_remember/rule.yml
 index dcde239e85..a63e0e6d1d 100644
---- a/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_password_pam_unix_remember.rule
-+++ b/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_password_pam_unix_remember.rule
+--- a/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_password_pam_unix_remember/rule.yml
++++ b/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_password_pam_unix_remember/rule.yml
 @@ -56,3 +56,5 @@ ocil: |-
      <pre>$ grep remember /etc/pam.d/system-auth</pre>
      The output should show the following at the end of the line:
      <pre>remember=<sub idref="var_password_pam_unix_remember" /></pre>
 +
 +platform: pam
-diff --git a/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_passwords_pam_faillock_deny.rule b/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_passwords_pam_faillock_deny.rule
+diff --git a/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_passwords_pam_faillock_deny/rule.yml b/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_passwords_pam_faillock_deny/rule.yml
 index c8147e7c17..e10b0a1b67 100644
---- a/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_passwords_pam_faillock_deny.rule
-+++ b/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_passwords_pam_faillock_deny.rule
+--- a/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_passwords_pam_faillock_deny/rule.yml
++++ b/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_passwords_pam_faillock_deny/rule.yml
 @@ -56,3 +56,5 @@ ocil: |-
      To ensure the failed password attempt policy is configured correctly, run the following command:
      <pre>$ grep pam_faillock /etc/pam.d/system-auth</pre>
      The output should show <tt>deny=<sub idref="var_accounts_passwords_pam_faillock_deny" /></tt>.
 +
 +platform: pam
-diff --git a/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_passwords_pam_faillock_deny_root.rule b/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_passwords_pam_faillock_deny_root.rule
+diff --git a/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_passwords_pam_faillock_deny_root/rule.yml b/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_passwords_pam_faillock_deny_root/rule.yml
 index b5283b052e..b4c4df7186 100644
---- a/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_passwords_pam_faillock_deny_root.rule
-+++ b/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_passwords_pam_faillock_deny_root.rule
+--- a/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_passwords_pam_faillock_deny_root/rule.yml
++++ b/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_passwords_pam_faillock_deny_root/rule.yml
 @@ -50,3 +50,5 @@ ocil: |-
      attempts, run the following command:
      <pre>$ grep even_deny_root /etc/pam.d/system-auth</pre>
      The output should show <tt>even_deny_root</tt>.
 +
 +platform: pam
-diff --git a/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_passwords_pam_faillock_interval.rule b/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_passwords_pam_faillock_interval.rule
+diff --git a/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_passwords_pam_faillock_interval/rule.yml b/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_passwords_pam_faillock_interval/rule.yml
 index 485fb7970d..ac21fe4c81 100644
---- a/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_passwords_pam_faillock_interval.rule
-+++ b/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_passwords_pam_faillock_interval.rule
-@@ -65,3 +65,5 @@
- ocil_clause: 'fail_interval is less than the required value'
- 
- ocil: "To ensure the failed password attempt policy is configured correctly, run the following command:\n<pre>$ grep pam_faillock /etc/pam.d/system-auth /etc/pam.d/password-auth</pre>\nFor each file, the output should show <tt>fail_interval=&lt;interval-in-seconds&gt;</tt> where <tt>interval-in-seconds</tt> is \n<tt><sub idref=\"var_accounts_passwords_pam_faillock_fail_interval\" /></tt>  or greater. \nIf the <tt>fail_interval</tt> parameter is not set, the default setting of 900 seconds is acceptable."
+--- a/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_passwords_pam_faillock_interval/rule.yml
++++ b/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_passwords_pam_faillock_interval/rule.yml
+@@ -65,3 +65,5 @@ ocil: |-
+     For each file, the output should show <tt>fail_interval=&lt;interval-in-seconds&gt;</tt> where <tt>interval-in-seconds</tt> is <tt><sub idref="var_accounts_passwords_pam_faillock_fail_interval" /></tt> or greater.
+     If the <tt>fail_interval</tt> parameter is not set, the default setting
+     of 900 seconds is acceptable.
 +
 +platform: pam
-diff --git a/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_passwords_pam_faillock_unlock_time.rule b/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_passwords_pam_faillock_unlock_time.rule
+diff --git a/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_passwords_pam_faillock_unlock_time/rule.yml b/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_passwords_pam_faillock_unlock_time/rule.yml
 index 9abd02feea..f4bfaec622 100644
---- a/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_passwords_pam_faillock_unlock_time.rule
-+++ b/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_passwords_pam_faillock_unlock_time.rule
+--- a/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_passwords_pam_faillock_unlock_time/rule.yml
++++ b/linux_os/guide/system/accounts/accounts-pam/locking_out_password_attempts/accounts_passwords_pam_faillock_unlock_time/rule.yml
 @@ -59,3 +59,5 @@ ocil: |-
      To ensure the failed password attempt policy is configured correctly, run the following command:
      <pre>$ grep pam_faillock /etc/pam.d/system-auth</pre>
      The output should show <tt>unlock_time=&lt;some-large-number&gt;</tt> or <tt>never</tt>.
 +
 +platform: pam
-diff --git a/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_lcredit.rule b/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_lcredit.rule
+diff --git a/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_lcredit/rule.yml b/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_lcredit/rule.yml
 index ba0be4ebeb..21d86585ed 100644
---- a/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_lcredit.rule
-+++ b/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_lcredit.rule
+--- a/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_lcredit/rule.yml
++++ b/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_lcredit/rule.yml
 @@ -51,3 +51,5 @@ ocil: |-
      <pre>$ grep lcredit /etc/security/pwquality.conf</pre>
      The <tt>lcredit</tt> parameter (as a negative number) will indicate how many special characters are required.
      The DoD and FISMA require at least one lowercase character in a password. This would appear as <tt>lcredit = -1</tt>.
 +
 +platform: pam
-diff --git a/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_ocredit.rule b/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_ocredit.rule
+diff --git a/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_ocredit/rule.yml b/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_ocredit/rule.yml
 index c39cc2a09b..d7f7083d27 100644
---- a/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_ocredit.rule
-+++ b/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_ocredit.rule
+--- a/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_ocredit/rule.yml
++++ b/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_ocredit/rule.yml
 @@ -53,3 +53,5 @@ ocil: |-
      The <tt>ocredit</tt> parameter (as a negative number) will indicate how many special characters are required.
      The DoD and FISMA require at least one special character in a password.
      This would appear as <tt>ocredit = -1</tt>.
 +
 +platform: pam
-diff --git a/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_retry.rule b/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_retry.rule
+diff --git a/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_retry/rule.yml b/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_retry/rule.yml
 index c0f8ed8d6d..fea35e37a3 100644
---- a/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_retry.rule
-+++ b/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_retry.rule
+--- a/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_retry/rule.yml
++++ b/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_retry/rule.yml
 @@ -46,3 +46,5 @@ ocil: |-
      The <tt>retry</tt> parameter will indicate how many attempts are permitted.
      The DoD required value is less than or equal to 3.
      This would appear as <tt>retry=3</tt>, or a lower value.
 +
 +platform: pam
-diff --git a/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_ucredit.rule b/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_ucredit.rule
+diff --git a/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_ucredit/rule.yml b/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_ucredit/rule.yml
 index 2222ac2297..a4ecdf969d 100644
---- a/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_ucredit.rule
-+++ b/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_ucredit.rule
+--- a/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_ucredit/rule.yml
++++ b/linux_os/guide/system/accounts/accounts-pam/password_quality/password_quality_pwquality/accounts_password_pam_ucredit/rule.yml
 @@ -50,3 +50,5 @@ ocil: |-
      The <tt>ucredit</tt> parameter (as a negative number) will indicate how many uppercase characters are required.
      The DoD and FISMA require at least one uppercase character in a password.
      This would appear as <tt>ucredit = -1</tt>.
 +
 +platform: pam
-diff --git a/linux_os/guide/system/accounts/accounts-pam/set_password_hashing_algorithm/set_password_hashing_algorithm_libuserconf.rule b/linux_os/guide/system/accounts/accounts-pam/set_password_hashing_algorithm/set_password_hashing_algorithm_libuserconf.rule
+diff --git a/linux_os/guide/system/accounts/accounts-pam/set_password_hashing_algorithm/set_password_hashing_algorithm_libuserconf/rule.yml b/linux_os/guide/system/accounts/accounts-pam/set_password_hashing_algorithm/set_password_hashing_algorithm_libuserconf/rule.yml
 index 0f6cf57e57..397bad4ea6 100644
---- a/linux_os/guide/system/accounts/accounts-pam/set_password_hashing_algorithm/set_password_hashing_algorithm_libuserconf.rule
-+++ b/linux_os/guide/system/accounts/accounts-pam/set_password_hashing_algorithm/set_password_hashing_algorithm_libuserconf.rule
+--- a/linux_os/guide/system/accounts/accounts-pam/set_password_hashing_algorithm/set_password_hashing_algorithm_libuserconf/rule.yml
++++ b/linux_os/guide/system/accounts/accounts-pam/set_password_hashing_algorithm/set_password_hashing_algorithm_libuserconf/rule.yml
 @@ -55,3 +55,5 @@ ocil: |-
      Inspect <tt>/etc/libuser.conf</tt> and ensure the following line appears
      in the <tt>[default]</tt> section:
      <pre>crypt_style = sha512</pre>
 +
 +platform: libuser
-diff --git a/linux_os/guide/system/accounts/accounts-pam/set_password_hashing_algorithm/set_password_hashing_algorithm_logindefs.rule b/linux_os/guide/system/accounts/accounts-pam/set_password_hashing_algorithm/set_password_hashing_algorithm_logindefs.rule
+diff --git a/linux_os/guide/system/accounts/accounts-pam/set_password_hashing_algorithm/set_password_hashing_algorithm_logindefs/rule.yml b/linux_os/guide/system/accounts/accounts-pam/set_password_hashing_algorithm/set_password_hashing_algorithm_logindefs/rule.yml
 index a23a7863c9..84212c7648 100644
---- a/linux_os/guide/system/accounts/accounts-pam/set_password_hashing_algorithm/set_password_hashing_algorithm_logindefs.rule
-+++ b/linux_os/guide/system/accounts/accounts-pam/set_password_hashing_algorithm/set_password_hashing_algorithm_logindefs.rule
+--- a/linux_os/guide/system/accounts/accounts-pam/set_password_hashing_algorithm/set_password_hashing_algorithm_logindefs/rule.yml
++++ b/linux_os/guide/system/accounts/accounts-pam/set_password_hashing_algorithm/set_password_hashing_algorithm_logindefs/rule.yml
 @@ -47,3 +47,5 @@ ocil_clause: 'it does not'
  ocil: |-
      Inspect <tt>/etc/login.defs</tt> and ensure the following line appears:
      <pre>ENCRYPT_METHOD SHA512</pre>
 +
 +platform: shadow-utils
-diff --git a/linux_os/guide/system/accounts/accounts-pam/set_password_hashing_algorithm/set_password_hashing_algorithm_systemauth.rule b/linux_os/guide/system/accounts/accounts-pam/set_password_hashing_algorithm/set_password_hashing_algorithm_systemauth.rule
+diff --git a/linux_os/guide/system/accounts/accounts-pam/set_password_hashing_algorithm/set_password_hashing_algorithm_systemauth/rule.yml b/linux_os/guide/system/accounts/accounts-pam/set_password_hashing_algorithm/set_password_hashing_algorithm_systemauth/rule.yml
 index 070e65fc3a..48e8ac427d 100644
---- a/linux_os/guide/system/accounts/accounts-pam/set_password_hashing_algorithm/set_password_hashing_algorithm_systemauth.rule
-+++ b/linux_os/guide/system/accounts/accounts-pam/set_password_hashing_algorithm/set_password_hashing_algorithm_systemauth.rule
+--- a/linux_os/guide/system/accounts/accounts-pam/set_password_hashing_algorithm/set_password_hashing_algorithm_systemauth/rule.yml
++++ b/linux_os/guide/system/accounts/accounts-pam/set_password_hashing_algorithm/set_password_hashing_algorithm_systemauth/rule.yml
 @@ -65,3 +65,5 @@ ocil: |-
      ensure that the <tt>pam_unix.so</tt> module includes the argument
      <tt>sha512</tt>:
      <pre>$ grep sha512 /etc/pam.d/system-auth</pre>
 +
 +platform: pam
-diff --git a/linux_os/guide/system/accounts/accounts-physical/disable_ctrlaltdel_burstaction.rule b/linux_os/guide/system/accounts/accounts-physical/disable_ctrlaltdel_burstaction.rule
+diff --git a/linux_os/guide/system/accounts/accounts-physical/disable_ctrlaltdel_burstaction/rule.yml b/linux_os/guide/system/accounts/accounts-physical/disable_ctrlaltdel_burstaction/rule.yml
 index e215a41a91..d68bf2be38 100644
---- a/linux_os/guide/system/accounts/accounts-physical/disable_ctrlaltdel_burstaction.rule
-+++ b/linux_os/guide/system/accounts/accounts-physical/disable_ctrlaltdel_burstaction.rule
+--- a/linux_os/guide/system/accounts/accounts-physical/disable_ctrlaltdel_burstaction/rule.yml
++++ b/linux_os/guide/system/accounts/accounts-physical/disable_ctrlaltdel_burstaction/rule.yml
 @@ -53,3 +53,5 @@ warnings:
          key sequence if running in <tt>runlevel 6</tt> (e.g. in GNOME, KDE, etc.)! The
          <tt>Ctrl-Alt-Del</tt> key sequence will only be disabled if running in
          the non-graphical <tt>runlevel 3</tt>.
 +
 +platform: systemd
-diff --git a/linux_os/guide/system/accounts/accounts-session/user_umask/accounts_umask_etc_login_defs.rule b/linux_os/guide/system/accounts/accounts-session/user_umask/accounts_umask_etc_login_defs.rule
+diff --git a/linux_os/guide/system/accounts/accounts-session/user_umask/accounts_umask_etc_login_defs/rule.yml b/linux_os/guide/system/accounts/accounts-session/user_umask/accounts_umask_etc_login_defs/rule.yml
 index e9e327352b..a087ca8f6a 100644
---- a/linux_os/guide/system/accounts/accounts-session/user_umask/accounts_umask_etc_login_defs.rule
-+++ b/linux_os/guide/system/accounts/accounts-session/user_umask/accounts_umask_etc_login_defs.rule
+--- a/linux_os/guide/system/accounts/accounts-session/user_umask/accounts_umask_etc_login_defs/rule.yml
++++ b/linux_os/guide/system/accounts/accounts-session/user_umask/accounts_umask_etc_login_defs/rule.yml
 @@ -41,3 +41,5 @@ ocil: |-
      All output must show the value of <tt>umask</tt> set as shown in the below:
      <pre># grep -i "UMASK" /etc/login.defs
@@ -415,16 +415,16 @@ Date: Wed, 3 Apr 2019 17:45:31 -0400
 Subject: [PATCH 07/11] Update LDAP check to evaluate for nss-pam-ldapd CPE
 
 ---
- .../ldap_client_start_tls.rule            |  2 ++
+ .../ldap_client_start_tls/rule.yml            |  2 ++
  ...nstalled_env_has_nss-pam-ldapd_package.xml | 24 +++++++++++++++++++
  ssg/constants.py                              |  1 +
  3 files changed, 27 insertions(+)
  create mode 100644 shared/checks/oval/installed_env_has_nss-pam-ldapd_package.xml
 
-diff --git a/linux_os/guide/services/ldap/openldap_client/ldap_client_start_tls.rule b/linux_os/guide/services/ldap/openldap_client/ldap_client_start_tls.rule
+diff --git a/linux_os/guide/services/ldap/openldap_client/ldap_client_start_tls/rule.yml b/linux_os/guide/services/ldap/openldap_client/ldap_client_start_tls/rule.yml
 index c4839d7de5..22a9fd60d9 100644
---- a/linux_os/guide/services/ldap/openldap_client/ldap_client_start_tls.rule
-+++ b/linux_os/guide/services/ldap/openldap_client/ldap_client_start_tls.rule
+--- a/linux_os/guide/services/ldap/openldap_client/ldap_client_start_tls/rule.yml
++++ b/linux_os/guide/services/ldap/openldap_client/ldap_client_start_tls/rule.yml
 @@ -48,3 +48,5 @@ ocil: |-
      <pre>$ grep start_tls /etc/pam_ldap.conf</pre>
      The result should contain:
@@ -481,24 +481,35 @@ Subject: [PATCH 08/11] Update FIPS checks to evaluate if in machine
  environment
 
 ---
- .../integrity/fips/grub_legacy_enable_fips_mode.rule        | 2 ++
- .../integrity/fips/package_dracut-fips_installed.rule       | 2 ++
+ .../software/integrity/fips/enable_dracut_fips_module/rule.yml  | 2 ++
+ .../integrity/fips/grub_legacy_enable_fips_mode/rule.yml        | 2 ++
+ .../integrity/fips/package_dracut-fips_installed/rule.yml       | 2 ++
  3 files changed, 6 insertions(+)
 
-diff --git a/linux_os/guide/system/software/integrity/fips/grub_legacy_enable_fips_mode.rule b/linux_os/guide/system/software/integrity/fips/grub_legacy_enable_fips_mode.rule
+diff --git a/linux_os/guide/system/software/integrity/fips/enable_dracut_fips_module/rule.yml b/linux_os/guide/system/software/integrity/fips/enable_dracut_fips_module/rule.yml
+index 08faf42259..dbdf64d526 100644
+--- a/linux_os/guide/system/software/integrity/fips/enable_dracut_fips_module/rule.yml
++++ b/linux_os/guide/system/software/integrity/fips/enable_dracut_fips_module/rule.yml
+@@ -48,3 +48,5 @@ warnings:
+         <br /><br />
+         See <b>{{{ weblink(link="http://csrc.nist.gov/groups/STM/cmvp/documents/140-1/1401vend.htm") }}}</b>
+         for a list of FIPS certified vendors.
++
++platform: machine
+diff --git a/linux_os/guide/system/software/integrity/fips/grub_legacy_enable_fips_mode/rule.yml b/linux_os/guide/system/software/integrity/fips/grub_legacy_enable_fips_mode/rule.yml
 index f112bddacd..6761b8736d 100644
---- a/linux_os/guide/system/software/integrity/fips/grub_legacy_enable_fips_mode.rule
-+++ b/linux_os/guide/system/software/integrity/fips/grub_legacy_enable_fips_mode.rule
+--- a/linux_os/guide/system/software/integrity/fips/grub_legacy_enable_fips_mode/rule.yml
++++ b/linux_os/guide/system/software/integrity/fips/grub_legacy_enable_fips_mode/rule.yml
 @@ -50,3 +50,5 @@ warnings:
          <br /><br />
          See <b>{{{ weblink(link="http://csrc.nist.gov/groups/STM/cmvp/documents/140-1/1401vend.htm") }}}</b>
          for a list of FIPS certified vendors.
 +
 +platform: machine
-diff --git a/linux_os/guide/system/software/integrity/fips/package_dracut-fips_installed.rule b/linux_os/guide/system/software/integrity/fips/package_dracut-fips_installed.rule
+diff --git a/linux_os/guide/system/software/integrity/fips/package_dracut-fips_installed/rule.yml b/linux_os/guide/system/software/integrity/fips/package_dracut-fips_installed/rule.yml
 index c1f6e515e6..055ec8f774 100644
---- a/linux_os/guide/system/software/integrity/fips/package_dracut-fips_installed.rule
-+++ b/linux_os/guide/system/software/integrity/fips/package_dracut-fips_installed.rule
+--- a/linux_os/guide/system/software/integrity/fips/package_dracut-fips_installed/rule.yml
++++ b/linux_os/guide/system/software/integrity/fips/package_dracut-fips_installed/rule.yml
 @@ -37,3 +37,5 @@ references:
  ocil_clause: 'the package is not installed'
  
@@ -676,51 +687,51 @@ Date: Mon, 8 Apr 2019 16:25:27 +0200
 Subject: [PATCH 10/11] Add yum CPE and update rules plaforms
 
 ---
- .../clean_components_post_updating.rule   |  2 +
- ....rule                                  |  2 +
- .../ensure_gpgcheck_local_packages.rule   |  2 +
- .../ensure_gpgcheck_repo_metadata.rule    |  2 +
+ .../clean_components_post_updating/rule.yml   |  2 +
+ .../rule.yml                                  |  2 +
+ .../ensure_gpgcheck_local_packages/rule.yml   |  2 +
+ .../ensure_gpgcheck_repo_metadata/rule.yml    |  2 +
  .../oval/installed_env_has_yum_package.xml    | 37 +++++++++++++++++++
  ssg/constants.py                              |  1 +
  6 files changed, 46 insertions(+)
  create mode 100644 shared/checks/oval/installed_env_has_yum_package.xml
 
-diff --git a/linux_os/guide/system/software/updating/clean_components_post_updating.rule b/linux_os/guide/system/software/updating/clean_components_post_updating.rule
+diff --git a/linux_os/guide/system/software/updating/clean_components_post_updating/rule.yml b/linux_os/guide/system/software/updating/clean_components_post_updating/rule.yml
 index d5f0756c2a..9bbcadea11 100644
---- a/linux_os/guide/system/software/updating/clean_components_post_updating.rule
-+++ b/linux_os/guide/system/software/updating/clean_components_post_updating.rule
+--- a/linux_os/guide/system/software/updating/clean_components_post_updating/rule.yml
++++ b/linux_os/guide/system/software/updating/clean_components_post_updating/rule.yml
 @@ -40,3 +40,5 @@ ocil: |-
-     <pre>$ grep clean_requirements_on_remove /etc/yum.conf</pre>
+     <pre>$ grep clean_requirements_on_remove {{{ pkg_manager_config_file }}}</pre>
      The output should return something similar to:
      <pre>clean_requirements_on_remove=1</pre>
 +
 +platform: yum
-diff --git a/linux_os/guide/system/software/updating/ensure_gpgcheck_globally_activated.rule b/linux_os/guide/system/software/updating/ensure_gpgcheck_globally_activated.rule
+diff --git a/linux_os/guide/system/software/updating/ensure_gpgcheck_globally_activated/rule.yml b/linux_os/guide/system/software/updating/ensure_gpgcheck_globally_activated/rule.yml
 index 73e29ae1a5..b19e178026 100644
---- a/linux_os/guide/system/software/updating/ensure_gpgcheck_globally_activated.rule
-+++ b/linux_os/guide/system/software/updating/ensure_gpgcheck_globally_activated.rule
+--- a/linux_os/guide/system/software/updating/ensure_gpgcheck_globally_activated/rule.yml
++++ b/linux_os/guide/system/software/updating/ensure_gpgcheck_globally_activated/rule.yml
 @@ -67,3 +67,5 @@ ocil: |-
      A value of <tt>1</tt> indicates that <tt>gpgcheck</tt> is enabled. Absence of a
      <tt>gpgcheck</tt> line or a setting of <tt>0</tt> indicates that it is
      disabled.
 +
 +platform: yum
-diff --git a/linux_os/guide/system/software/updating/ensure_gpgcheck_local_packages.rule b/linux_os/guide/system/software/updating/ensure_gpgcheck_local_packages.rule
+diff --git a/linux_os/guide/system/software/updating/ensure_gpgcheck_local_packages/rule.yml b/linux_os/guide/system/software/updating/ensure_gpgcheck_local_packages/rule.yml
 index 7d94688af4..d1ffba4d4e 100644
---- a/linux_os/guide/system/software/updating/ensure_gpgcheck_local_packages.rule
-+++ b/linux_os/guide/system/software/updating/ensure_gpgcheck_local_packages.rule
+--- a/linux_os/guide/system/software/updating/ensure_gpgcheck_local_packages/rule.yml
++++ b/linux_os/guide/system/software/updating/ensure_gpgcheck_local_packages/rule.yml
 @@ -47,3 +47,5 @@ ocil: |-
-     <pre>$ grep localpkg_gpgcheck /etc/yum.conf</pre>
+     <pre>$ grep localpkg_gpgcheck {{{ pkg_manager_config_file }}}</pre>
      The output should return something similar to:
      <pre>localpkg_gpgcheck=1</pre>
 +
 +platform: yum
-diff --git a/linux_os/guide/system/software/updating/ensure_gpgcheck_repo_metadata.rule b/linux_os/guide/system/software/updating/ensure_gpgcheck_repo_metadata.rule
+diff --git a/linux_os/guide/system/software/updating/ensure_gpgcheck_repo_metadata/rule.yml b/linux_os/guide/system/software/updating/ensure_gpgcheck_repo_metadata/rule.yml
 index aa3aa83f70..4f8a76652c 100644
---- a/linux_os/guide/system/software/updating/ensure_gpgcheck_repo_metadata.rule
-+++ b/linux_os/guide/system/software/updating/ensure_gpgcheck_repo_metadata.rule
+--- a/linux_os/guide/system/software/updating/ensure_gpgcheck_repo_metadata/rule.yml
++++ b/linux_os/guide/system/software/updating/ensure_gpgcheck_repo_metadata/rule.yml
 @@ -55,3 +55,5 @@ ocil: |-
-     <pre>$ grep repo_gpgcheck /etc/yum.conf</pre>
+     <pre>$ grep repo_gpgcheck {{{ pkg_manager_config_file }}}</pre>
      The output should return something similar to:
      <pre>repo_gpgcheck=1</pre>
 +

@@ -1,0 +1,80 @@
+From 74177471031fb6c4348c28b2bdda72999d9f52bf Mon Sep 17 00:00:00 2001
+From: Gabriel Becker <ggasparb@redhat.com>
+Date: Thu, 9 May 2019 17:23:36 +0200
+Subject: [PATCH] Deduplicate CCE from rule force_opensc_card_drivers.
+
+---
+ .../smart_card_login/force_opensc_card_drivers/rule.yml         | 2 +-
+ shared/references/cce-rhel-avail.txt                          | 1 -
+ 2 files changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/linux_os/guide/system/accounts/accounts-physical/screen_locking/smart_card_login/force_opensc_card_drivers/rule.yml b/linux_os/guide/system/accounts/accounts-physical/screen_locking/smart_card_login/force_opensc_card_drivers/rule.yml
+index 717b570f05..cc934eb0cb 100644
+--- a/linux_os/guide/system/accounts/accounts-physical/screen_locking/smart_card_login/force_opensc_card_drivers/rule.yml
++++ b/linux_os/guide/system/accounts/accounts-physical/screen_locking/smart_card_login/force_opensc_card_drivers/rule.yml
+@@ -27,7 +27,7 @@ rationale: |-
+ severity: medium
+ 
+ identifiers:
+-    cce@rhel7: 80207-4
++    cce@rhel7: 81002-8
+     cce@rhel8: 80821-2
+ 
+ references:
+diff --git a/shared/references/cce-rhel-avail.txt b/shared/references/cce-rhel-avail.txt
+index a08b2ed5dc..3cc6d0a916 100644
+--- a/shared/references/cce-rhel-avail.txt
++++ b/shared/references/cce-rhel-avail.txt
+@@ -1,52 +1,3 @@
+-CCE-80954-1
+-CCE-80955-8
+-CCE-80956-6
+-CCE-80957-4
+-CCE-80958-2
+-CCE-80959-0
+-CCE-80960-8
+-CCE-80961-6
+-CCE-80962-4
+-CCE-80963-2
+-CCE-80964-0
+-CCE-80965-7
+-CCE-80966-5
+-CCE-80967-3
+-CCE-80968-1
+-CCE-80969-9
+-CCE-80970-7
+-CCE-80971-5
+-CCE-80972-3
+-CCE-80973-1
+-CCE-80974-9
+-CCE-80975-6
+-CCE-80976-4
+-CCE-80977-2
+-CCE-80978-0
+-CCE-80979-8
+-CCE-80980-6
+-CCE-80981-4
+-CCE-80982-2
+-CCE-80983-0
+-CCE-80984-8
+-CCE-80985-5
+-CCE-80986-3
+-CCE-80987-1
+-CCE-80988-9
+-CCE-80989-7
+-CCE-80990-5
+-CCE-80991-3
+-CCE-80992-1
+-CCE-80993-9
+-CCE-80994-7
+-CCE-80995-4
+-CCE-80996-2
+-CCE-80997-0
+-CCE-80998-8
+-CCE-80999-6
+-CCE-81000-2
+-CCE-81001-0
+-CCE-81002-8
+ CCE-81003-6
+ CCE-81004-4
+ CCE-81005-1

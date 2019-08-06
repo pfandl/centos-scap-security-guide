@@ -1,0 +1,768 @@
+From a732c5c1d77f96438f866928839639f92df9f36f Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Jan=20=C4=8Cern=C3=BD?= <jcerny@redhat.com>
+Date: Mon, 20 May 2019 15:36:17 +0200
+Subject: [PATCH] Add missing tags and platform assertions
+
+Some tasks were missing tags, but they were dependencies of
+other tasks. When user run the generated playbook with --tags,
+those dependent tasks weren't evaluated and then the whole
+playbook failed. For example rhbz#1685950.
+---
+ .../sssd_enable_smartcards/ansible/shared.yml   |  7 ++++++-
+ .../sssd_memcache_timeout/ansible/shared.yml    |  7 ++++++-
+ .../ansible/shared.yml                          |  7 ++++++-
+ .../ansible/shared.yml                          |  7 ++++++-
+ .../ansible/shared.yml                          |  6 ++++--
+ .../configure_opensc_nss_db/ansible/shared.yml  | 11 +++++++----
+ .../ansible/shared.yml                          |  6 ++++--
+ .../no_direct_root_logins/ansible/shared.yml    |  3 +++
+ .../ansible/shared.yml                          | 14 ++++++++++++--
+ .../ansible/shared.yml                          | 17 +++++++++++++++--
+ .../ansible/shared.yml                          | 14 ++++++++++++--
+ .../ansible/shared.yml                          | 14 ++++++++++++--
+ .../ansible/shared.yml                          |  3 +++
+ .../configure_crypto_policy/ansible/shared.yml  |  3 +++
+ .../ansible/shared.yml                          |  4 +++-
+ .../ansible/shared.yml                          |  4 +++-
+ .../ansible/shared.yml                          |  3 +++
+ ...emplate_ANSIBLE_audit_rules_dac_modification | 14 ++++++++++++--
+ ...ate_ANSIBLE_audit_rules_file_deletion_events | 14 ++++++++++++--
+ .../template_ANSIBLE_audit_rules_login_events   | 14 ++++++++++++--
+ ...late_ANSIBLE_audit_rules_privileged_commands | 11 +++++++++--
+ ...E_audit_rules_unsuccessful_file_modification | 14 ++++++++++++--
+ ...e_ANSIBLE_audit_rules_usergroup_modification | 14 ++++++++++++--
+ .../templates/template_ANSIBLE_file_groupowner  |  3 +++
+ shared/templates/template_ANSIBLE_file_owner    |  3 +++
+ .../templates/template_ANSIBLE_file_permissions |  5 ++++-
+ .../template_ANSIBLE_file_regex_permissions     |  1 +
+ shared/templates/template_ANSIBLE_sebool_var    |  2 ++
+ 28 files changed, 190 insertions(+), 35 deletions(-)
+
+diff --git a/linux_os/guide/services/sssd/sssd_enable_smartcards/ansible/shared.yml b/linux_os/guide/services/sssd/sssd_enable_smartcards/ansible/shared.yml
+index f6dbdf4..2232b83 100644
+--- a/linux_os/guide/services/sssd/sssd_enable_smartcards/ansible/shared.yml
++++ b/linux_os/guide/services/sssd/sssd_enable_smartcards/ansible/shared.yml
+@@ -8,6 +8,9 @@
+   register: test_grep_domain
+   ignore_errors: yes
+   changed_when: False
++  tags:
++    @ANSIBLE_TAGS@
++  @ANSIBLE_ENSURE_PLATFORM@
+ 
+ - name: "Add default domain group (if no domain there)"
+   ini_file:
+@@ -20,7 +23,9 @@
+   with_items:
+     - { section: sssd, option: domains, value: default}
+     - { section: domain/default, option: id_provider, value: files }
+-  when: test_grep_domain.stdout == ""
++  when: test_grep_domain.stdout == "" and @ANSIBLE_PLATFORM_CONDITION@
++  tags:
++    @ANSIBLE_TAGS@
+ - name: "Enable Smartcards in SSSD"
+   ini_file:
+     dest: /etc/sssd/sssd.conf
+diff --git a/linux_os/guide/services/sssd/sssd_memcache_timeout/ansible/shared.yml b/linux_os/guide/services/sssd/sssd_memcache_timeout/ansible/shared.yml
+index 3cf2af4..a5f7658 100644
+--- a/linux_os/guide/services/sssd/sssd_memcache_timeout/ansible/shared.yml
++++ b/linux_os/guide/services/sssd/sssd_memcache_timeout/ansible/shared.yml
+@@ -10,6 +10,9 @@
+   register: test_grep_domain
+   ignore_errors: yes
+   changed_when: False
++  tags:
++    @ANSIBLE_TAGS@
++  @ANSIBLE_ENSURE_PLATFORM@
+ 
+ - name: "Add default domain group (if no domain there)"
+   ini_file:
+@@ -22,7 +25,9 @@
+   with_items:
+     - { section: sssd, option: domains, value: default}
+     - { section: domain/default, option: id_provider, value: files }
+-  when: test_grep_domain.stdout == ""
++  when: test_grep_domain.stdout == "" and @ANSIBLE_PLATFORM_CONDITION@
++  tags:
++    @ANSIBLE_TAGS@
+ 
+ - name: "Configure SSSD's Memory Cache to Expire"
+   ini_file:
+diff --git a/linux_os/guide/services/sssd/sssd_offline_cred_expiration/ansible/shared.yml b/linux_os/guide/services/sssd/sssd_offline_cred_expiration/ansible/shared.yml
+index f2cddfd..f8d0b00 100644
+--- a/linux_os/guide/services/sssd/sssd_offline_cred_expiration/ansible/shared.yml
++++ b/linux_os/guide/services/sssd/sssd_offline_cred_expiration/ansible/shared.yml
+@@ -8,6 +8,9 @@
+   register: test_grep_domain
+   ignore_errors: yes
+   changed_when: False
++  tags:
++    @ANSIBLE_TAGS@
++  @ANSIBLE_ENSURE_PLATFORM@
+ 
+ - name: "Add default domain group (if no domain there)"
+   ini_file:
+@@ -20,7 +23,9 @@
+   with_items:
+     - { section: sssd, option: domains, value: default}
+     - { section: domain/default, option: id_provider, value: files }
+-  when: test_grep_domain.stdout == ""
++  when: test_grep_domain.stdout == "" and @ANSIBLE_PLATFORM_CONDITION@
++  tags:
++    @ANSIBLE_TAGS@
+ 
+ - name: "Configure SSD to Expire Offline Credentials"
+   ini_file:
+diff --git a/linux_os/guide/services/sssd/sssd_ssh_known_hosts_timeout/ansible/shared.yml b/linux_os/guide/services/sssd/sssd_ssh_known_hosts_timeout/ansible/shared.yml
+index 61bd798..d7f246e 100644
+--- a/linux_os/guide/services/sssd/sssd_ssh_known_hosts_timeout/ansible/shared.yml
++++ b/linux_os/guide/services/sssd/sssd_ssh_known_hosts_timeout/ansible/shared.yml
+@@ -10,6 +10,9 @@
+   register: test_grep_domain
+   ignore_errors: yes
+   changed_when: False
++  tags:
++    @ANSIBLE_TAGS@
++  @ANSIBLE_ENSURE_PLATFORM@
+ 
+ - name: "Add default domain group (if no domain there)"
+   ini_file:
+@@ -22,7 +25,9 @@
+   with_items:
+     - { section: sssd, option: domains, value: default}
+     - { section: domain/default, option: id_provider, value: files }
+-  when: test_grep_domain.stdout == ""
++  when: test_grep_domain.stdout == "" and @ANSIBLE_PLATFORM_CONDITION@
++  tags:
++    @ANSIBLE_TAGS@
+ 
+ - name: "Configure SSSD to Expire SSH Known Hosts"
+   ini_file:
+diff --git a/linux_os/guide/system/accounts/accounts-physical/screen_locking/smart_card_login/configure_opensc_card_drivers/ansible/shared.yml b/linux_os/guide/system/accounts/accounts-physical/screen_locking/smart_card_login/configure_opensc_card_drivers/ansible/shared.yml
+index f4617b1..69f488a 100644
+--- a/linux_os/guide/system/accounts/accounts-physical/screen_locking/smart_card_login/configure_opensc_card_drivers/ansible/shared.yml
++++ b/linux_os/guide/system/accounts/accounts-physical/screen_locking/smart_card_login/configure_opensc_card_drivers/ansible/shared.yml
+@@ -9,6 +9,9 @@
+   stat:
+     path: /etc/opensc-{{ ansible_architecture }}.conf
+   register: opensc_conf_cd
++  tags:
++    @ANSIBLE_TAGS@
++  @ANSIBLE_ENSURE_PLATFORM@
+ 
+ - name: "@RULE_TITLE@"
+   lineinfile:
+@@ -16,7 +19,6 @@
+     line: '        card_drivers = {{ var_smartcard_drivers }}'
+     regexp: '(^\s+#|^)\s+card_drivers\s+=\s+.*'
+     state: present
+-  when: opensc_conf_cd.stat.exists    
++  when: opensc_conf_cd.stat.exists and @ANSIBLE_PLATFORM_CONDITION@
+   tags:
+     @ANSIBLE_TAGS@
+-  @ANSIBLE_ENSURE_PLATFORM@
+diff --git a/linux_os/guide/system/accounts/accounts-physical/screen_locking/smart_card_login/configure_opensc_nss_db/ansible/shared.yml b/linux_os/guide/system/accounts/accounts-physical/screen_locking/smart_card_login/configure_opensc_nss_db/ansible/shared.yml
+index 1e1dee5..dcef0b6 100644
+--- a/linux_os/guide/system/accounts/accounts-physical/screen_locking/smart_card_login/configure_opensc_nss_db/ansible/shared.yml
++++ b/linux_os/guide/system/accounts/accounts-physical/screen_locking/smart_card_login/configure_opensc_nss_db/ansible/shared.yml
+@@ -3,10 +3,13 @@
+ # strategy = configure
+ # complexity = low
+ # disruption = low
+--   name: Check existence of pkcs11-switch
+-    stat:
+-        path: /usr/bin/pkcs11-switch
+-    register: pkcs11switch
++- name: Check existence of pkcs11-switch
++  stat:
++    path: /usr/bin/pkcs11-switch
++  register: pkcs11switch
++  tags:
++    @ANSIBLE_TAGS@
++  @ANSIBLE_ENSURE_PLATFORM@
+ 
+ - name: Get NSS database smart card configuration
+   command: /usr/bin/pkcs11-switch
+diff --git a/linux_os/guide/system/accounts/accounts-physical/screen_locking/smart_card_login/force_opensc_card_drivers/ansible/shared.yml b/linux_os/guide/system/accounts/accounts-physical/screen_locking/smart_card_login/force_opensc_card_drivers/ansible/shared.yml
+index 30452e8..a5da032 100644
+--- a/linux_os/guide/system/accounts/accounts-physical/screen_locking/smart_card_login/force_opensc_card_drivers/ansible/shared.yml
++++ b/linux_os/guide/system/accounts/accounts-physical/screen_locking/smart_card_login/force_opensc_card_drivers/ansible/shared.yml
+@@ -9,6 +9,9 @@
+   stat:
+     path: /etc/opensc-{{ ansible_architecture }}.conf
+   register: opensc_conf_fcd
++  tags:
++    @ANSIBLE_TAGS@
++  @ANSIBLE_ENSURE_PLATFORM@
+ 
+ - name: "@RULE_TITLE@"
+   lineinfile:
+@@ -16,7 +19,6 @@
+     line: '        force_card_driver = {{ var_smartcard_drivers }}'
+     regexp: '(^\s+#|^)\s+force_card_driver\s+=\s+.*'
+     state: present
+-  when: opensc_conf_fcd.stat.exists    
++  when: opensc_conf_fcd.stat.exists and @ANSIBLE_PLATFORM_CONDITION@
+   tags:
+     @ANSIBLE_TAGS@
+-  @ANSIBLE_ENSURE_PLATFORM@
+diff --git a/linux_os/guide/system/accounts/accounts-restrictions/root_logins/no_direct_root_logins/ansible/shared.yml b/linux_os/guide/system/accounts/accounts-restrictions/root_logins/no_direct_root_logins/ansible/shared.yml
+index 7b20eed..e4e5e0f 100644
+--- a/linux_os/guide/system/accounts/accounts-restrictions/root_logins/no_direct_root_logins/ansible/shared.yml
++++ b/linux_os/guide/system/accounts/accounts-restrictions/root_logins/no_direct_root_logins/ansible/shared.yml
+@@ -7,6 +7,9 @@
+   stat:
+     path: /etc/securetty
+   register: securetty_empty
++  tags:
++    @ANSIBLE_TAGS@
++  @ANSIBLE_ENSURE_PLATFORM@
+ 
+ - name: "Direct root Logins Not Allowed"
+   shell: echo > /etc/securetty
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_create/ansible/shared.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_create/ansible/shared.yml
+index bd42214..39f35f0 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_create/ansible/shared.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_create/ansible/shared.yml
+@@ -7,6 +7,9 @@
+ - name: Set architecture for audit create_module tasks
+   set_fact:
+     audit_arch: "b{{ ansible_architecture | regex_replace('.*(\\d\\d$)','\\1') }}"
++  tags:
++    @ANSIBLE_TAGS@
++  @ANSIBLE_ENSURE_PLATFORM@
+ 
+ # Inserts/replaces the rule in /etc/audit/rules.d
+ 
+@@ -17,16 +20,23 @@
+     contains: ^.*create_module.*$
+     patterns: '*.rules'
+   register: find_create_module
++  tags:
++    @ANSIBLE_TAGS@
++  @ANSIBLE_ENSURE_PLATFORM@
+ - name: Use /etc/audit/rules.d/privileged.rules as the recipient for the rule
+   set_fact:
+     all_files:
+     - /etc/audit/rules.d/privileged.rules
+-  when: find_create_module.matched == 0
++  when: find_create_module.matched == 0 and @ANSIBLE_PLATFORM_CONDITION@
++  tags:
++    @ANSIBLE_TAGS@
+ - name: Use matched file as the recipient for the rule
+   set_fact:
+     all_files:
+     - '{{ find_create_module.files | map(attribute=''path'') | list | first }}'
+-  when: find_create_module.matched > 0
++  when: find_create_module.matched > 0 and @ANSIBLE_PLATFORM_CONDITION@
++  tags:
++    @ANSIBLE_TAGS@
+ - name: Inserts/replaces the create_module rule in rules.d
+   lineinfile:
+     path: '{{ all_files[0] }}'
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_delete/ansible/shared.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_delete/ansible/shared.yml
+index 59df796..0f2b57f 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_delete/ansible/shared.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_delete/ansible/shared.yml
+@@ -7,6 +7,9 @@
+ - name: Set architecture for audit delete_module tasks
+   set_fact:
+     audit_arch: "b{{ ansible_architecture | regex_replace('.*(\\d\\d$)','\\1') }}"
++  tags:
++    @ANSIBLE_TAGS@
++  @ANSIBLE_ENSURE_PLATFORM@
+ 
+ # Inserts/replaces the rule in /etc/audit/rules.d
+ 
+@@ -17,16 +20,26 @@
+     contains: ^.*delete_module.*$
+     patterns: '*.rules'
+   register: find_delete_module
++  tags:
++    @ANSIBLE_TAGS@
++  @ANSIBLE_ENSURE_PLATFORM@
++
+ - name: Use /etc/audit/rules.d/privileged.rules as the recipient for the rule
+   set_fact:
+     all_files:
+     - /etc/audit/rules.d/privileged.rules
+-  when: find_delete_module.matched == 0
++  when: find_delete_module.matched == 0 and @ANSIBLE_PLATFORM_CONDITION@
++  tags:
++    @ANSIBLE_TAGS@
++
+ - name: Use matched file as the recipient for the rule
+   set_fact:
+     all_files:
+     - '{{ find_delete_module.files | map(attribute=''path'') | list | first }}'
+-  when: find_delete_module.matched > 0
++  when: find_delete_module.matched > 0 and @ANSIBLE_PLATFORM_CONDITION@
++  tags:
++    @ANSIBLE_TAGS@
++
+ - name: Inserts/replaces the delete_module rule in rules.d
+   lineinfile:
+     path: '{{ all_files[0] }}'
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_finit/ansible/shared.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_finit/ansible/shared.yml
+index dbd6a8b..be89110 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_finit/ansible/shared.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_finit/ansible/shared.yml
+@@ -7,6 +7,9 @@
+ - name: Set architecture for audit finit_module tasks
+   set_fact:
+     audit_arch: "b{{ ansible_architecture | regex_replace('.*(\\d\\d$)','\\1') }}"
++  tags:
++    @ANSIBLE_TAGS@
++  @ANSIBLE_ENSURE_PLATFORM@
+ 
+ # Inserts/replaces the rule in /etc/audit/rules.d
+ 
+@@ -17,16 +20,23 @@
+     contains: ^.*finit_module.*$
+     patterns: '*.rules'
+   register: find_finit_module
++  tags:
++    @ANSIBLE_TAGS@
++  @ANSIBLE_ENSURE_PLATFORM@
+ - name: Use /etc/audit/rules.d/privileged.rules as the recipient for the rule
+   set_fact:
+     all_files:
+     - /etc/audit/rules.d/privileged.rules
+-  when: find_finit_module.matched == 0
++  when: find_finit_module.matched == 0 and @ANSIBLE_PLATFORM_CONDITION@
++  tags:
++    @ANSIBLE_TAGS@
+ - name: Use matched file as the recipient for the rule
+   set_fact:
+     all_files:
+     - '{{ find_finit_module.files | map(attribute=''path'') | list | first }}'
+-  when: find_finit_module.matched > 0
++  when: find_finit_module.matched > 0 and @ANSIBLE_PLATFORM_CONDITION@
++  tags:
++    @ANSIBLE_TAGS@
+ - name: Inserts/replaces the finit_module rule in rules.d
+   lineinfile:
+     path: '{{ all_files[0] }}'
+diff --git a/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_init/ansible/shared.yml b/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_init/ansible/shared.yml
+index 7514401..dd41927 100644
+--- a/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_init/ansible/shared.yml
++++ b/linux_os/guide/system/auditing/auditd_configure_rules/audit_kernel_module_loading/audit_rules_kernel_module_loading_init/ansible/shared.yml
+@@ -7,6 +7,9 @@
+ - name: Set architecture for audit init_module tasks
+   set_fact:
+     audit_arch: "b{{ ansible_architecture | regex_replace('.*(\\d\\d$)','\\1') }}"
++  tags:
++    @ANSIBLE_TAGS@
++  @ANSIBLE_ENSURE_PLATFORM@
+ 
+ # Inserts/replaces the rule in /etc/audit/rules.d
+ 
+@@ -17,16 +20,23 @@
+     contains: ^.*init_module.*$
+     patterns: '*.rules'
+   register: find_init_module
++  tags:
++    @ANSIBLE_TAGS@
++  @ANSIBLE_ENSURE_PLATFORM@
+ - name: Use /etc/audit/rules.d/privileged.rules as the recipient for the rule
+   set_fact:
+     all_files:
+     - /etc/audit/rules.d/privileged.rules
+-  when: find_init_module.matched == 0
++  when: find_init_module.matched == 0 and @ANSIBLE_PLATFORM_CONDITION@
++  tags:
++    @ANSIBLE_TAGS@
+ - name: Use matched file as the recipient for the rule
+   set_fact:
+     all_files:
+     - '{{ find_init_module.files | map(attribute=''path'') | list | first }}'
+-  when: find_init_module.matched > 0
++  when: find_init_module.matched > 0 and @ANSIBLE_PLATFORM_CONDITION@
++  tags:
++    @ANSIBLE_TAGS@
+ - name: Inserts/replaces the init_module rule in rules.d
+   lineinfile:
+     path: '{{ all_files[0] }}'
+diff --git a/linux_os/guide/system/software/gnome/gnome_system_settings/dconf_gnome_disable_geolocation/ansible/shared.yml b/linux_os/guide/system/software/gnome/gnome_system_settings/dconf_gnome_disable_geolocation/ansible/shared.yml
+index b0de57f..19f5a14 100644
+--- a/linux_os/guide/system/software/gnome/gnome_system_settings/dconf_gnome_disable_geolocation/ansible/shared.yml
++++ b/linux_os/guide/system/software/gnome/gnome_system_settings/dconf_gnome_disable_geolocation/ansible/shared.yml
+@@ -21,6 +21,9 @@
+     option: gelocation
+     value: "false"
+     create: yes
++  tags:
++    @ANSIBLE_TAGS@
++  @ANSIBLE_ENSURE_PLATFORM@
+ 
+ - name: "Prevent user modification of GNOME geolocation - location tracking"
+   lineinfile:
+diff --git a/linux_os/guide/system/software/integrity/crypto/configure_crypto_policy/ansible/shared.yml b/linux_os/guide/system/software/integrity/crypto/configure_crypto_policy/ansible/shared.yml
+index 2254249..c50753c 100644
+--- a/linux_os/guide/system/software/integrity/crypto/configure_crypto_policy/ansible/shared.yml
++++ b/linux_os/guide/system/software/integrity/crypto/configure_crypto_policy/ansible/shared.yml
+@@ -17,3 +17,6 @@
+ 
+ - name: Verify that Crypto Policy is Set (runtime)
+   shell: /usr/bin/update-crypto-policies --set {{ var_system_crypto_policy }}
++  tags:
++    @ANSIBLE_TAGS@
++  @ANSIBLE_ENSURE_PLATFORM@
+diff --git a/linux_os/guide/system/software/updating/ensure_gpgcheck_globally_activated/ansible/shared.yml b/linux_os/guide/system/software/updating/ensure_gpgcheck_globally_activated/ansible/shared.yml
+index 551087e..8589950 100644
+--- a/linux_os/guide/system/software/updating/ensure_gpgcheck_globally_activated/ansible/shared.yml
++++ b/linux_os/guide/system/software/updating/ensure_gpgcheck_globally_activated/ansible/shared.yml
+@@ -8,7 +8,9 @@
+     path: /etc/yum.conf
+   register: yum_config_file
+   check_mode: no
+-  when: ansible_distribution == "Fedora"
++  when: ansible_distribution == "Fedora" and @ANSIBLE_PLATFORM_CONDITION@
++  tags:
++    @ANSIBLE_TAGS@
+ 
+ # Old versions of Fedora use yum
+ 
+diff --git a/linux_os/guide/system/software/updating/ensure_gpgcheck_local_packages/ansible/shared.yml b/linux_os/guide/system/software/updating/ensure_gpgcheck_local_packages/ansible/shared.yml
+index cc61f4f..1313dc0 100644
+--- a/linux_os/guide/system/software/updating/ensure_gpgcheck_local_packages/ansible/shared.yml
++++ b/linux_os/guide/system/software/updating/ensure_gpgcheck_local_packages/ansible/shared.yml
+@@ -8,7 +8,9 @@
+     path: /etc/yum.conf
+   register: yum_config_file
+   check_mode: no
+-  when: ansible_distribution == "Fedora"
++  when: ansible_distribution == "Fedora" and @ANSIBLE_PLATFORM_CONDITION@
++  tags:
++    @ANSIBLE_TAGS@
+ 
+ # Old versions of Fedora use yum
+ 
+diff --git a/linux_os/guide/system/software/updating/ensure_gpgcheck_never_disabled/ansible/shared.yml b/linux_os/guide/system/software/updating/ensure_gpgcheck_never_disabled/ansible/shared.yml
+index 56050ef..500459f 100644
+--- a/linux_os/guide/system/software/updating/ensure_gpgcheck_never_disabled/ansible/shared.yml
++++ b/linux_os/guide/system/software/updating/ensure_gpgcheck_never_disabled/ansible/shared.yml
+@@ -10,6 +10,9 @@
+     patterns: "*.repo"
+     contains: ^\[.+]$
+   register: yum_find
++  tags:
++    @ANSIBLE_TAGS@
++  @ANSIBLE_ENSURE_PLATFORM@
+ 
+ - name: Ensure gpgcheck Enabled For All {{{ pkg_manager }}} Package Repositories
+   with_items: "{{ yum_find.files }}"
+diff --git a/shared/templates/template_ANSIBLE_audit_rules_dac_modification b/shared/templates/template_ANSIBLE_audit_rules_dac_modification
+index 0f43d05..eb69f49 100644
+--- a/shared/templates/template_ANSIBLE_audit_rules_dac_modification
++++ b/shared/templates/template_ANSIBLE_audit_rules_dac_modification
+@@ -10,6 +10,9 @@
+ - name: Set architecture for audit {{{ ATTR }}} tasks
+   set_fact:
+     audit_arch: "b{{ ansible_architecture | regex_replace('.*(\\d\\d$)','\\1') }}"
++  tags:
++    @ANSIBLE_TAGS@
++  @ANSIBLE_ENSURE_PLATFORM@
+ 
+ #
+ # Inserts/replaces the rule in /etc/audit/rules.d
+@@ -21,18 +24,25 @@
+     contains: "-F key=perm_mod$"
+     patterns: "*.rules"
+   register: find_{{{ ATTR }}}
++  tags:
++    @ANSIBLE_TAGS@
++  @ANSIBLE_ENSURE_PLATFORM@
+ 
+ - name: If existing DAC ruleset not found, use /etc/audit/rules.d/privileged.rules as the recipient for the rule
+   set_fact:
+     all_files:
+       - /etc/audit/rules.d/privileged.rules
+-  when: find_{{{ ATTR }}}.matched == 0
++  when: find_{{{ ATTR }}}.matched == 0 and @ANSIBLE_PLATFORM_CONDITION@
++  tags:
++    @ANSIBLE_TAGS@
+ 
+ - name: Use matched file as the recipient for the rule
+   set_fact:
+     all_files:
+       - "{{ find_{{{ ATTR }}}.files | map(attribute='path') | list | first }}"
+-  when: find_{{{ ATTR }}}.matched > 0
++  when: find_{{{ ATTR }}}.matched > 0 and @ANSIBLE_PLATFORM_CONDITION@
++  tags:
++    @ANSIBLE_TAGS@
+ 
+ - name: Inserts/replaces the {{{ ATTR }}} rule in rules.d when on x86
+   lineinfile:
+diff --git a/shared/templates/template_ANSIBLE_audit_rules_file_deletion_events b/shared/templates/template_ANSIBLE_audit_rules_file_deletion_events
+index 1ccef80..c15c2cd 100644
+--- a/shared/templates/template_ANSIBLE_audit_rules_file_deletion_events
++++ b/shared/templates/template_ANSIBLE_audit_rules_file_deletion_events
+@@ -10,6 +10,9 @@
+ - name: Set architecture for audit {{{ NAME }}} tasks
+   set_fact:
+     audit_arch: "b{{ ansible_architecture | regex_replace('.*(\\d\\d$)','\\1') }}"
++  tags:
++    @ANSIBLE_TAGS@
++  @ANSIBLE_ENSURE_PLATFORM@
+ 
+ #
+ # Inserts/replaces the rule in /etc/audit/rules.d
+@@ -21,18 +24,25 @@
+     contains: "-F key=delete$"
+     patterns: "*.rules"
+   register: find_{{{ NAME }}}
++  tags:
++    @ANSIBLE_TAGS@
++  @ANSIBLE_ENSURE_PLATFORM@
+ 
+ - name: If existing DAC ruleset not found, use /etc/audit/rules.d/delete.rules as the recipient for the rule
+   set_fact:
+     all_files:
+       - /etc/audit/rules.d/delete.rules
+-  when: find_{{{ NAME }}}.matched == 0
++  when: find_{{{ NAME }}}.matched == 0 and @ANSIBLE_PLATFORM_CONDITION@
++  tags:
++    @ANSIBLE_TAGS@
+ 
+ - name: Use matched file as the recipient for the rule
+   set_fact:
+     all_files:
+       - "{{ find_{{{ NAME }}}.files | map(attribute='path') | list | first }}"
+-  when: find_{{{ NAME }}}.matched > 0
++  when: find_{{{ NAME }}}.matched > 0 and @ANSIBLE_PLATFORM_CONDITION@
++  tags:
++    @ANSIBLE_TAGS@
+ 
+ - name: Inserts/replaces the {{{ NAME }}} rule in rules.d when on x86
+   lineinfile:
+diff --git a/shared/templates/template_ANSIBLE_audit_rules_login_events b/shared/templates/template_ANSIBLE_audit_rules_login_events
+index 835bf3a..cb319eb 100644
+--- a/shared/templates/template_ANSIBLE_audit_rules_login_events
++++ b/shared/templates/template_ANSIBLE_audit_rules_login_events
+@@ -10,6 +10,9 @@
+ - name: Set architecture for audit {{{ NAME }}} tasks
+   set_fact:
+     audit_arch: "b{{ ansible_architecture | regex_replace('.*(\\d\\d$)','\\1') }}"
++  tags:
++    @ANSIBLE_TAGS@
++  @ANSIBLE_ENSURE_PLATFORM@
+ 
+ #
+ # Inserts/replaces the rule in /etc/audit/rules.d
+@@ -21,18 +24,25 @@
+     contains: "-k logins$"
+     patterns: "*.rules"
+   register: find_{{{ NAME }}}
++  tags:
++    @ANSIBLE_TAGS@
++  @ANSIBLE_ENSURE_PLATFORM@
+ 
+ - name: If existing user/group modification ruleset not found, use /etc/audit/rules.d/logins.rules as the recipient for the rule
+   set_fact:
+     all_files:
+       - /etc/audit/rules.d/logins.rules
+-  when: find_{{{ NAME }}}.matched == 0
++  when: find_{{{ NAME }}}.matched == 0 and @ANSIBLE_PLATFORM_CONDITION@
++  tags:
++    @ANSIBLE_TAGS@
+ 
+ - name: Use matched file as the recipient for the rule
+   set_fact:
+     all_files:
+       - "{{ find_{{{ NAME }}}.files | map(attribute='path') | list | first }}"
+-  when: find_{{{ NAME }}}.matched > 0
++  when: find_{{{ NAME }}}.matched > 0 and @ANSIBLE_PLATFORM_CONDITION@
++  tags:
++    @ANSIBLE_TAGS@
+ 
+ - name: Inserts/replaces the {{{ NAME }}} rule in rules.d when on x86
+   lineinfile:
+diff --git a/shared/templates/template_ANSIBLE_audit_rules_privileged_commands b/shared/templates/template_ANSIBLE_audit_rules_privileged_commands
+index a8bbc66..63a14d2 100644
+--- a/shared/templates/template_ANSIBLE_audit_rules_privileged_commands
++++ b/shared/templates/template_ANSIBLE_audit_rules_privileged_commands
+@@ -13,18 +13,25 @@
+     contains: "^.*path={{{ PATH }}}.*$"
+     patterns: "*.rules"
+   register: find_{{{ NAME }}}
++  tags:
++    @ANSIBLE_TAGS@
++  @ANSIBLE_ENSURE_PLATFORM@
+ 
+ - name: Use /etc/audit/rules.d/privileged.rules as the recipient for the rule
+   set_fact:
+     all_files:
+       - /etc/audit/rules.d/privileged.rules
+-  when: find_{{{ NAME }}}.matched == 0
++  when: find_{{{ NAME }}}.matched == 0 and @ANSIBLE_PLATFORM_CONDITION@
++  tags:
++    @ANSIBLE_TAGS@
+ 
+ - name: Use matched file as the recipient for the rule
+   set_fact:
+     all_files:
+       - "{{ find_{{{ NAME }}}.files | map(attribute='path') | list | first }}"
+-  when: find_{{{ NAME }}}.matched > 0
++  when: find_{{{ NAME }}}.matched > 0 and @ANSIBLE_PLATFORM_CONDITION@
++  tags:
++    @ANSIBLE_TAGS@
+ 
+ - name: Inserts/replaces the {{{ NAME }}} rule in rules.d
+   lineinfile:
+diff --git a/shared/templates/template_ANSIBLE_audit_rules_unsuccessful_file_modification b/shared/templates/template_ANSIBLE_audit_rules_unsuccessful_file_modification
+index 015a29b..99b7bdd 100644
+--- a/shared/templates/template_ANSIBLE_audit_rules_unsuccessful_file_modification
++++ b/shared/templates/template_ANSIBLE_audit_rules_unsuccessful_file_modification
+@@ -10,6 +10,9 @@
+ - name: Set architecture for audit {{{ NAME }}} tasks
+   set_fact:
+     audit_arch: "b{{ ansible_architecture | regex_replace('.*(\\d\\d$)','\\1') }}"
++  tags:
++    @ANSIBLE_TAGS@
++  @ANSIBLE_ENSURE_PLATFORM@
+ 
+ #
+ # Inserts/replaces the rule in /etc/audit/rules.d
+@@ -21,18 +24,25 @@
+     contains: "-F key=perm_mod$"
+     patterns: "*.rules"
+   register: find_{{{ NAME }}}
++  tags:
++    @ANSIBLE_TAGS@
++  @ANSIBLE_ENSURE_PLATFORM@
+ 
+ - name: If existing DAC ruleset not found, use /etc/audit/rules.d/access.rules as the recipient for the rule
+   set_fact:
+     all_files:
+       - /etc/audit/rules.d/access.rules
+-  when: find_{{{ NAME }}}.matched == 0
++  when: find_{{{ NAME }}}.matched == 0 and @ANSIBLE_PLATFORM_CONDITION@
++  tags:
++    @ANSIBLE_TAGS@
+ 
+ - name: Use matched file as the recipient for the rule
+   set_fact:
+     all_files:
+       - "{{ find_{{{ NAME }}}.files | map(attribute='path') | list | first }}"
+-  when: find_{{{ NAME }}}.matched > 0
++  when: find_{{{ NAME }}}.matched > 0 and @ANSIBLE_PLATFORM_CONDITION@
++  tags:
++    @ANSIBLE_TAGS@
+ 
+ - name: Inserts/replaces the {{{ NAME }}} rule in rules.d when on x86
+   lineinfile:
+diff --git a/shared/templates/template_ANSIBLE_audit_rules_usergroup_modification b/shared/templates/template_ANSIBLE_audit_rules_usergroup_modification
+index a4b3a0a..df71891 100644
+--- a/shared/templates/template_ANSIBLE_audit_rules_usergroup_modification
++++ b/shared/templates/template_ANSIBLE_audit_rules_usergroup_modification
+@@ -10,6 +10,9 @@
+ - name: Set architecture for audit {{{ NAME }}} tasks
+   set_fact:
+     audit_arch: "b{{ ansible_architecture | regex_replace('.*(\\d\\d$)','\\1') }}"
++  tags:
++    @ANSIBLE_TAGS@
++  @ANSIBLE_ENSURE_PLATFORM@
+ 
+ #
+ # Inserts/replaces the rule in /etc/audit/rules.d
+@@ -21,18 +24,25 @@
+     contains: "-k audit_rules_usergroup_modification$"
+     patterns: "*.rules"
+   register: find_{{{ NAME }}}
++  tags:
++    @ANSIBLE_TAGS@
++  @ANSIBLE_ENSURE_PLATFORM@
+ 
+ - name: If existing user/group modification ruleset not found, use /etc/audit/rules.d/privileged.rules as the recipient for the rule
+   set_fact:
+     all_files:
+       - /etc/audit/rules.d/privileged.rules
+-  when: find_{{{ NAME }}}.matched == 0
++  when: find_{{{ NAME }}}.matched == 0 and @ANSIBLE_PLATFORM_CONDITION@
++  tags:
++    @ANSIBLE_TAGS@
+ 
+ - name: Use matched file as the recipient for the rule
+   set_fact:
+     all_files:
+       - "{{ find_{{{ NAME }}}.files | map(attribute='path') | list | first }}"
+-  when: find_{{{ NAME }}}.matched > 0
++  when: find_{{{ NAME }}}.matched > 0 and @ANSIBLE_PLATFORM_CONDITION@
++  tags:
++    @ANSIBLE_TAGS@
+ 
+ - name: Inserts/replaces the {{{ NAME }}} rule in rules.d when on x86
+   lineinfile:
+diff --git a/shared/templates/template_ANSIBLE_file_groupowner b/shared/templates/template_ANSIBLE_file_groupowner
+index 3c7335a..f9c7a9c 100644
+--- a/shared/templates/template_ANSIBLE_file_groupowner
++++ b/shared/templates/template_ANSIBLE_file_groupowner
+@@ -7,6 +7,9 @@
+   stat:
+     path: {{{ FILEPATH }}}
+   register: file_exists
++  tags:
++    @ANSIBLE_TAGS@
++  @ANSIBLE_ENSURE_PLATFORM@
+ 
+ - name: Ensure group owner {{{ FILEGID }}} on {{{ FILEPATH }}}
+   file:
+diff --git a/shared/templates/template_ANSIBLE_file_owner b/shared/templates/template_ANSIBLE_file_owner
+index 13fd7dd..6eb0cff 100644
+--- a/shared/templates/template_ANSIBLE_file_owner
++++ b/shared/templates/template_ANSIBLE_file_owner
+@@ -7,6 +7,9 @@
+   stat:
+     path: {{{ FILEPATH }}}
+   register: file_exists
++  tags:
++    @ANSIBLE_TAGS@
++  @ANSIBLE_ENSURE_PLATFORM@
+ 
+ - name: Ensure owner {{{ FILEUID }}} on {{{ FILEPATH }}}
+   file:
+diff --git a/shared/templates/template_ANSIBLE_file_permissions b/shared/templates/template_ANSIBLE_file_permissions
+index 57c8394..8d226a5 100644
+--- a/shared/templates/template_ANSIBLE_file_permissions
++++ b/shared/templates/template_ANSIBLE_file_permissions
+@@ -7,7 +7,10 @@
+   stat:
+     path: {{{ FILEPATH }}}
+   register: file_exists
+-  
++  tags:
++    @ANSIBLE_TAGS@
++  @ANSIBLE_ENSURE_PLATFORM@
++
+ - name: Ensure permission {{{ FILEMODE }}} on {{{ FILEPATH }}}
+   file:
+     path: {{{ FILEPATH }}}
+diff --git a/shared/templates/template_ANSIBLE_file_regex_permissions b/shared/templates/template_ANSIBLE_file_regex_permissions
+index 01e36e7..478d29b 100644
+--- a/shared/templates/template_ANSIBLE_file_regex_permissions
++++ b/shared/templates/template_ANSIBLE_file_regex_permissions
+@@ -11,6 +11,7 @@
+   register: files_found
+   tags:
+     @ANSIBLE_TAGS@
++  @ANSIBLE_ENSURE_PLATFORM@
+ 
+ - name: Set permissions for {{{ FILEPATH }}} file(s)
+   file:
+diff --git a/shared/templates/template_ANSIBLE_sebool_var b/shared/templates/template_ANSIBLE_sebool_var
+index ae6bee4..d48d1cf 100644
+--- a/shared/templates/template_ANSIBLE_sebool_var
++++ b/shared/templates/template_ANSIBLE_sebool_var
+@@ -11,6 +11,8 @@
+     state: latest
+   tags:
+     - skip_ansible_lint # [ANSIBLE0010] Skipping lint because ANSIBLE0010 is a bad security practice
++    @ANSIBLE_TAGS@
++  @ANSIBLE_ENSURE_PLATFORM@
+ 
+ - name: Set SELinux boolean {{{ SEBOOLID }}} accordingly
+   seboolean:
+-- 
+2.20.1
+

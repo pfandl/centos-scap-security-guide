@@ -1,0 +1,141 @@
+From 57e3dba57c5a9e9172476ea254fae2a8fa4e9591 Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Fri, 1 Mar 2019 10:22:19 +0100
+Subject: [PATCH 1/2] Add rule for package pcsc-lite installed
+
+Select the rule in profiles that select service_pcscd_enabled.
+---
+ .../package_pcsc-lite_installed/rule.yml      | 23 +++++++++++++++++++
+ rhel7/profiles/ospp.profile                   |  1 +
+ rhel7/profiles/rhelh-stig.profile             |  1 +
+ rhel7/profiles/rhelh-vpp.profile              |  1 +
+ rhel8/profiles/pci-dss.profile                |  1 +
+ rhv4/profiles/rhvh-stig.profile               |  1 +
+ rhv4/profiles/rhvh-vpp.profile                |  1 +
+ 7 files changed, 29 insertions(+)
+ create mode 100644 linux_os/guide/system/accounts/accounts-physical/screen_locking/smart_card_login/package_pcsc-lite_installed/rule.yml
+
+diff --git a/linux_os/guide/system/accounts/accounts-physical/screen_locking/smart_card_login/package_pcsc-lite_installed/rule.yml b/linux_os/guide/system/accounts/accounts-physical/screen_locking/smart_card_login/package_pcsc-lite_installed/rule.yml
+new file mode 100644
+index 0000000000..6baf31bbe1
+--- /dev/null
++++ b/linux_os/guide/system/accounts/accounts-physical/screen_locking/smart_card_login/package_pcsc-lite_installed/rule.yml
+@@ -0,0 +1,23 @@
++documentation_complete: true
++
++prodtype: rhel7,rhel8,fedora,rhv4
++
++title: 'Install pcsc-lite'
++
++description: |-
++    {{{ describe_package_install(package="pcsc-lite") }}}
++
++rationale: |-
++    The pcsc-lite package must be installed if it is to be available for
++    multifactor authentication using smartcards.
++
++severity: medium
++
++references:
++    disa: "1954"
++    srg: SRG-OS-000375-GPOS-00160
++    vmmsrg: SRG-OS-000377-VMM-001530
++
++ocil_clause: 'the package is not installed'
++
++ocil: '{{{ ocil_package(package="pcsc-lite") }}}'
+diff --git a/rhel7/profiles/ospp.profile b/rhel7/profiles/ospp.profile
+index 64f54c3945..166de67169 100644
+--- a/rhel7/profiles/ospp.profile
++++ b/rhel7/profiles/ospp.profile
+@@ -387,6 +387,7 @@ selections:
+     - configure_opensc_nss_db
+     - configure_opensc_card_drivers
+     - force_opensc_card_drivers
++    - package_pcsc-lite_installed
+     - service_pcscd_enabled
+     - sssd_enable_smartcards
+     - sssd_memcache_timeout
+diff --git a/rhel7/profiles/rhelh-stig.profile b/rhel7/profiles/rhelh-stig.profile
+index cf387e4a25..f88f4026b0 100644
+--- a/rhel7/profiles/rhelh-stig.profile
++++ b/rhel7/profiles/rhelh-stig.profile
+@@ -361,6 +361,7 @@ selections:
+     - configure_opensc_nss_db
+     - configure_opensc_card_drivers
+     - force_opensc_card_drivers
++    - package_pcsc-lite_installed
+     - service_pcscd_enabled
+     - sssd_enable_smartcards
+     - sssd_memcache_timeout
+diff --git a/rhel7/profiles/rhelh-vpp.profile b/rhel7/profiles/rhelh-vpp.profile
+index b26e523f6d..2b4a5805ef 100644
+--- a/rhel7/profiles/rhelh-vpp.profile
++++ b/rhel7/profiles/rhelh-vpp.profile
+@@ -178,6 +178,7 @@ selections:
+     - configure_opensc_nss_db
+     - configure_opensc_card_drivers
+     - force_opensc_card_drivers
++    - package_pcsc-lite_installed
+     - service_pcscd_enabled
+     - sssd_enable_smartcards
+ 
+diff --git a/rhel8/profiles/pci-dss.profile b/rhel8/profiles/pci-dss.profile
+index 934622c456..5990e9e00d 100644
+--- a/rhel8/profiles/pci-dss.profile
++++ b/rhel8/profiles/pci-dss.profile
+@@ -119,6 +119,7 @@ selections:
+     - configure_opensc_nss_db
+     - configure_opensc_card_drivers
+     - force_opensc_card_drivers
++    - package_pcsc-lite_installed
+     - service_pcscd_enabled
+     - sssd_enable_smartcards
+     - set_password_hashing_algorithm_systemauth
+diff --git a/rhv4/profiles/rhvh-stig.profile b/rhv4/profiles/rhvh-stig.profile
+index 47f0052756..f55098b276 100644
+--- a/rhv4/profiles/rhvh-stig.profile
++++ b/rhv4/profiles/rhvh-stig.profile
+@@ -361,6 +361,7 @@ selections:
+     - configure_opensc_nss_db
+     - configure_opensc_card_drivers
+     - force_opensc_card_drivers
++    - package_pcsc-lite_installed
+     - service_pcscd_enabled
+     - sssd_enable_smartcards
+     - sssd_memcache_timeout
+diff --git a/rhv4/profiles/rhvh-vpp.profile b/rhv4/profiles/rhvh-vpp.profile
+index 5b9dee7590..ecc6fce5e0 100644
+--- a/rhv4/profiles/rhvh-vpp.profile
++++ b/rhv4/profiles/rhvh-vpp.profile
+@@ -178,6 +178,7 @@ selections:
+     - configure_opensc_nss_db
+     - configure_opensc_card_drivers
+     - force_opensc_card_drivers
++    - package_pcsc-lite_installed
+     - service_pcscd_enabled
+     - sssd_enable_smartcards
+ 
+
+From d8ffcfed9a1e97e18b02bc6be8d7918b6a994a95 Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Fri, 1 Mar 2019 16:58:19 +0100
+Subject: [PATCH 2/2] Update title of rule package_pcsc-lite_installed
+
+---
+ .../smart_card_login/package_pcsc-lite_installed/rule.yml       | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/linux_os/guide/system/accounts/accounts-physical/screen_locking/smart_card_login/package_pcsc-lite_installed/rule.yml b/linux_os/guide/system/accounts/accounts-physical/screen_locking/smart_card_login/package_pcsc-lite_installed/rule.yml
+index 6baf31bbe1..b2a243db84 100644
+--- a/linux_os/guide/system/accounts/accounts-physical/screen_locking/smart_card_login/package_pcsc-lite_installed/rule.yml
++++ b/linux_os/guide/system/accounts/accounts-physical/screen_locking/smart_card_login/package_pcsc-lite_installed/rule.yml
+@@ -2,7 +2,7 @@ documentation_complete: true
+ 
+ prodtype: rhel7,rhel8,fedora,rhv4
+ 
+-title: 'Install pcsc-lite'
++title: 'Install the pcsc-lite package'
+ 
+ description: |-
+     {{{ describe_package_install(package="pcsc-lite") }}}

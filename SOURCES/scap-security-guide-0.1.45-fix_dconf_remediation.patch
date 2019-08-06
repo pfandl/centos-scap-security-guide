@@ -1,0 +1,22 @@
+From 8ea989799f6d69c4a80ca8e4bf0d08177e916571 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Mat=C4=9Bj=20T=C3=BD=C4=8D?= <matyc@redhat.com>
+Date: Wed, 12 Jun 2019 15:48:39 +0200
+Subject: [PATCH] Call dconf update in all dconf-related shared remediation
+ functions.
+
+---
+ shared/bash_remediation_functions/include_dconf_settings.sh | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/shared/bash_remediation_functions/include_dconf_settings.sh b/shared/bash_remediation_functions/include_dconf_settings.sh
+index 02f9877e97..9cfce467f8 100644
+--- a/shared/bash_remediation_functions/include_dconf_settings.sh
++++ b/shared/bash_remediation_functions/include_dconf_settings.sh
+@@ -70,5 +70,7 @@ function dconf_lock {
+ 	then
+ 		echo "/${_key}/${_setting}" >> "/etc/dconf/db/${_db}/locks/${_lockFile}"
+ 	fi
++
++	dconf update
+ }
+ 
