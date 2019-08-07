@@ -1,0 +1,120 @@
+diff -uNrp scap-security-guide-0.1.40.orig/rhel7/profiles/C2S.profile scap-security-guide-0.1.40/rhel7/profiles/C2S.profile
+--- scap-security-guide-0.1.40.orig/rhel7/profiles/C2S.profile	2018-07-25 12:50:14.000000000 +0000
++++ scap-security-guide-0.1.40/rhel7/profiles/C2S.profile	2018-11-25 15:17:23.769888627 +0000
+@@ -3,6 +3,8 @@ documentation_complete: true
+ title: 'C2S for Red Hat Enterprise Linux 7'
+ 
+ description: |-
++    **Not applicable to CentOS Linux, included for reference only**
++
+     This profile demonstrates compliance against the
+     U.S. Government Commercial Cloud Services (C2S) baseline.
+ 
+diff -uNrp scap-security-guide-0.1.40.orig/rhel7/profiles/cjis.profile scap-security-guide-0.1.40/rhel7/profiles/cjis.profile
+--- scap-security-guide-0.1.40.orig/rhel7/profiles/cjis.profile	2018-07-25 12:50:14.000000000 +0000
++++ scap-security-guide-0.1.40/rhel7/profiles/cjis.profile	2018-11-25 15:29:55.671294215 +0000
+@@ -3,6 +3,8 @@ documentation_complete: true
+ title: 'Criminal Justice Information Services (CJIS) Security Policy'
+ 
+ description: |-
++    **Not applicable to CentOS Linux, included for reference only**
++
+     This profile is derived from FBI's CJIS v5.4
+     Security Policy. A copy of this policy can be found at the CJIS Security
+     Policy Resource Center:
+diff -uNrp scap-security-guide-0.1.40.orig/rhel7/profiles/hipaa.profile scap-security-guide-0.1.40/rhel7/profiles/hipaa.profile
+--- scap-security-guide-0.1.40.orig/rhel7/profiles/hipaa.profile	2018-07-25 12:50:14.000000000 +0000
++++ scap-security-guide-0.1.40/rhel7/profiles/hipaa.profile	2018-11-25 15:30:15.463278958 +0000
+@@ -3,6 +3,8 @@ documentation_complete: True
+ title: 'Health Insurance Portability and Accountability Act (HIPAA)'
+ 
+ description: |-
++    **Not applicable to CentOS Linux, included for reference only**
++
+     The HIPAA Security Rule establishes U.S. national standards to protect individuals’
+     electronic personal health information that is created, received, used, or
+     maintained by a covered entity. The Security Rule requires appropriate
+diff -uNrp scap-security-guide-0.1.40.orig/rhel7/profiles/ospp42.profile scap-security-guide-0.1.40/rhel7/profiles/ospp42.profile
+--- scap-security-guide-0.1.40.orig/rhel7/profiles/ospp42.profile	2018-11-25 12:23:46.255295645 +0000
++++ scap-security-guide-0.1.40/rhel7/profiles/ospp42.profile	2018-11-25 15:19:26.088789033 +0000
+@@ -3,6 +3,8 @@ documentation_complete: true
+ title: 'OSPP - Protection Profile for General Purpose Operating Systems v. 4.2'
+ 
+ description: |-
++    **Not applicable to CentOS Linux, included for reference only**
++
+     This profile reflects mandatory configuration controls identified in the
+     NIAP Configuration Annex to the Protection Profile for General Purpose
+     Operating Systems (Protection Profile Version 4.2).
+diff -uNrp scap-security-guide-0.1.40.orig/rhel7/profiles/ospp.profile scap-security-guide-0.1.40/rhel7/profiles/ospp.profile
+--- scap-security-guide-0.1.40.orig/rhel7/profiles/ospp.profile	2018-11-25 12:23:46.255295645 +0000
++++ scap-security-guide-0.1.40/rhel7/profiles/ospp.profile	2018-11-25 15:21:23.225693654 +0000
+@@ -3,6 +3,8 @@ documentation_complete: true
+ title: 'United States Government Configuration Baseline'
+ 
+ description: |-
++    **Not applicable to CentOS Linux, included for reference only**
++
+     This compliance profile reflects the core set of security
+     related configuration settings for deployment of Red Hat Enterprise
+     Linux 7.x into U.S. Defense, Intelligence, and Civilian agencies.
+diff -uNrp scap-security-guide-0.1.40.orig/rhel7/profiles/standard.profile scap-security-guide-0.1.40/rhel7/profiles/standard.profile
+--- scap-security-guide-0.1.40.orig/rhel7/profiles/standard.profile	2018-07-25 12:50:14.000000000 +0000
++++ scap-security-guide-0.1.40/rhel7/profiles/standard.profile	2018-11-25 15:18:14.952846958 +0000
+@@ -3,6 +3,8 @@ documentation_complete: true
+ title: 'Standard System Security Profile for Red Hat Enterprise Linux 7'
+ 
+ description: |-
++    **Not applicable to CentOS Linux, included for reference only**
++
+     This profile contains rules to ensure standard security baseline
+     of a Red Hat Enterprise Linux 7 system. Regardless of your system's workload
+     all of these checks should pass.
+diff -uNrp scap-security-guide-0.1.43.orig/rhel7/profiles/nist-800-171-cui.profile scap-security-guide-0.1.43/rhel7/profiles/nist-800-171-cui.profile
+--- scap-security-guide-0.1.43.orig/rhel7/profiles/nist-800-171-cui.profile	2019-02-18 13:15:54.000000000 +0000
++++ scap-security-guide-0.1.43/rhel7/profiles/nist-800-171-cui.profile	2019-08-07 15:08:00.311568091 +0000
+@@ -3,6 +3,8 @@ documentation_complete: true
+ title: 'Unclassified Information in Non-federal Information Systems and Organizations (NIST 800-171)'
+ 
+ description: |-
++    **Not applicable to CentOS Linux, included for reference only**
++
+     From NIST 800-171, Section 2.2:
+     Security requirements for protecting the confidentiality of CUI in non-federal
+     information systems and organizations have a well-defined structure that
+diff -uNrp scap-security-guide-0.1.43.orig/rhel7/profiles/pci-dss.profile scap-security-guide-0.1.43/rhel7/profiles/pci-dss.profile
+--- scap-security-guide-0.1.43.orig/rhel7/profiles/pci-dss.profile	2019-08-07 15:03:56.740656786 +0000
++++ scap-security-guide-0.1.43/rhel7/profiles/pci-dss.profile	2019-08-07 15:09:12.666541739 +0000
+@@ -3,6 +3,8 @@ documentation_complete: true
+ title: 'PCI-DSS v3.2.1 Control Baseline for Red Hat Enterprise Linux 7'
+ 
+ description: |-
++    **Not applicable to CentOS Linux, included for reference only**
++
+     Ensures PCI-DSS v3.2.1 related security configuration settings are applied.
+ 
+ selections:
+diff -uNrp scap-security-guide-0.1.43.orig/rhel7/profiles/rht-ccp.profile scap-security-guide-0.1.43/rhel7/profiles/rht-ccp.profile
+--- scap-security-guide-0.1.43.orig/rhel7/profiles/rht-ccp.profile	2019-02-18 13:15:54.000000000 +0000
++++ scap-security-guide-0.1.43/rhel7/profiles/rht-ccp.profile	2019-08-07 15:10:05.513522496 +0000
+@@ -3,6 +3,8 @@ documentation_complete: true
+ title: 'Red Hat Corporate Profile for Certified Cloud Providers (RH CCP)'
+ 
+ description: |-
++    **Not applicable to CentOS Linux, included for reference only**
++
+     This profile contains the minimum security relevant
+     configuration settings recommended by Red Hat, Inc for
+     Red Hat Enterprise Linux 7 instances deployed by Red Hat Certified
+diff -uNrp scap-security-guide-0.1.43.orig/rhel7/profiles/stig-rhel7-disa.profile scap-security-guide-0.1.43/rhel7/profiles/stig-rhel7-disa.profile
+--- scap-security-guide-0.1.43.orig/rhel7/profiles/stig-rhel7-disa.profile	2019-08-07 15:03:56.741656785 +0000
++++ scap-security-guide-0.1.43/rhel7/profiles/stig-rhel7-disa.profile	2019-08-07 15:11:05.638502204 +0000
+@@ -3,6 +3,8 @@ documentation_complete: true
+ title: 'DISA STIG for Red Hat Enterprise Linux 7'
+ 
+ description: |-
++    **Not applicable to CentOS Linux, included for reference only**
++
+     This profile contains configuration checks that align to the
+     DISA STIG for Red Hat Enterprise Linux V1R4.
+ 

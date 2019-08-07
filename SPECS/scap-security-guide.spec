@@ -41,6 +41,7 @@ Patch25:	scap-security-guide-0.1.45-aide_not_applicable_to_containers.patch
 Patch26:	scap-security-guide-0.1.45-smartcards_not_applicable_to_containers.patch
 Patch27:	scap-security-guide-0.1.45-add_rule_dconf_db_up_to_date.patch
 Patch28:	scap-security-guide-0.1.45-fix_dconf_remediation.patch
+Patch999:       centos-debranding.patch
 BuildArch:	noarch
 
 BuildRequires:	libxslt, expat, python, openscap-scanner >= 1.2.16, python-jinja2, cmake >= 2.8, PyYAML
@@ -100,6 +101,7 @@ mkdir build
 %patch26 -p1
 %patch27 -p1
 %patch28 -p1
+%patch999 -p1
 
 %build
 mkdir -p build && cd build
@@ -127,7 +129,7 @@ mkdir -p build && cd build
 -DSSG_PRODUCT_WRLINUX:BOOL=OFF \
 -DSSG_PRODUCT_OL7:BOOL=OFF \
 -DSSG_PRODUCT_OL8:BOOL=OFF \
--DSSG_CENTOS_DERIVATIVES_ENABLED:BOOL=OFF \
+-DSSG_CENTOS_DERIVATIVES_ENABLED:BOOL=ON \
 -DSSG_SCIENTIFIC_LINUX_DERIVATIVES_ENABLED:BOOL=OFF \
 ../
 make %{?_smp_mflags}
