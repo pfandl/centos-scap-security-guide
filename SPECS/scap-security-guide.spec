@@ -1,37 +1,13 @@
 Name:		scap-security-guide
-Version:	0.1.42
-Release:	11%{?dist}
+Version:	0.1.46
+Release:	1%{?dist}
 Summary:	Security guidance and baselines in SCAP formats
 Group:		Applications/System
 License:	BSD
 URL:		https://github.com/ComplianceAsCode/content/
 Source0:	https://github.com/ComplianceAsCode/content/releases/download/v%{version}/scap-security-guide-%{version}.tar.bz2
-Patch0:		test-stable-ids.patch
-Patch1:		add-missing-kickstart-files.patch
-Patch2:		disable-not-in-good-shape-profiles.patch
-Patch3:		fips.patch
-Patch4:		split-os-is-certified.patch
-Patch5:		fips-rename_def.patch
-Patch6:		crypto_kerboeros_fix.patch
-Patch7:		crypto_uninstalled_fix.patch
-Patch8:		profile_desc.patch
-Patch9:		profile_desc2.patch
-Patch10:	remove_sshd_rhosts_rsa_selection.patch
-Patch11:	podman_backend.patch
-Patch12:	update_platform_in_crypto_policies_tests.patch
-Patch13:	bind_libreswan_scenarios.patch
-Patch14:	crypto_nss_fix.patch
-Patch15:	profile_desc_typo_fix.patch
-Patch16:	select_software_updates.patch
-Patch17:	unselect_dropped_packages.patch
-Patch18:	assign_cce_to_content.patch
-Patch19:	assign_cce_to_ospp_rules.patch
-Patch20:	audit_rule_order_regex.patch
-Patch21:	audit_parameter_position.patch
-Patch22:	audit_rules_path_syscall.patch
-Patch23:	audit_rules_etc_shadow_gshadow.patch
-Patch24:	audit_var_log_directory_access.patch
-Patch25:	audit_rule_order_remediations.patch
+# Patch enables only OSPP and PCI-DSS profiles in RHEL8 datastream
+Patch0:		disable-not-in-good-shape-profiles.patch
 BuildArch:	noarch
 
 # To get python3 inside the buildroot require its path explicitly in BuildRequires
@@ -66,53 +42,17 @@ present in %{name} package.
 %prep
 %setup -q
 %patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
-%patch7 -p1
-%patch8 -p1
-%patch9 -p1
-%patch10 -p1
-%patch11 -p1
-%patch12 -p1
-%patch13 -p1
-%patch14 -p1
-%patch15 -p1
-%patch16 -p1
-%patch17 -p1
-%patch18 -p1
-%patch19 -p1
-%patch20 -p1
-%patch21 -p1
-%patch22 -p1
-%patch23 -p1
-%patch24 -p1
-%patch25 -p1
 mkdir build
 
 %build
 cd build
 %cmake \
--DSSG_PRODUCT_CHROMIUM:BOOL=OFF \
--DSSG_PRODUCT_DEBIAN8:BOOL=OFF \
--DSSG_PRODUCT_EXAMPLE:BOOL=OFF \
--DSSG_PRODUCT_FEDORA:BOOL=OFF \
--DSSG_PRODUCT_JBOSS_EAP6:BOOL=OFF \
--DSSG_PRODUCT_JBOSS_FUSE6:BOOL=OFF \
--DSSG_PRODUCT_OCP3:BOOL=OFF \
--DSSG_PRODUCT_OL7:BOOL=OFF \
--DSSG_PRODUCT_OPENSUSE:BOOL=OFF \
--DSSG_PRODUCT_OSP13:BOOL=OFF \
--DSSG_PRODUCT_RHV4:BOOL=OFF \
--DSSG_PRODUCT_SUSE11:BOOL=OFF \
--DSSG_PRODUCT_SUSE12:BOOL=OFF \
--DSSG_PRODUCT_UBUNTU14:BOOL=OFF \
--DSSG_PRODUCT_UBUNTU16:BOOL=OFF \
--DSSG_PRODUCT_UBUNTU18:BOOL=OFF \
--DSSG_PRODUCT_WRLINUX:BOOL=OFF \
+-DSSG_PRODUCT_DEFAULT:BOOLEAN=FALSE \
+-DSSG_PRODUCT_RHEL6:BOOLEAN=TRUE \
+-DSSG_PRODUCT_RHEL7:BOOLEAN=TRUE \
+-DSSG_PRODUCT_RHEL8:BOOLEAN=TRUE \
+-DSSG_PRODUCT_FIREFOX:BOOLEAN=TRUE \
+-DSSG_PRODUCT_JRE:BOOLEAN=TRUE \
 -DSSG_CENTOS_DERIVATIVES_ENABLED:BOOL=OFF \
 -DSSG_SCIENTIFIC_LINUX_DERIVATIVES_ENABLED:BOOL=OFF ../
 %make_build
@@ -136,6 +76,26 @@ cd build
 %doc %{_docdir}/%{name}/tables/*.html
 
 %changelog
+* Mon Sep 02 2019 Watson Sato <wsato@redhat.com> - 0.1.46-1
+- Update to latest upstream SCAP-Security-Guide-0.1.46 release
+- Align OSPP Profile with Common Criteria Requirements (RHBZ#1714798)
+
+* Wed Aug 07 2019 Milan Lysonek <mlysonek@redhat.com> - 0.1.45-2
+- Use crypto-policy rules in OSPP profile.
+- Re-enable FIREFOX and JRE product in build.
+- Change test suite logging message about missing profile from ERROR to WARNING.
+- Build only one version of SCAP content at a time.
+
+* Tue Aug 06 2019 Milan Lysonek <mlysonek@redhat.com> - 0.1.45-1
+- Update to latest upstream SCAP-Security-Guide-0.1.45 release
+
+* Mon Jun 17 2019 Matěj Týč <matyc@redhat.com> - 0.1.44-2
+- Ported changelog from late 8.0 builds.
+- Disabled build of the OL8 product, updated other components of the cmake invocation.
+
+* Fri Jun 14 2019 Matěj Týč <matyc@redhat.com> - 0.1.44-1
+- Update to latest upstream SCAP-Security-Guide-0.1.44 release
+
 * Mon Mar 11 2019 Gabriel Becker <ggasparb@redhat.com> - 0.1.42-11
 - Assign CCE to rules from OSPP profile which were missing the identifier.
 - Fix regular expression for Audit rules ordering
