@@ -1,0 +1,60 @@
+From 5f4e807cb6e54744ad69cd1e7d622c85ae4e8803 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Mat=C4=9Bj=20T=C3=BD=C4=8D?= <matyc@redhat.com>
+Date: Thu, 21 Nov 2019 16:28:23 +0100
+Subject: [PATCH 1/2] Updated the e8 profile for RHEL8.
+
+- removed obsolete SSHD settings.
+- added rules for crypto policies.
+---
+ rhel8/profiles/e8.profile | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/rhel8/profiles/e8.profile b/rhel8/profiles/e8.profile
+index 53b4c156e2..f0f19a4708 100644
+--- a/rhel8/profiles/e8.profile
++++ b/rhel8/profiles/e8.profile
+@@ -123,14 +123,16 @@ selections:
+   - sshd_print_last_log
+   - sshd_use_priv_separation
+   - sshd_do_not_permit_user_env
+-  - sshd_disable_rhosts_rsa
+   - sshd_disable_rhosts
+-  - sshd_allow_only_protocol2
+   - sshd_set_loglevel_info
+   - sshd_disable_empty_passwords
+   - sshd_disable_user_known_hosts
+   - sshd_enable_strictmodes
+ 
++  - var_system_crypto_policy=default
++  - configure_crypto_policy
++  - configure_ssh_crypto_policy
++
+   ### Application whitelisting
+   - package_fapolicyd_installed
+   - service_fapolicyd_enabled
+
+From 659326a1d4db99dc30c4807b5b5ce4c97db37709 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Mat=C4=9Bj=20T=C3=BD=C4=8D?= <matyc@redhat.com>
+Date: Mon, 25 Nov 2019 16:42:37 +0100
+Subject: [PATCH 2/2] Update the crypto policy and rationale.
+
+---
+ rhel8/profiles/e8.profile | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/rhel8/profiles/e8.profile b/rhel8/profiles/e8.profile
+index f0f19a4708..f78e908482 100644
+--- a/rhel8/profiles/e8.profile
++++ b/rhel8/profiles/e8.profile
+@@ -129,7 +129,10 @@ selections:
+   - sshd_disable_user_known_hosts
+   - sshd_enable_strictmodes
+ 
+-  - var_system_crypto_policy=default
++  # The E8 profile bans usage of SHA-1, and as of 11/2019 the FUTURE crypto policy is the only one that ensures this.
++  # TODO: Re-evaluate after another crypto policies become available.
++  # See also: https://www.cyber.gov.au/ism/guidelines-using-cryptography
++  - var_system_crypto_policy=future
+   - configure_crypto_policy
+   - configure_ssh_crypto_policy
+ 

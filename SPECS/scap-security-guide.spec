@@ -1,12 +1,15 @@
 Name:		scap-security-guide
-Version:	0.1.44
+Version:	0.1.47
 Release:	2%{?dist}
 Summary:	Security guidance and baselines in SCAP formats
 Group:		Applications/System
 License:	BSD
 URL:		https://github.com/ComplianceAsCode/content/
 Source0:	https://github.com/ComplianceAsCode/content/releases/download/v%{version}/scap-security-guide-%{version}.tar.bz2
+# Patch enables only OSPP and PCI-DSS profiles in RHEL8 datastream
 Patch0:		disable-not-in-good-shape-profiles.patch
+Patch1:		scap-security-guide-0.1.48-e8_kickstarts.patch
+Patch2:		scap-security-guide-0.1.48-e8_polish.patch
 BuildArch:	noarch
 
 # To get python3 inside the buildroot require its path explicitly in BuildRequires
@@ -41,29 +44,19 @@ present in %{name} package.
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
+%patch2 -p1
 mkdir build
 
 %build
 cd build
 %cmake \
--DSSG_PRODUCT_CHROMIUM:BOOL=OFF \
--DSSG_PRODUCT_DEBIAN8:BOOL=OFF \
--DSSG_PRODUCT_EAP6:BOOL=OFF \
--DSSG_PRODUCT_EXAMPLE:BOOL=OFF \
--DSSG_PRODUCT_FEDORA:BOOL=OFF \
--DSSG_PRODUCT_FUSE6:BOOL=OFF \
--DSSG_PRODUCT_OCP3:BOOL=OFF \
--DSSG_PRODUCT_OL7:BOOL=OFF \
--DSSG_PRODUCT_OL8:BOOL=OFF \
--DSSG_PRODUCT_OPENSUSE:BOOL=OFF \
--DSSG_PRODUCT_RHOSP13:BOOL=OFF \
--DSSG_PRODUCT_RHV4:BOOL=OFF \
--DSSG_PRODUCT_SLE11:BOOL=OFF \
--DSSG_PRODUCT_SLE12:BOOL=OFF \
--DSSG_PRODUCT_UBUNTU1404:BOOL=OFF \
--DSSG_PRODUCT_UBUNTU1604:BOOL=OFF \
--DSSG_PRODUCT_UBUNTU1804:BOOL=OFF \
--DSSG_PRODUCT_WRLINUX:BOOL=OFF \
+-DSSG_PRODUCT_DEFAULT:BOOLEAN=FALSE \
+-DSSG_PRODUCT_RHEL6:BOOLEAN=TRUE \
+-DSSG_PRODUCT_RHEL7:BOOLEAN=TRUE \
+-DSSG_PRODUCT_RHEL8:BOOLEAN=TRUE \
+-DSSG_PRODUCT_FIREFOX:BOOLEAN=TRUE \
+-DSSG_PRODUCT_JRE:BOOLEAN=TRUE \
 -DSSG_CENTOS_DERIVATIVES_ENABLED:BOOL=OFF \
 -DSSG_SCIENTIFIC_LINUX_DERIVATIVES_ENABLED:BOOL=OFF ../
 %make_build
@@ -87,6 +80,31 @@ cd build
 %doc %{_docdir}/%{name}/tables/*.html
 
 %changelog
+* Tue Nov 26 2019 Matěj Týč <matyc@redhat.com> - 0.1.47-2
+- Improved the e8 profile (RHBZ#1755194)
+
+* Mon Nov 11 2019 Vojtech Polasek <vpolasek@redhat.com> - 0.1.47-1
+- Update to latest upstream SCAP-Security-Guide-0.1.47 release (RHBZ#1757762)
+
+* Wed Oct 16 2019 Gabriel Becker <ggasparb@redhat.com> - 0.1.46-3
+- Align SSHD crypto policy algorithms to Common Criteria Requirements. (RHBZ#1762821)
+
+* Wed Oct 09 2019 Watson Sato <wsato@redhat.com> - 0.1.46-2
+- Fix evaluaton and remediation of audit rules in PCI-DSS profile (RHBZ#1754919)
+
+* Mon Sep 02 2019 Watson Sato <wsato@redhat.com> - 0.1.46-1
+- Update to latest upstream SCAP-Security-Guide-0.1.46 release
+- Align OSPP Profile with Common Criteria Requirements (RHBZ#1714798)
+
+* Wed Aug 07 2019 Milan Lysonek <mlysonek@redhat.com> - 0.1.45-2
+- Use crypto-policy rules in OSPP profile.
+- Re-enable FIREFOX and JRE product in build.
+- Change test suite logging message about missing profile from ERROR to WARNING.
+- Build only one version of SCAP content at a time.
+
+* Tue Aug 06 2019 Milan Lysonek <mlysonek@redhat.com> - 0.1.45-1
+- Update to latest upstream SCAP-Security-Guide-0.1.45 release
+
 * Mon Jun 17 2019 Matěj Týč <matyc@redhat.com> - 0.1.44-2
 - Ported changelog from late 8.0 builds.
 - Disabled build of the OL8 product, updated other components of the cmake invocation.
@@ -337,7 +355,7 @@ cd build
 * Tue Oct 22 2013 Jan iankko Lieskovsky <jlieskov@redhat.com> 0.1-3
 - Add .gitignore for Fedora output directory
 - Set up Fedora release name and CPE based on build system properties
-- Use correct file paths in scap-security-guide(8) manual page 
+- Use correct file paths in scap-security-guide(8) manual page
   (RH BZ#1018905, c#10)
 - Apply further changes motivated by scap-security-guide Fedora RPM review
   request (RH BZ#1018905, c#8):

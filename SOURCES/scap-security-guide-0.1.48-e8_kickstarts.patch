@@ -1,0 +1,362 @@
+From 3cf5caec6f0705d24bc3f285e19d1831714bca16 Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Wed, 13 Nov 2019 18:05:32 +0100
+Subject: [PATCH 1/4] Add simple kickstart file for e8 profiles
+
+As the profile doesn't require a particular disk partition layout, I
+went for the 'autopart' feature.
+---
+ rhel7/kickstart/ssg-rhel7-e8-ks.cfg | 122 ++++++++++++++++++++++++++++
+ rhel8/kickstart/ssg-rhel8-e8-ks.cfg | 122 ++++++++++++++++++++++++++++
+ 2 files changed, 244 insertions(+)
+ create mode 100644 rhel7/kickstart/ssg-rhel7-e8-ks.cfg
+ create mode 100644 rhel8/kickstart/ssg-rhel8-e8-ks.cfg
+
+diff --git a/rhel7/kickstart/ssg-rhel7-e8-ks.cfg b/rhel7/kickstart/ssg-rhel7-e8-ks.cfg
+new file mode 100644
+index 0000000000..9e44a87a86
+--- /dev/null
++++ b/rhel7/kickstart/ssg-rhel7-e8-ks.cfg
+@@ -0,0 +1,122 @@
++# SCAP Security Guide Essential Eight profile kickstart for Red Hat Enterprise Linux 7 Server
++# Version: 0.0.1
++# Date: 2019-11-13
++#
++# Based on:
++# http://fedoraproject.org/wiki/Anaconda/Kickstart
++# https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/7/html/Installation_Guide/sect-kickstart-syntax.html
++
++# Install a fresh new system (optional)
++install
++
++# Specify installation method to use for installation
++# To use a different one comment out the 'url' one below, update
++# the selected choice with proper options & un-comment it
++#
++# Install from an installation tree on a remote server via FTP or HTTP:
++# --url		the URL to install from
++#
++# Example:
++#
++# url --url=http://192.168.122.1/image
++#
++# Modify concrete URL in the above example appropriately to reflect the actual
++# environment machine is to be installed in
++#
++# Other possible / supported installation methods:
++# * install from the first CD-ROM/DVD drive on the system:
++#
++# cdrom
++#
++# * install from a directory of ISO images on a local drive:
++#
++# harddrive --partition=hdb2 --dir=/tmp/install-tree
++#
++# * install from provided NFS server:
++#
++# nfs --server=<hostname> --dir=<directory> [--opts=<nfs options>]
++#
++
++# Set language to use during installation and the default language to use on the installed system (required)
++lang en_US.UTF-8
++
++# Set system keyboard type / layout (required)
++keyboard us
++
++# Configure network information for target system and activate network devices in the installer environment (optional)
++# --onboot	enable device at a boot time
++# --device	device to be activated and / or configured with the network command
++# --bootproto	method to obtain networking configuration for device (default dhcp)
++# --noipv6	disable IPv6 on this device
++#
++# NOTE: Usage of DHCP will fail CCE-27021-5 (DISA FSO RHEL-06-000292). To use static IP configuration,
++#       "--bootproto=static" must be used. For example:
++# network --bootproto=static --ip=10.0.2.15 --netmask=255.255.255.0 --gateway=10.0.2.254 --nameserver 192.168.2.1,192.168.3.1
++#
++network --onboot yes --device eth0 --bootproto dhcp --noipv6
++
++# Set the system's root password (required)
++# Plaintext password is: server
++# Refer to e.g. http://fedoraproject.org/wiki/Anaconda/Kickstart#rootpw to see how to create
++# encrypted password form for different plaintext password
++rootpw --iscrypted $6$rhel6usgcb$aS6oPGXcPKp3OtFArSrhRwu6sN8q2.yEGY7AIwDOQd23YCtiz9c5mXbid1BzX9bmXTEZi.hCzTEXFosVBI5ng0
++
++# The selected profile will restrict root login
++# Add a user that can login and escalate privileges
++# Plaintext password is: admin123
++user --name=admin --groups=wheel --password=$6$Ga6ZnIlytrWpuCzO$q0LqT1USHpahzUafQM9jyHCY9BiE5/ahXLNWUMiVQnFGblu0WWGZ1e6icTaCGO4GNgZNtspp1Let/qpM7FMVB0 --iscrypted
++
++# Configure firewall settings for the system (optional)
++# --enabled	reject incoming connections that are not in response to outbound requests
++# --ssh		allow sshd service through the firewall
++firewall --enabled --ssh
++
++# Set up the authentication options for the system (required)
++# --enableshadow	enable shadowed passwords by default
++# --passalgo		hash / crypt algorithm for new passwords
++# See the manual page for authconfig for a complete list of possible options.
++authconfig --enableshadow --passalgo=sha512
++
++# State of SELinux on the installed system (optional)
++# Defaults to enforcing
++selinux --enforcing
++
++# Set the system time zone (required)
++timezone --utc America/New_York
++
++# Specify how the bootloader should be installed (required)
++# Plaintext password is: password
++# Refer to e.g. http://fedoraproject.org/wiki/Anaconda/Kickstart#rootpw to see how to create
++# encrypted password form for different plaintext password
++bootloader --location=mbr --append="crashkernel=auto rhgb quiet" --password=$6$rhel6usgcb$kOzIfC4zLbuo3ECp1er99NRYikN419wxYMmons8Vm/37Qtg0T8aB9dKxHwqapz8wWAFuVkuI/UJqQBU92bA5C0
++
++# Initialize (format) all disks (optional)
++zerombr
++
++# The following partition layout scheme assumes disk of size 20GB or larger
++# Modify size of partitions appropriately to reflect actual machine's hardware
++# 
++# Remove Linux partitions from the system prior to creating new ones (optional)
++# --linux	erase all Linux partitions
++# --initlabel	initialize the disk label to the default based on the underlying architecture
++clearpart --linux --initlabel
++
++# Create primary system partitions (required for installs)
++autopart
++
++%addon org_fedora_oscap
++        content-type = scap-security-guide
++        profile = xccdf_org.ssgproject.content_profile_e8
++%end
++
++# Packages selection (%packages section is required)
++%packages
++
++# Require @Base
++@Base
++
++%end # End of %packages section
++
++# Reboot after the installation is complete (optional)
++# --eject	attempt to eject CD or DVD media before rebooting
++reboot --eject
+diff --git a/rhel8/kickstart/ssg-rhel8-e8-ks.cfg b/rhel8/kickstart/ssg-rhel8-e8-ks.cfg
+new file mode 100644
+index 0000000000..3555f528cb
+--- /dev/null
++++ b/rhel8/kickstart/ssg-rhel8-e8-ks.cfg
+@@ -0,0 +1,122 @@
++# SCAP Security Guide Essential Eight profile kickstart for Red Hat Enterprise Linux 8 Server
++# Version: 0.0.1
++# Date: 2019-11-13
++#
++# Based on:
++# http://fedoraproject.org/wiki/Anaconda/Kickstart
++# https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/7/html/Installation_Guide/sect-kickstart-syntax.html
++
++# Install a fresh new system (optional)
++install
++
++# Specify installation method to use for installation
++# To use a different one comment out the 'url' one below, update
++# the selected choice with proper options & un-comment it
++#
++# Install from an installation tree on a remote server via FTP or HTTP:
++# --url		the URL to install from
++#
++# Example:
++#
++# url --url=http://192.168.122.1/image
++#
++# Modify concrete URL in the above example appropriately to reflect the actual
++# environment machine is to be installed in
++#
++# Other possible / supported installation methods:
++# * install from the first CD-ROM/DVD drive on the system:
++#
++# cdrom
++#
++# * install from a directory of ISO images on a local drive:
++#
++# harddrive --partition=hdb2 --dir=/tmp/install-tree
++#
++# * install from provided NFS server:
++#
++# nfs --server=<hostname> --dir=<directory> [--opts=<nfs options>]
++#
++
++# Set language to use during installation and the default language to use on the installed system (required)
++lang en_US.UTF-8
++
++# Set system keyboard type / layout (required)
++keyboard us
++
++# Configure network information for target system and activate network devices in the installer environment (optional)
++# --onboot	enable device at a boot time
++# --device	device to be activated and / or configured with the network command
++# --bootproto	method to obtain networking configuration for device (default dhcp)
++# --noipv6	disable IPv6 on this device
++#
++# NOTE: Usage of DHCP will fail CCE-27021-5 (DISA FSO RHEL-06-000292). To use static IP configuration,
++#       "--bootproto=static" must be used. For example:
++# network --bootproto=static --ip=10.0.2.15 --netmask=255.255.255.0 --gateway=10.0.2.254 --nameserver 192.168.2.1,192.168.3.1
++#
++network --onboot yes --device eth0 --bootproto dhcp --noipv6
++
++# Set the system's root password (required)
++# Plaintext password is: server
++# Refer to e.g. http://fedoraproject.org/wiki/Anaconda/Kickstart#rootpw to see how to create
++# encrypted password form for different plaintext password
++rootpw --iscrypted $6$rhel6usgcb$aS6oPGXcPKp3OtFArSrhRwu6sN8q2.yEGY7AIwDOQd23YCtiz9c5mXbid1BzX9bmXTEZi.hCzTEXFosVBI5ng0
++
++# The selected profile will restrict root login
++# Add a user that can login and escalate privileges
++# Plaintext password is: admin123
++user --name=admin --groups=wheel --password=$6$Ga6ZnIlytrWpuCzO$q0LqT1USHpahzUafQM9jyHCY9BiE5/ahXLNWUMiVQnFGblu0WWGZ1e6icTaCGO4GNgZNtspp1Let/qpM7FMVB0 --iscrypted
++
++# Configure firewall settings for the system (optional)
++# --enabled	reject incoming connections that are not in response to outbound requests
++# --ssh		allow sshd service through the firewall
++firewall --enabled --ssh
++
++# Set up the authentication options for the system (required)
++# --enableshadow	enable shadowed passwords by default
++# --passalgo		hash / crypt algorithm for new passwords
++# See the manual page for authconfig for a complete list of possible options.
++authconfig --enableshadow --passalgo=sha512
++
++# State of SELinux on the installed system (optional)
++# Defaults to enforcing
++selinux --enforcing
++
++# Set the system time zone (required)
++timezone --utc America/New_York
++
++# Specify how the bootloader should be installed (required)
++# Plaintext password is: password
++# Refer to e.g. http://fedoraproject.org/wiki/Anaconda/Kickstart#rootpw to see how to create
++# encrypted password form for different plaintext password
++bootloader --location=mbr --append="crashkernel=auto rhgb quiet" --password=$6$rhel6usgcb$kOzIfC4zLbuo3ECp1er99NRYikN419wxYMmons8Vm/37Qtg0T8aB9dKxHwqapz8wWAFuVkuI/UJqQBU92bA5C0
++
++# Initialize (format) all disks (optional)
++zerombr
++
++# The following partition layout scheme assumes disk of size 20GB or larger
++# Modify size of partitions appropriately to reflect actual machine's hardware
++# 
++# Remove Linux partitions from the system prior to creating new ones (optional)
++# --linux	erase all Linux partitions
++# --initlabel	initialize the disk label to the default based on the underlying architecture
++clearpart --linux --initlabel
++
++# Create primary system partitions (required for installs)
++autopart
++
++%addon org_fedora_oscap
++        content-type = scap-security-guide
++        profile = xccdf_org.ssgproject.content_profile_e8
++%end
++
++# Packages selection (%packages section is required)
++%packages
++
++# Require @Base
++@Base
++
++%end # End of %packages section
++
++# Reboot after the installation is complete (optional)
++# --eject	attempt to eject CD or DVD media before rebooting
++reboot --eject
+
+From 94249bce4b61c33e52f59efdb112e2082b4acf46 Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Fri, 15 Nov 2019 11:19:51 +0100
+Subject: [PATCH 2/4] Use authselect for el8 kickstart
+
+auth and authconfig are deprecated
+---
+ rhel8/kickstart/ssg-rhel8-e8-ks.cfg | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/rhel8/kickstart/ssg-rhel8-e8-ks.cfg b/rhel8/kickstart/ssg-rhel8-e8-ks.cfg
+index 3555f528cb..e814024e2e 100644
+--- a/rhel8/kickstart/ssg-rhel8-e8-ks.cfg
++++ b/rhel8/kickstart/ssg-rhel8-e8-ks.cfg
+@@ -72,10 +72,10 @@ user --name=admin --groups=wheel --password=$6$Ga6ZnIlytrWpuCzO$q0LqT1USHpahzUaf
+ firewall --enabled --ssh
+ 
+ # Set up the authentication options for the system (required)
+-# --enableshadow	enable shadowed passwords by default
+-# --passalgo		hash / crypt algorithm for new passwords
+-# See the manual page for authconfig for a complete list of possible options.
+-authconfig --enableshadow --passalgo=sha512
++# sssd profile sets sha512 to hash passwords
++# passwords are shadowed by default
++# See the manual page for authselect-profile for a complete list of possible options.
++authselect select sssd
+ 
+ # State of SELinux on the installed system (optional)
+ # Defaults to enforcing
+
+From 1ff6ab4ec0449074c4608eed0194903123eda34b Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Fri, 15 Nov 2019 11:22:31 +0100
+Subject: [PATCH 3/4] Updated kickstart documenation link for el8
+
+---
+ rhel8/kickstart/ssg-rhel8-e8-ks.cfg | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/rhel8/kickstart/ssg-rhel8-e8-ks.cfg b/rhel8/kickstart/ssg-rhel8-e8-ks.cfg
+index e814024e2e..41d4b3d654 100644
+--- a/rhel8/kickstart/ssg-rhel8-e8-ks.cfg
++++ b/rhel8/kickstart/ssg-rhel8-e8-ks.cfg
+@@ -4,7 +4,7 @@
+ #
+ # Based on:
+ # http://fedoraproject.org/wiki/Anaconda/Kickstart
+-# https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/7/html/Installation_Guide/sect-kickstart-syntax.html
++# https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html-single/performing_an_advanced_rhel_installation/index#performing_an_automated_installation_using_kickstart
+ 
+ # Install a fresh new system (optional)
+ install
+
+From ef5edccc3ec58131644f31481ec3df20ab345229 Mon Sep 17 00:00:00 2001
+From: Watson Sato <wsato@redhat.com>
+Date: Mon, 18 Nov 2019 13:31:18 +0100
+Subject: [PATCH 4/4] Add link to oscap-anaconda-addon documentation
+
+---
+ rhel7/kickstart/ssg-rhel7-e8-ks.cfg | 3 +++
+ rhel8/kickstart/ssg-rhel8-e8-ks.cfg | 3 +++
+ 2 files changed, 6 insertions(+)
+
+diff --git a/rhel7/kickstart/ssg-rhel7-e8-ks.cfg b/rhel7/kickstart/ssg-rhel7-e8-ks.cfg
+index 9e44a87a86..23f1bad7e1 100644
+--- a/rhel7/kickstart/ssg-rhel7-e8-ks.cfg
++++ b/rhel7/kickstart/ssg-rhel7-e8-ks.cfg
+@@ -104,6 +104,9 @@ clearpart --linux --initlabel
+ # Create primary system partitions (required for installs)
+ autopart
+ 
++# Harden installation with Essential Eight profile
++# For more details and configuration options see command %addon org_fedora_oscap in
++# https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/installation_guide/sect-kickstart-syntax#sect-kickstart-commands
+ %addon org_fedora_oscap
+         content-type = scap-security-guide
+         profile = xccdf_org.ssgproject.content_profile_e8
+diff --git a/rhel8/kickstart/ssg-rhel8-e8-ks.cfg b/rhel8/kickstart/ssg-rhel8-e8-ks.cfg
+index 41d4b3d654..8380ea13a3 100644
+--- a/rhel8/kickstart/ssg-rhel8-e8-ks.cfg
++++ b/rhel8/kickstart/ssg-rhel8-e8-ks.cfg
+@@ -104,6 +104,9 @@ clearpart --linux --initlabel
+ # Create primary system partitions (required for installs)
+ autopart
+ 
++# Harden installation with Essential Eight profile
++# For more details and configuration options see
++# https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html-single/performing_an_advanced_rhel_installation/index#addon-org_fedora_oscap_kickstart-commands-for-addons-supplied-with-the-rhel-installation-program
+ %addon org_fedora_oscap
+         content-type = scap-security-guide
+         profile = xccdf_org.ssgproject.content_profile_e8
